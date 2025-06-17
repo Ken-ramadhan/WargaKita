@@ -1,0 +1,24 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+
+class Pengumuman extends Model
+{
+    //
+    protected $table = 'pengumuman';
+    protected $fillable = [
+        'judul',
+        'subjek',
+        'isi',
+        'tanggal',
+        'id_rt',
+    ];
+
+    public function rukuntetangga(): BelongsToMany
+    {
+        return $this->belongsToMany(Rukun_tetangga::class,'id_rt', 'id_rt');
+    }
+}
