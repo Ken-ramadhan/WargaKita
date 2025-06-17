@@ -15,6 +15,7 @@ class Kartu_keluarga extends Model
     public $incrementing = false;
     protected $keyType = 'string';
     protected $fillable = [
+        'no_kk',
         'id_rt',
         'kepala_kk',
     ];
@@ -23,7 +24,7 @@ class Kartu_keluarga extends Model
 
     public function rukunTetangga(): BelongsTo
     {
-        return $this->belongsTo(Rukun_tetangga::class, 'id_rt', 'id_rt');
+        return $this->belongsTo(Rukun_tetangga::class, 'id_rt', 'id');
     }
 
     public function tagihan(): HasMany

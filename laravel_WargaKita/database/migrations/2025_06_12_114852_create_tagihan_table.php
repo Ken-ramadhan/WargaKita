@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tagihans', function (Blueprint $table) {
+        Schema::create('tagihan', function (Blueprint $table) {
             $table->id();
             $table->char('no_kk', 16);
-            $table->foreign('no_kk')->references('no_kk')->on('kartu_keluargas')->onDelete('cascade');
+            $table->foreign('no_kk')->references('no_kk')->on('kartu_keluarga')->onDelete('restrict');
             $table->enum('status', ['lunas', 'belum_lunas'])->default('belum_lunas');
             $table->dateTime('tgl_bayar')->nullable();
-            $table->foreignId('id_iuran')->constrained('iurans')->onDelete('cascade');
+            $table->foreignId('id_iuran')->constrained('iuran')->onDelete('cascade');
             $table->enum('kategori_pembayaran',['transfer', 'tunai'])->nullable();
             $table->string('bukti_transfer')->nullable();
 
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tagihans');
+        Schema::dropIfExists('tagihan');
     }
 };

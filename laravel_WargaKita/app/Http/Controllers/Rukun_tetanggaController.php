@@ -14,6 +14,7 @@ class Rukun_tetanggaController extends Controller
     {
         //
         $rukun_tetangga = Rukun_tetangga::all();
+        return view('rukun_tetangga', compact('rukun_tetangga'));
     }
 
     /**
@@ -30,6 +31,16 @@ class Rukun_tetanggaController extends Controller
     public function store(Request $request)
     {
         //
+        $request->validate([
+            'nomor_rt' => 'required|string',
+        ], [
+            'nomor_rt.required' => 'Nomor Rukun Tetangga harus diisi.',
+        ]);
+
+        Rukun_tetangga::create([
+            'nomor_rt' => $request->nomor_rt,
+        ]);
+        return redirect()->route('rukun_tetangga.index')->with('success', 'Rukun Tetangga berhasil ditambahkan.');
     }
 
     /**
@@ -38,6 +49,8 @@ class Rukun_tetanggaController extends Controller
     public function show(string $id)
     {
         //
+        $rukun_tetangga = Rukun_tetangga::findOrFail($id);
+        return view('rukun_tetangga.show', compact('rukun_tetangga'));
     }
 
     /**
@@ -46,6 +59,8 @@ class Rukun_tetanggaController extends Controller
     public function edit(string $id)
     {
         //
+        $rukun_tetangga = Rukun_tetangga::findOrFail($id);
+        return view('rukun_tetangga.edit', compact('rukun_tetangga'));
     }
 
     /**
@@ -54,6 +69,16 @@ class Rukun_tetanggaController extends Controller
     public function update(Request $request, string $id)
     {
         //
+        $request->validate([
+            'nomor_rt' => 'required|string|max:255',
+        ], [
+            'nomor_rt.required' => 'Nama Rukun Tetangga harus diisi.',
+        ]);
+        $rukun_tetangga = Rukun_tetangga::findOrFail($id);
+        $rukun_tetangga->update([
+            'nomor_rt' => $request->nomor_rt,
+        ]);
+        return redirect()->route('rukun_tetangga.index')->with('success', 'Rukun Tetangga berhasil diperbarui.');
     }
 
     /**
@@ -62,5 +87,11 @@ class Rukun_tetanggaController extends Controller
     public function destroy(string $id)
     {
         //
+         try {
+        Rukun_tetangga::findOrFail($id)->delete();
+        return redirect()->back()->with('success', 'RT berhasil dihapus.');
+    } catch (\Illuminate\Database\QueryException $e) {
+        return redirect()->back()->with('error', 'Tidak bisa menghapus RT karena masih digunakan.');
+    }
     }
 }

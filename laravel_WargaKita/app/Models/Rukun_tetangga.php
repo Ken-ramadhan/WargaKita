@@ -11,7 +11,7 @@ class Rukun_tetangga extends Model
     //
     protected $table = 'rukun_tetangga';
     protected $fillable = [
-        'nama',
+        'nomor_rt',
     ];
 
     public function warga(): HasMany

@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('subjek');
             $table->text('isi');
             $table->dateTime('tanggal');
-            $table->foreignId('id_rt')->constrained('rukun_tetanggas')->onDelete('cascade');
+            $table->foreignId('id_rt')->constrained('rukun_tetangga')->onDelete('restrict');
             $table->timestamps();
         });
     }

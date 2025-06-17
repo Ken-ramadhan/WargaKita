@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->char('nik', 16)->unique();
             $table->string('password');
-            $table->foreignId('id_roles')->constrained('roles')->onDelete('cascade');
+            $table->foreignId('id_roles')->constrained('roles')->onDelete('restrict');
             $table->timestamps();
         });
 

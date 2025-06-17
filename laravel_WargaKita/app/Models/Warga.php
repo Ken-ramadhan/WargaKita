@@ -14,6 +14,7 @@ class Warga extends Model
     public $incrementing = false;
     protected $keyType = 'string';
     protected $fillable = [
+        'nik',
         'no_kk',
         'nama',
     ];
@@ -25,6 +26,6 @@ class Warga extends Model
 
     public function rukunTetangga(): HasOne
     {
-        return $this->hasOne(Rukun_tetangga::class,'id_rt', 'id_rt');
+        return $this->hasOne(Rukun_tetangga::class,'id_rt', 'id');
     }
 }

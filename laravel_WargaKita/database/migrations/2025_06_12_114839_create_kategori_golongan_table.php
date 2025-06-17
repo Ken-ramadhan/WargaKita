@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('kartu_keluargas', function (Blueprint $table) {
-            $table->char('no_kk', 16)->primary()->unique();
-            $table->foreignId('id_rt')->constrained('rukun_tetanggas')->onDelete('cascade');
-            $table->string('kepala_kk');
+        Schema::create('kategori_golongan', function (Blueprint $table) {
+            $table->id();
+            $table->string('nama');
+            $table->string('keterangan')->nullable();
             $table->timestamps();
         });
     }
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('kartu_keluargas');
+        Schema::dropIfExists('kategori_golongan');
     }
 };

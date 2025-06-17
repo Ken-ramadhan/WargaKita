@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('rukun_tetanggas', function (Blueprint $table) {
-            $table->id();
+        Schema::create('warga', function (Blueprint $table) {
+            $table->char('nik', 16)->primary()->unique();
+            $table->char('no_kk', 16); // atau tipe lain sesuai dengan kolom aslinya
+            $table->foreign('no_kk')->references('no_kk')->on('kartu_keluarga')->onDelete('restrict');
+
             $table->string('nama');
             $table->timestamps();
         });
@@ -23,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('rukun_tetanggas');
+        Schema::dropIfExists('warga');
     }
 };
