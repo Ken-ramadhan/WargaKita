@@ -12,10 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('warga', function (Blueprint $table) {
-            $table->char('nik', 16)->primary()->unique();
-            $table->char('no_kk', 16); // atau tipe lain sesuai dengan kolom aslinya
-            $table->foreign('no_kk')->references('no_kk')->on('kartu_keluarga')->onDelete('restrict');
-
+            $table->char('nik', 16)->primary(); // Sudah cukup, tidak perlu ->unique() lagi
+            $table->char('no_kk', 16);
+            $table->foreign('no_kk')
+                ->references('no_kk')
+                ->on('kartu_keluarga')
+                ->onDelete('restrict')
+                ->onUpdate('cascade');
             $table->string('nama');
             $table->timestamps();
         });

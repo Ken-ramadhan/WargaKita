@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard')
+@section('title', $title)
 
 @section('content')
 
@@ -14,15 +14,35 @@
 
         <!-- Begin Page Content -->
         <div class="container-fluid">
-
-            <!-- Page Heading -->
-            <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                <h1 class="h3 mb-0 text-gray-800">Mananjeman Kartu Keluarga</h1>
-            </div>
-
             <!-- Content Row -->
 
             <div class="row">
+
+                    <form method="GET" action="{{ route('kartu_keluarga.index') }}" class="mb-3 d-flex gap-2">
+                        <div class="input-group">
+                            <input type="text" name="search" value="{{ request('search') }}" class="form-control"
+                                placeholder="Cari Data Kartu Keluarga...">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="submit">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Filter Nomor RT -->
+                        <select name="rt" class="form-select w-25">
+                            <option value="">Semua RT</option>
+                            @foreach ($rukun_tetangga as $rt)
+                                <option value="{{ $rt->nomor_rt }}" {{ request('rt') == $rt->nomor_rt ? 'selected' : '' }}>
+                                    RT {{ $rt->nomor_rt }}
+                                </option>
+                            @endforeach
+                        </select>
+
+                        <!-- Tombol -->
+                        <button class="btn btn-primary">Terapkan</button>
+                        <a href="{{ route('kartu_keluarga.index') }}" class="btn btn-secondary">Reset</a>
+                    </form>
 
                 <!-- Area Chart -->
                 <div class="col-xl-12 col-lg-7">
@@ -40,37 +60,139 @@
                                     <div class="dropdown-header">Tambah Data Kartu Keluarga</div>
                                     <a class="dropdown-item" href="#" data-bs-toggle="modal"
                                         data-bs-target="#modalTambahWarga">Tambah</a>
-                                    {{-- <a class="dropdown-item" href="{{ route('kartu_keluarga') }}">Kartu Keluarga</a> --}}
+
+                                    <div class="dropdown-header">Halaman Warga</div>
+                                    <a class="dropdown-item" href="{{ route('warga.index') }}">Manajemen Warga</a>
                                 </div>
                             </div>
                         </div>
                         <!-- Card Body -->
                         <div class="card-body">
-                            <table class="table">
+                            <table class="table table-hover">
                                 <thead>
                                     <tr>
-                                        <th scope="col">id</th>
-                                        <th scope="col">No KK</th>
-                                        <th scope="col">Nomor Rt</th>
+                                        <th scope="col">No</th>
+                                        <th scope="col">NO KK</th>
+                                        <th scope="col">NOMOR RT</th>
+                                        <th scope="col">KEPALA KK(NIK)</th>
+                                        <th scope="col">AKSI</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($kartu_keluarga as $kk)
                                         <tr>
-                                            <th scope="row">{{ $loop->iteration  }}</th>
+                                            <th scope="row">{{ $loop->iteration }}</th>
                                             <td>{{ $kk->no_kk }}</td>
                                             <td>{{ $kk->rukunTetangga->nomor_rt ?? '-' }}</td>
+                                            <td>{{ $kk->kepala_kk }}</td>
+
+                                            <td>
+                                                <form action="{{ route('kartu_keluarga.destroy', $kk->no_kk) }}"
+                                                    method="POST" class="d-inline"
+                                                    onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                                    {{-- Alert Konfirmasi Hapus --}}
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                                    {{-- Alert Error --}}
+                                                </form>
+                                                <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal"
+                                                    data-bs-target="#modalEditkk{{ $kk->no_kk }}">
+                                                    Edit
+                                                </button>
+                                            </td>
 
                                         </tr>
+
+                                        <tr>
+                                            @if (session('error'))
+                                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                                    {{ session('error') }}
+                                                    <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                                        aria-label="Close"></button>
+                                                </div>
+                                            @endif
+                                        </tr>
+
+                                        <!-- Modal Edit kartu keluarga -->
+                                        <div class="modal fade" id="modalEditkk{{ $kk->no_kk }}" tabindex="-1"
+                                            aria-labelledby="modalEditKKLabel{{ $kk->no_kk }}" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content shadow-lg">
+                                                    <div class="modal-header bg-warning text-white">
+                                                        <h5 class="modal-title" id="modalEditRTLabel{{ $kk->no_kk }}">
+                                                            Edit Nomor KK
+                                                        </h5>
+                                                        <button type="button" class="btn-close btn-close-white"
+                                                            data-bs-dismiss="modal" aria-label="Tutup"></button>
+                                                    </div>
+                                                    <form action="{{ route('kartu_keluarga.update', $kk->no_kk) }}"
+                                                        method="POST">
+                                                        @csrf
+                                                        @method('PUT')
+                                                        <div class="modal-body">
+                                                            <div class="mb-3">
+                                                                <label for="no_kk{{ $kk->no_kk }}"
+                                                                    class="form-label">Nomor KK</label>
+                                                                <input type="text" name="no_kk"
+                                                                    class="form-control @error('no_kk') is-invalid @enderror"
+                                                                    value="{{ old('no_kk', $kk->no_kk) }}" required>
+                                                                @error('no_kk')
+                                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                                @enderror
+
+
+                                                                <label for="nomor_rt{{ $kk->nomor_rt }}"
+                                                                    class="form-label">Nomor RT</label>
+                                                                <select name="id_rt" class="form-control">
+                                                                    @foreach ($rukun_tetangga as $rt)
+                                                                        <option value="{{ $rt->id }}"
+                                                                            {{ $kk->id_rt == $rt->id ? 'selected' : '' }}>
+                                                                            RT {{ $rt->nomor_rt }}
+                                                                        </option>
+                                                                    @endforeach
+                                                                </select>
+
+                                                                <div class="row mb-3">
+                                                                    <label for="kepala_kk" class="form-label">Kepala
+                                                                        KK</label>
+                                                                    <input type="text" name="kepala_kk" id="kepala_kk"
+                                                                        class="form-control" value="{{ $kk->kepala_kk }}"
+                                                                        required>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="submit" class="btn btn-warning">Simpan
+                                                                Perubahan</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
                                     @endforeach
 
                                 </tbody>
                             </table>
+                            <!-- Info dan Tombol Pagination Sejajar -->
+                            <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+                                <!-- Info Kustom -->
+                                <div class="text-muted mb-2">
+                                    Menampilkan {{ $kartu_keluarga->firstItem() ?? '0' }}-{{ $kartu_keluarga->lastItem() }}
+                                    dari total
+                                    {{ $kartu_keluarga->total() }} data
+                                </div>
+
+                                <!-- Tombol Pagination -->
+                                <div>
+                                    {{ $kartu_keluarga->links('pagination::bootstrap-5') }}
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Modal Tambah kartu keluarga -->
-                        <div class="modal fade" id="modalTambahWarga" tabindex="-1" aria-labelledby="modalTambahWargaLabel"
-                            aria-hidden="true">
+                        <div class="modal fade" id="modalTambahWarga" tabindex="-1"
+                            aria-labelledby="modalTambahWargaLabel" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content shadow-lg">
                                     <div class="modal-header bg-primary text-white">
@@ -80,7 +202,8 @@
                                     </div>
                                     <div class="modal-body">
                                         {{-- Form Tambah Warga --}}
-                                        <form action="{{ route('kartu_keluarga.store') }}" method="POST" class="p-4">
+                                        <form action="{{ route('kartu_keluarga.store') }}" method="POST"
+                                            class="p-4">
                                             @csrf
 
                                             <!-- Input No KK -->

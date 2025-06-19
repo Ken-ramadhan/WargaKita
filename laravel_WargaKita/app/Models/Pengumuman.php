@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Pengumuman extends Model
 {
@@ -17,8 +17,8 @@ class Pengumuman extends Model
         'id_rt',
     ];
 
-    public function rukuntetangga(): BelongsToMany
+    public function rukuntetangga(): BelongsTo
     {
-        return $this->belongsToMany(Rukun_tetangga::class,'id_rt', 'id_rt');
+        return $this->belongsTo(Rukun_tetangga::class,'id_rt', 'id');
     }
 }

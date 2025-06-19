@@ -23,6 +23,27 @@
     <!-- Bootstrap 5 CSS -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
+<style>
+    @media (min-width: 768px)
+    {
+        .sidebar {
+    transition: all 0.3s ease;
+}
+
+.sidebar.toggled {
+    width: 100px !important; /* ukuran kecil saat ditutup */
+}
+
+.sidebar .nav-item .nav-link span {
+    transition: opacity 0.3s ease;
+}
+body.sidebar-toggled .sidebar {
+    width: 80px;
+}
+    }
+    
+</style>
+
 
 </head>
 
@@ -99,15 +120,27 @@
 
 
 @if ($errors->any())
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const modal = new bootstrap.Modal(document.getElementById('modalTambahWarga'));
-        modal.show();
-    });
-</script>
+    @if (old('form_type') === 'tambah')
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const modal = new bootstrap.Modal(document.getElementById('modalTambahWarga'));
+                modal.show();
+            });
+        </script>
+    @elseif (old('form_type') === 'edit' && session('open_edit_modal'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const modalId = 'modalEditwarga{{ session('open_edit_modal') }}';
+                const modalElement = document.getElementById(modalId);
+
+                if (modalElement) {
+                    const modal = new bootstrap.Modal(modalElement);
+                    modal.show();
+                }
+            });
+        </script>
+    @endif
 @endif
-
-
 </body>
 
 </html>

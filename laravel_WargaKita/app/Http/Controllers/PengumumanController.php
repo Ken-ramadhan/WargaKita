@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pengumuman;
+use App\Models\Rukun_tetangga;
 use Illuminate\Http\Request;
 
 class PengumumanController extends Controller
@@ -10,11 +11,69 @@ class PengumumanController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+
+    public function index(Request $request)
+{
+    $search = $request->input('search');
+    $tahun = $request->input('tahun');
+    $bulan = $request->input('bulan');
+    $subjek = $request->input('subjek');
+
+    $pengumuman = Pengumuman::when($search, function ($query, $search) {
+        $query->where('judul', 'like', '%' . $search . '%')
+              ->orWhere('isi', 'like', '%' . $search . '%');
+
+        $searchLower = strtolower($search);
+
+        $hariList = ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu', 'minggu'];
+        if (in_array($searchLower, $hariList)) {
+            $query->orWhereRaw("DAYNAME(tanggal) = ?", [$this->indoToEnglishDay($searchLower)]);
+        }
+
+        $bulanList = ['januari', 'februari', 'maret', 'april', 'mei', 'juni', 'juli', 'agustus', 'september', 'oktober', 'november', 'desember'];
+        if (in_array($searchLower, $bulanList)) {
+            $bulanAngka = array_search($searchLower, $bulanList) + 1;
+            $query->orWhereMonth('tanggal', $bulanAngka);
+        }
+    })
+    ->when($tahun, fn($q) => $q->whereYear('tanggal', $tahun))
+    ->when($bulan, fn($q) => $q->whereMonth('tanggal', $bulan))
+    ->when($subjek, fn($q) => $q->where('subjek', $subjek))
+    ->paginate(5)
+    ->withQueryString();
+
+    $rukun_tetangga = Rukun_tetangga::all();
+    $title = 'Pengumuman';
+
+    $daftar_tahun = Pengumuman::selectRaw('YEAR(tanggal) as tahun')->distinct()->orderByDesc('tahun')->pluck('tahun');
+    $daftar_bulan = range(1, 12);
+    $daftar_subjek = Pengumuman::select('subjek')->distinct()->pluck('subjek');
+
+    return view('pengumuman', compact(
+        'pengumuman',
+        'rukun_tetangga',
+        'title',
+        'daftar_tahun',
+        'daftar_bulan',
+        'daftar_subjek'
+    ));
+}
+
+    // Fungsi bantu ubah nama hari dari Indonesia ke Inggris
+    private function indoToEnglishDay($day)
     {
-        //
-        $pengumuman = Pengumuman::all();
+        return match (strtolower($day)) {
+            'senin' => 'Monday',
+            'selasa' => 'Tuesday',
+            'rabu' => 'Wednesday',
+            'kamis' => 'Thursday',
+            'jumat' => 'Friday',
+            'sabtu' => 'Saturday',
+            'minggu' => 'Sunday',
+            default => $day,
+        };
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -30,6 +89,30 @@ class PengumumanController extends Controller
     public function store(Request $request)
     {
         //
+
+        $request->validate([
+            'judul' => 'required|string|max:255',
+            'subjek' => 'nullable|string|max:255',
+            'isi' => 'required|string',
+            'tanggal' => 'required|date',
+            'id_rt' => 'required|exists:rukun_tetangga,id',
+        ], [
+            'judul.required' => 'Judul pengumuman harus diisi.',
+            'isi.required' => 'Isi pengumuman harus diisi.',
+            'tanggal.required' => 'Tanggal pengumuman harus diisi.',
+            'id_rt.required' => 'Rukun Tetangga harus dipilih.',
+            'id_rt.exists' => 'Rukun Tetangga yang dipilih tidak valid.',
+
+        ]);
+
+        Pengumuman::create([
+            'judul' => $request->judul,
+            'subjek' => $request->subjek,
+            'isi' => $request->isi,
+            'tanggal' => $request->tanggal,
+            'id_rt' => $request->id_rt,
+        ]);
+        return redirect()->route('pengumuman.index')->with('success', 'Pengumuman berhasil ditambahkan.');
     }
 
     /**
@@ -38,6 +121,8 @@ class PengumumanController extends Controller
     public function show(string $id)
     {
         //
+        $pengumuman = Pengumuman::findOrFail($id);
+        return view('pengumuman.show', compact('pengumuman'));
     }
 
     /**
@@ -46,6 +131,8 @@ class PengumumanController extends Controller
     public function edit(string $id)
     {
         //
+        $pengumuman = Pengumuman::findOrFail($id);
+        return view('pengumuman.edit', compact('pengumuman'));
     }
 
     /**
@@ -54,6 +141,28 @@ class PengumumanController extends Controller
     public function update(Request $request, string $id)
     {
         //
+        $pengumuman = Pengumuman::findOrFail($id);
+        $request->validate([
+            'judul' => 'required|string|max:255',
+            'subjek' => 'nullable|string|max:255',
+            'isi' => 'required|string',
+            'tanggal' => 'required|date',
+            'id_rt' => 'required|exists:rukun_tetangga,id',
+        ], [
+            'judul.required' => 'Judul pengumuman harus diisi.',
+            'isi.required' => 'Isi pengumuman harus diisi.',
+            'tanggal.required' => 'Tanggal pengumuman harus diisi.',
+            'id_rt.required' => 'Rukun Tetangga harus dipilih.',
+            'id_rt.exists' => 'Rukun Tetangga yang dipilih tidak valid.',
+        ]);
+        $pengumuman->update([
+            'judul' => $request->judul,
+            'subjek' => $request->subjek,
+            'isi' => $request->isi,
+            'tanggal' => $request->tanggal,
+            'id_rt' => $request->id_rt,
+        ]);
+        return redirect()->route('pengumuman.index')->with('success', 'Pengumuman berhasil diperbarui.');
     }
 
     /**
@@ -62,5 +171,8 @@ class PengumumanController extends Controller
     public function destroy(string $id)
     {
         //
+        $pengumuman = Pengumuman::findOrFail($id);
+        $pengumuman->delete();
+        return redirect()->route('pengumuman.index')->with('success', 'Pengumuman berhasil dihapus.');
     }
 }

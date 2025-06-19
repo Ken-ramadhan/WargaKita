@@ -13,8 +13,9 @@ class Rukun_tetanggaController extends Controller
     public function index()
     {
         //
-        $rukun_tetangga = Rukun_tetangga::all();
-        return view('rukun_tetangga', compact('rukun_tetangga'));
+        $rukun_tetangga = Rukun_tetangga::paginate(5);
+        $title = 'Rukun Tetangga';
+        return view('rukun_tetangga', compact('rukun_tetangga', 'title'));
     }
 
     /**

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard')
+@section('title', $title)
 
 @section('content')
 
@@ -14,12 +14,6 @@
 
         <!-- Begin Page Content -->
         <div class="container-fluid">
-
-            <!-- Page Heading -->
-            <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                <h1 class="h3 mb-0 text-gray-800">Rukun Tetangga</h1>
-            </div>
-
             <!-- Content Row -->
 
             <div class="row">
@@ -29,7 +23,7 @@
                     <div class="card shadow mb-4">
                         <!-- Card Header - Dropdown -->
                         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                            <h6 class="m-0 font-weight-bold text-primary">Tabel Daftar Warga</h6>
+                            <h6 class="m-0 font-weight-bold text-primary">Tabel Rukun Tetangga</h6>
                             <div class="dropdown no-arrow">
                                 <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -45,29 +39,32 @@
                         </div>
                         <!-- Card Body -->
                         <div class="card-body">
-                            <table class="table">
+                            <table class="table table-hover">
                                 <thead>
                                     <tr>
-                                        <th scope="col">id</th>
+                                        <th scope="col">No</th>
+                                        <th scope="col">ID</th>
                                         <th scope="col">NOMOR RT</th>
                                         <th scope="col">AKSI</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($rukun_tetangga as $rukun_tetangga)
+                                    @foreach ($rukun_tetangga as $rt)
                                         <tr>
-                                            <th scope="row">{{ $rukun_tetangga->id }}</th>
-                                            <td>{{ $rukun_tetangga->nomor_rt }}</td>
+                                            <th scope="row">{{ $loop->iteration }}</th>
+                                            <th scope="row">{{ $rt->id }}</th>
+                                            <td>{{ $rt->nomor_rt }}</td>
                                             <td>
-                                                <form action="{{ route('rukun_tetangga.destroy', $rukun_tetangga->id) }}"
-                                                    method="POST" class="d-inline">
+                                                <form action="{{ route('rukun_tetangga.destroy', $rt->id) }}"
+                                                    method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus RT ini?')">
+                                                    {{-- Alert Konfirmasi Hapus --}}
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
                                                     {{-- Alert Error --}}
                                                 </form>
                                                 <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal"
-                                                    data-bs-target="#modalEditRT{{ $rukun_tetangga->id }}">
+                                                    data-bs-target="#modalEditRT{{ $rt->id }}">
                                                     Edit
                                                 </button>
                                             </td>
@@ -87,28 +84,28 @@
                                         
                                         
                                         <!-- Modal Edit RT -->
-                                        <div class="modal fade" id="modalEditRT{{ $rukun_tetangga->id }}" tabindex="-1"
-                                            aria-labelledby="modalEditRTLabel{{ $rukun_tetangga->id }}" aria-hidden="true">
+                                        <div class="modal fade" id="modalEditRT{{ $rt->id }}" tabindex="-1"
+                                            aria-labelledby="modalEditRTLabel{{ $rt->id }}" aria-hidden="true">
                                             <div class="modal-dialog">
                                                 <div class="modal-content shadow-lg">
                                                     <div class="modal-header bg-warning text-white">
                                                         <h5 class="modal-title"
-                                                            id="modalEditRTLabel{{ $rukun_tetangga->id }}">Edit Nomor RT
+                                                            id="modalEditRTLabel{{ $rt->id }}">Edit Nomor RT
                                                         </h5>
                                                         <button type="button" class="btn-close btn-close-white"
                                                             data-bs-dismiss="modal" aria-label="Tutup"></button>
                                                     </div>
-                                                    <form action="{{ route('rukun_tetangga.update', $rukun_tetangga->id) }}"
+                                                    <form action="{{ route('rukun_tetangga.update', $rt->id) }}"
                                                         method="POST">
                                                         @csrf
                                                         @method('PUT')
                                                         <div class="modal-body">
                                                             <div class="mb-3">
-                                                                <label for="nomor_rt{{ $rukun_tetangga->id }}"
+                                                                <label for="nomor_rt{{ $rt->id }}"
                                                                     class="form-label">Nomor RT</label>
                                                                 <input type="text" class="form-control" name="nomor_rt"
-                                                                    id="nomor_rt{{ $rukun_tetangga->id }}"
-                                                                    value="{{ $rukun_tetangga->nomor_rt }}" required>
+                                                                    id="nomor_rt{{ $rt->id }}"
+                                                                    value="{{ $rt->nomor_rt }}" required>
                                                             </div>
                                                         </div>
                                                         <div class="modal-footer">
@@ -123,6 +120,20 @@
 
                                 </tbody>
                             </table>
+
+                            <!-- Info dan Tombol Pagination Sejajar -->
+                                <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+                                    <!-- Info Kustom -->
+                                    <div class="text-muted mb-2">
+                                        Menampilkan {{ $rukun_tetangga->firstItem() }}-{{ $rukun_tetangga->lastItem() }} dari total
+                                        {{ $rukun_tetangga->total() }} data
+                                    </div>
+
+                                    <!-- Tombol Pagination -->
+                                    <div>
+                                        {{ $rukun_tetangga->links('pagination::bootstrap-5') }}
+                                    </div>
+                                </div>
                         </div>
 
                         <!-- Modal Tambah RT -->
