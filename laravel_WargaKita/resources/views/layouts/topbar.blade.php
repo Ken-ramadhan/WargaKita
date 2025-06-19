@@ -1,5 +1,10 @@
 <!-- Topbar -->
 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+        
+    <!-- Tombol Toggle Sidebar -->
+    <button id="sidebarToggle" class="btn btn-link d-md-none rounded-circle me-3">
+        <i class="fa fa-bars"></i>
+    </button>
 
     @php
         $segment = request()->segment(1);
@@ -9,6 +14,9 @@
             'pengumuman' => 'Pengumuman',
             'kartu_keluarga' => 'Kartu Keluarga',
             'rukun_tetangga' => 'Rukun Tetangga',
+            'tagihan' => 'Tagihan',
+            'iuran' => 'Iuran',
+            'kategori_golongan' => 'Kategori Golongan',
             default => ucwords(str_replace('-', ' ', $segment)),
         };
     @endphp
@@ -16,10 +24,6 @@
     <h1 class="h3 mb-0 text-gray-800 mx-2">{{ $judulHalaman }}</h1>
 
 
-    <!-- Tombol Toggle Sidebar -->
-    <button id="sidebarToggle" class="btn btn-link d-md-none rounded-circle me-3">
-        <i class="fa fa-bars"></i>
-    </button>
 
     <!-- Topbar Navbar -->
     <ul class="navbar-nav ml-auto">

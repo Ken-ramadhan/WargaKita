@@ -13,7 +13,9 @@ class TagihanController extends Controller
     public function index()
     {
         //
-        $tagihan = Tagihan::all();
+        $tagihan = Tagihan::paginate(5);
+        $title = 'Tagihan';
+        return view('tagihan', compact('tagihan', 'title'));
     }
 
     /**

@@ -23,7 +23,7 @@ class WargaController extends Controller
             $query->where('nama', 'like', '%' . $search . '%')
                 ->orWhere('nik', 'like', '%' . $search . '%')
                 ->orWhere('no_kk', 'like', '%' . $search . '%');
-        })->paginate(5)->withQueryString();
+        })->orderBy('nama', 'asc')->paginate(5)->withQueryString();
 
         return view('warga', compact('warga', 'title'));
     }

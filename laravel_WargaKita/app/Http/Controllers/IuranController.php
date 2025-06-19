@@ -13,7 +13,9 @@ class IuranController extends Controller
     public function index()
     {
         //
-        $iuran = Iuran::all();
+        $iuran = Iuran::paginate(5);
+        $title = 'Iuran';
+        return view('iuran', compact('iuran', 'title'));
     }
 
     /**
