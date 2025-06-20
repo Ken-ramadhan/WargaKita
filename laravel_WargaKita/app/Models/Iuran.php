@@ -12,11 +12,10 @@ class Iuran extends Model
     protected $table = 'iuran';
     protected $fillable = [
         'nama',
-        'nominal',
         'tgl_tagih',
         'tgl_tempo',
-        'id_golongan',
         'jenis',
+        'nominal',
     ];
 
 
@@ -29,4 +28,9 @@ class Iuran extends Model
     {
         return $this->belongsTo(Kategori_golongan::class, 'id_golongan', 'id_golongan');
     }
+
+    public function iuranGolongan()
+{
+    return $this->hasMany(IuranGolongan::class, 'id_iuran');
+}
 }

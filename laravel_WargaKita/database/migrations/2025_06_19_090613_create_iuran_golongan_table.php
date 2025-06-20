@@ -11,22 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('iuran', function (Blueprint $table) {
+        Schema::create('iuran_golongan', function (Blueprint $table) {
             $table->id();
-            $table->string('nama');
-            $table->integer('nominal')->nullable();
-            $table->dateTime('tgl_tagih');
-            $table->dateTime('tgl_tempo');
-            $table->enum('jenis',['otomatis', 'manual']);
+            $table->foreignId('id_iuran')->constrained('iuran')->onDelete('cascade');
+            $table->foreignId('id_golongan')->constrained('kategori_golongan')->onDelete('cascade');
+            $table->integer('nominal');
             $table->timestamps();
         });
     }
- 
+
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('iuran');
+        Schema::dropIfExists('iuran_golongan');
     }
 };

@@ -39,6 +39,7 @@ class PengumumanController extends Controller
     ->when($tahun, fn($q) => $q->whereYear('tanggal', $tahun))
     ->when($bulan, fn($q) => $q->whereMonth('tanggal', $bulan))
     ->when($subjek, fn($q) => $q->where('subjek', $subjek))
+    ->orderBy('created_at', 'desc')
     ->paginate(5)
     ->withQueryString();
 

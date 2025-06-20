@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('kartu_keluarga', function (Blueprint $table) {
             $table->char('no_kk', 16)->primary()->unique();
             $table->foreignId('id_rt')->constrained('rukun_tetangga')->onDelete('restrict');
+            $table->foreignId('id_golongan')->constrained('kategori_golongan')->onDelete('restrict');
             $table->string('kepala_kk');
             $table->timestamps();
         });

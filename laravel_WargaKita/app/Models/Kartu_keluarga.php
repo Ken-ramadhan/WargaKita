@@ -18,6 +18,7 @@ class Kartu_keluarga extends Model
         'no_kk',
         'id_rt',
         'kepala_kk',
+        'id_golongan',
     ];
 
     
@@ -31,4 +32,10 @@ class Kartu_keluarga extends Model
     {
         return $this->hasMany(Tagihan::class);
     }
+
+    public function golongan()
+{
+    return $this->belongsTo(Kategori_golongan::class, 'id_golongan');
+}
+
 }

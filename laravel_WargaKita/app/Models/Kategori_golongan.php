@@ -12,4 +12,13 @@ class Kategori_golongan extends Model
         'nama',
         'keterangan',
     ];
+
+    public function iuranGolongan()
+    {
+        return $this->hasMany(IuranGolongan::class, 'id_golongan');
+    }
+    public function keluarga()
+    {
+        return $this->hasMany(Kartu_keluarga::class, 'id_golongan');
+    }
 }
