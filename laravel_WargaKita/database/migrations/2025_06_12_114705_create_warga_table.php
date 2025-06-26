@@ -20,6 +20,17 @@ return new class extends Migration
                 ->onDelete('restrict')
                 ->onUpdate('cascade');
             $table->string('nama');
+            $table->enum('jenis_kelamin', ['laki-laki', 'perempuan']);
+            $table->string('tempat_lahir');
+            $table->date('tanggal_lahir');
+            $table->string('agama');
+            $table->string('pendidikan');
+            $table->string('pekerjaan');
+            $table->string('status_perkawinan');
+            $table->enum('status_hubungan_dalam_keluarga', ['kepala keluarga','istri','anak',]);
+            $table->enum('golongan_darah', ['A', 'B', 'AB', 'O']);
+            $table->string('nama_ayah');
+            $table->string('nama_ibu');
             $table->timestamps();
         });
     }

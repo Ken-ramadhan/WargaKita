@@ -34,12 +34,18 @@ class Rukun_tetanggaController extends Controller
         //
         $request->validate([
             'nomor_rt' => 'required|string',
+            'nama_ketua_rt' => 'required|string|max:255',
+            'masa_jabatan' => 'required|string|max:255',
         ], [
             'nomor_rt.required' => 'Nomor Rukun Tetangga harus diisi.',
+            'nama_ketua_rt.required' => 'Nama Ketua Rukun Tetangga harus diisi.',
+            'masa_jabatan.required' => 'Masa Jabatan harus diisi.',
         ]);
 
         Rukun_tetangga::create([
             'nomor_rt' => $request->nomor_rt,
+            'nama_ketua_rt' => $request->nama_ketua_rt,
+            'masa_jabatan' => $request->masa_jabatan,
         ]);
         return redirect()->route('rukun_tetangga.index')->with('success', 'Rukun Tetangga berhasil ditambahkan.');
     }
@@ -72,12 +78,18 @@ class Rukun_tetanggaController extends Controller
         //
         $request->validate([
             'nomor_rt' => 'required|string|max:255',
+            'nama_ketua_rt' => 'required|string|max:255',
+            'masa_jabatan' => 'required|string|max:255',
         ], [
             'nomor_rt.required' => 'Nama Rukun Tetangga harus diisi.',
+            'nama_ketua_rt.required' => 'Nama Ketua Rukun Tetangga harus diisi.',
+            'masa_jabatan.required' => 'Masa Jabatan harus diisi.',
         ]);
         $rukun_tetangga = Rukun_tetangga::findOrFail($id);
         $rukun_tetangga->update([
             'nomor_rt' => $request->nomor_rt,
+            'nama_ketua_rt' => $request->nama_ketua_rt,
+            'masa_jabatan' => $request->masa_jabatan,
         ]);
         return redirect()->route('rukun_tetangga.index')->with('success', 'Rukun Tetangga berhasil diperbarui.');
     }

@@ -12,6 +12,9 @@ class Rukun_tetangga extends Model
     protected $table = 'rukun_tetangga';
     protected $fillable = [
         'nomor_rt',
+        'nama_ketua_rt',
+        'masa_jabatan',
+        'alamat_rt,'
     ];
 
     public function warga(): HasMany
@@ -22,6 +25,11 @@ class Rukun_tetangga extends Model
     public function pengumuman(): BelongsToMany
     {
         return $this->belongsToMany(Pengumuman::class);
+    }
+
+    public function pengeluaran(): HasMany
+    {
+        return $this->hasMany(Pengeluaran::class, 'id_rt');
     }
 
 }

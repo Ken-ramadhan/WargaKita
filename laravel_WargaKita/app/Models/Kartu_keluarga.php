@@ -16,8 +16,15 @@ class Kartu_keluarga extends Model
     protected $keyType = 'string';
     protected $fillable = [
         'no_kk',
+        'alamat',
         'id_rt',
-        'kepala_kk',
+        'rw',
+        'kelurahan',
+        'kecamatan',
+        'kabupaten',
+        'provinsi',
+        'kode_pos',
+        'tgl_terbit',
         'id_golongan',
     ];
 
@@ -37,5 +44,10 @@ class Kartu_keluarga extends Model
 {
     return $this->belongsTo(Kategori_golongan::class, 'id_golongan');
 }
+
+    public function warga(): HasMany
+    {
+        return $this->hasMany(Warga::class, 'no_kk', 'no_kk');
+    }
 
 }

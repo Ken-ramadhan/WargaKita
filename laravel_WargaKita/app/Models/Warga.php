@@ -17,15 +17,21 @@ class Warga extends Model
         'nik',
         'no_kk',
         'nama',
+        'jenis_kelamin',
+        'tempat_lahir',
+        'tanggal_lahir',
+        'agama',
+        'pendidikan',
+        'pekerjaan',
+        'status_perkawinan',
+        'status_hubungan_dalam_keluarga',
+        'golongan_darah',
+        'nama_ayah',
+        'nama_ibu',
     ];
 
     public function kartuKeluarga(): BelongsTo
     {
         return $this->belongsTo(Kartu_keluarga::class,'no_kk', 'no_kk');
-    }
-
-    public function rukunTetangga(): HasOne
-    {
-        return $this->hasOne(Rukun_tetangga::class,'id_rt', 'id');
     }
 }

@@ -1,10 +1,12 @@
 <!-- Topbar -->
 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-        
-    <!-- Tombol Toggle Sidebar -->
-    <button id="sidebarToggle" class="btn btn-link d-md-none rounded-circle me-3">
+
+    <!-- Tombol buka sidebar modal untuk mobile -->
+    <button class="btn btn-link d-md-none rounded-circle mr-3" data-toggle="modal" data-target="#mobileSidebarModal">
         <i class="fa fa-bars"></i>
     </button>
+
+
 
     @php
         $segment = request()->segment(1);
@@ -17,6 +19,8 @@
             'tagihan' => 'Tagihan',
             'iuran' => 'Iuran',
             'kategori_golongan' => 'Kategori Golongan',
+            'pengeluaran' => 'Pengeluaran',
+            'laporan_pengeluaran_bulanan' => 'Laporan Pengeluaran Bulanan',
             default => ucwords(str_replace('-', ' ', $segment)),
         };
     @endphp
@@ -171,7 +175,7 @@
         <li class="nav-item dropdown no-arrow">
             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="false">
-                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Douglas McGee</span>
+                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Rizqi Ramadhan</span>
                 <img class="img-profile rounded-circle" src="img/undraw_profile.svg">
             </a>
             <!-- Dropdown - User Information -->

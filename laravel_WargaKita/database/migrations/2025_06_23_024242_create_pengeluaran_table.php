@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('rukun_tetangga', function (Blueprint $table) {
+        Schema::create('pengeluaran', function (Blueprint $table) {
             $table->id();
-            $table->string('nomor_rt');
-            $table->string('nama_ketua_rt');
-            $table->string('masa_jabatan');
-            $table->string('alamat_rt')->nullable();
+            $table->foreignId('id_rt')->constrained('rukun_tetangga')->onDelete('cascade');
+            $table->string('nama_pengeluaran');
+            $table->unsignedBigInteger('jumlah');
+            $table->date('tanggal');
+            $table->text('keterangan')->nullable();
             $table->timestamps();
         });
     }
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('rukun_tetangga');
+        Schema::dropIfExists('pengeluaran');
     }
 };

@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -21,40 +20,130 @@
     <!-- Custom styles for this template-->
     <link href="{{ asset('css/sb-admin-2.min.css') }}" rel="stylesheet">
     <!-- Bootstrap 5 CSS -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-<style>
-    @media (min-width: 768px)
-    {
-        .sidebar {
-    transition: all 0.3s ease;
-}
+    <style>
+        @media (min-width: 768px) {
+            .sidebar {
+                transition: all 0.3s ease;
+            }
 
-.sidebar.toggled {
-    width: 100px !important; /* ukuran kecil saat ditutup */
-}
+            .sidebar.toggled {
+                width: 100px !important;
+                /* ukuran kecil saat ditutup */
+            }
 
-.sidebar .nav-item .nav-link span {
-    transition: opacity 0.3s ease;
-}
-body.sidebar-toggled .sidebar {
-    width: 80px;
-}
+            .sidebar .nav-item .nav-link span {
+                transition: opacity 0.3s ease;
+            }
+
+            body.sidebar-toggled .sidebar {
+                width: 80px;
+            }
+        }
+    .scroll-table thead th {
+        position: sticky;
+        top: 0;
+        background: rgb(255, 255, 255); /* atau sesuaikan dengan warna thead */
+        z-index: 10;
     }
-    
-</style>
+
+    .table-container {
+        max-height: 380px;
+        overflow-y: auto;
+    }
+    </style>
 
 
 </head>
 
-<body id="page-top">
+<body id="page-top" style="overflow: hidden;">
 
     <!-- Page Wrapper -->
     <div id="wrapper">
         <!-- Sidebar -->
-        @include('layouts.sidebar')
+        <!-- Sidebar Desktop -->
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion d-none d-md-block"
+            id="accordionSidebar">
+            @include('layouts.sidebar')
+        </ul>
+       <!-- Sidebar Modal untuk Mobile -->
+<div class="modal fade" id="mobileSidebarModal" tabindex="-1" role="dialog" aria-labelledby="mobileSidebarLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-slideout-left modal-sm" role="document">
+        <div class="modal-content bg-primary text-white">
+            <div class="modal-header border-0">
+                <h5 class="modal-title">Menu</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Tutup">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body p-0">
+                <!-- Salin isi <ul> sidebar ke sini -->
+                <ul class="navbar-nav sidebar sidebar-dark accordion">
+                    <!-- Divider -->
+    <hr class="sidebar-divider my-0">
+
+    <!-- Nav Item - Dashboard -->
+    <li class="nav-item active">
+        <a class="nav-link" href="index.html">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>Dashboard</span></a>
+    </li>
+
+    <!-- Nav lainnya -->
+    {{-- ... semua item lainnya tetap seperti sebelumnya ... --}}
+
+    <li class="nav-item {{ Request::is('warga*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('warga.index') }}">
+            <i class="fas fa-users"></i>
+            <span>Manajemen Warga</span>
+        </a>
+    </li>
+
+    <li class="nav-item {{ Request::is('rukun_tetangga*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('rukun_tetangga.index') }}">
+            <i class="fas fa-house-user"></i>
+            <span>Rukun Tetangga</span>
+        </a>
+    </li>
+
+    <li class="nav-item {{ Request::is('pengumuman*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('pengumuman.index') }}">
+            <i class="fas fa-bullhorn"></i>
+            <span>Pengumuman</span>
+        </a>
+    </li>
+
+    <li class="nav-item {{ Request::is('tagihan*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('tagihan.index') }}">
+            <i class="fas fa-file-invoice-dollar"></i>
+            <span>Manajemen Keuangan</span>
+        </a>
+    </li>
+
+    <li class="nav-item {{ Request::is('kategori_golongan*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('kategori_golongan.index') }}">
+            <i class="fas fa-layer-group"></i>
+            <span>Kategori Golongan</span>
+        </a>
+    </li>
+
+    <hr class="sidebar-divider d-none d-md-block">
+
+
+    <!-- Divider -->
+    <hr class="sidebar-divider d-none d-md-block">
+
+                    @include('layouts.sidebar')
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
         <!-- End of Sidebar -->
-        
+
         <!-- Content Wrapper -->
         <div id="content-wrapper" class="d-flex flex-column">
 
@@ -62,7 +151,7 @@ body.sidebar-toggled .sidebar {
             @yield('content')
             <!-- End of Main Content -->
 
-            
+
             {{-- footer --}}
             @include('layouts.footer')
             <!-- End of Footer -->
@@ -116,31 +205,11 @@ body.sidebar-toggled .sidebar {
     <script src="{{ asset('js/demo/chart-area-demo.js') }}"></script>
     <script src="{{ asset('js/demo/chart-pie-demo.js') }}"></script>
     <!-- Bootstrap 5 JS Bundle -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 
-@if ($errors->any())
-    @if (old('form_type') === 'tambah')
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const modal = new bootstrap.Modal(document.getElementById('modalTambahWarga'));
-                modal.show();
-            });
-        </script>
-    @elseif (old('form_type') === 'edit' && session('open_edit_modal'))
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const modalId = 'modalEditwarga{{ session('open_edit_modal') }}';
-                const modalElement = document.getElementById(modalId);
 
-                if (modalElement) {
-                    const modal = new bootstrap.Modal(modalElement);
-                    modal.show();
-                }
-            });
-        </script>
-    @endif
-@endif
+
 </body>
 
 </html>

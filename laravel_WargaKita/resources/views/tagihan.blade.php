@@ -60,15 +60,16 @@
                                     <div class="dropdown-header">Tambah Data Tagihan</div>
                                     <a class="dropdown-item" href="#" data-bs-toggle="modal"
                                         data-bs-target="#modalTambahTagihan">Tambah</a>
-
-                                    <div class="dropdown-header">Halaman Iuran</div>
+                                        <hr>
                                     <a class="dropdown-item" href="{{ route('iuran.index') }}">Iuran</a>
+                                    <a class="dropdown-item" href="{{ route('pengeluaran.index') }}">Pengeluaran</a>
                                 </div>
                             </div>
                         </div>
                         <!-- Card Body -->
                         <div class="card-body">
-                            <table class="table table-hover">
+                            <div class="table-responsive">
+                            <table class="table table-hover align-middle">
                                 <thead>
                                     <tr>
                                         <th scope="col">No</th>
@@ -189,6 +190,7 @@
                                     {{ $kartu_keluarga->links('pagination::bootstrap-5') }}
                                 </div>
                             </div> --}}
+                            </div>
                         </div>
 
                         <!-- Modal Tambah kartu keluarga -->

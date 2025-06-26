@@ -15,10 +15,12 @@ class IuranController extends Controller
     public function index()
     {
         //
+
         $iuran = Iuran::paginate(5);
         $kategori_golongan = Kategori_golongan::all();
+        $iuran_golongan = IuranGolongan::with('golongan')->get();
         $title = 'Iuran';
-        return view('iuran', compact('iuran', 'title', 'kategori_golongan'));
+        return view('iuran', compact('iuran', 'title', 'kategori_golongan', 'iuran_golongan'));
     }
 
     /**
@@ -32,45 +34,48 @@ class IuranController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-   public function store(Request $request)
-{
-    $validated = $request->validate([
-        'nama' => 'required|string|max:255',
-        'tgl_tagih' => 'required|date',
-        'tgl_tempo' => 'required|date',
-        'jenis' => 'required|in:otomatis,manual',
-        'nominal' => 'nullable|numeric',
-        'nominal.*' => 'nullable|numeric'
-    ],
-    [
-        'nama.required' => 'Nama iuran harus diisi',
-        'tgl_tagih.required' => 'Tanggal tagih harus diisi',
-        'tgl_tempo.required' => 'Tanggal tempo harus diisi',
-        'jenis.required' => 'Jenis iuran harus dipilih',
-        'nominal.numeric' => 'Nominal harus berupa angka|max:20',
-        'nominal.*.numeric' => 'Nominal untuk setiap golongan harus berupa angka',
-    ]);
+    public function store(Request $request)
+    {
+        $validated = $request->validate(
+            [
+                'nama' => 'required|string|max:255',
+                'tgl_tagih' => 'required|date',
+                'tgl_tempo' => 'required|date',
+                'jenis' => 'required|in:otomatis,manual',
+                // hanya jika manual
+                'nominal' => $request->jenis === 'manual' ? 'required|numeric' : 'nullable',
 
-    $iuran = Iuran::create([
-        'nama' => $request->nama,
-        'tgl_tagih' => $request->tgl_tagih,
-        'tgl_tempo' => $request->tgl_tempo,
-        'jenis' => $request->jenis,
-        'nominal' => $request->jenis === 'manual' ? $request->nominal : null,
-    ]);
+                // hanya jika otomatis
+                'nominal.*' => $request->jenis === 'otomatis' ? 'required|numeric' : 'nullable',
+            ],
+            [
+                'nama.required' => 'Nama iuran harus diisi',
+                'tgl_tagih.required' => 'Tanggal tagih harus diisi',
+                'tgl_tempo.required' => 'Tanggal tempo harus diisi',
+                'jenis.required' => 'Jenis iuran harus dipilih',
+            ]
+        );
 
-    if ($request->jenis === 'otomatis') {
-        foreach ($request->nominal as $golonganId => $nominal) {
-            IuranGolongan::create([
-                'id_iuran' => $iuran->id,
-                'id_golongan' => $golonganId,
-                'nominal' => $nominal,
-            ]);
+        $iuran = Iuran::create([
+            'nama' => $request->nama,
+            'tgl_tagih' => $request->tgl_tagih,
+            'tgl_tempo' => $request->tgl_tempo,
+            'jenis' => $request->jenis,
+            'nominal' => $request->jenis === 'manual' ? $request->nominal_manual : null,
+        ]);
+
+        if ($request->jenis === 'otomatis') {
+            foreach ($request->nominal as $golonganId => $nominal) {
+                IuranGolongan::create([
+                    'id_iuran' => $iuran->id,
+                    'id_golongan' => $golonganId,
+                    'nominal' => $nominal,
+                ]);
+            }
         }
-    }
 
-    return redirect()->route('iuran.index')->with('success', 'Iuran berhasil ditambahkan');
-}
+        return redirect()->route('iuran.index')->with('success', 'Iuran berhasil ditambahkan');
+    }
 
 
 
@@ -89,6 +94,9 @@ class IuranController extends Controller
     public function edit(string $id)
     {
         //
+        $iuran = Iuran::findOrFail($id);
+        $kategori_golongan = Kategori_golongan::all();
+        return view('iuran.edit', compact('iuran', 'kategori_golongan'));
     }
 
     /**
@@ -97,6 +105,36 @@ class IuranController extends Controller
     public function update(Request $request, string $id)
     {
         //
+        $validated = $request->validate([
+            'nama' => 'required|string|max:255',
+            'tgl_tagih' => 'required|date',
+            'tgl_tempo' => 'required|date',
+            'jenis' => 'required|in:otomatis,manual',
+            'nominal' => 'nullable|numeric',
+            'nominal.*' => 'nullable|numeric'
+        ]);
+
+        $iuran = Iuran::findOrFail($id);
+        $iuran->update([
+            'nama' => $request->nama,
+            'tgl_tagih' => $request->tgl_tagih,
+            'tgl_tempo' => $request->tgl_tempo,
+            'jenis' => $request->jenis,
+            'nominal' => $request->jenis === 'manual' ? $request->nominal : null,
+        ]);
+
+        if ($request->jenis === 'otomatis') {
+            IuranGolongan::where('id_iuran', $iuran->id)->delete();
+            foreach ($request->nominal as $golonganId => $nominal) {
+                IuranGolongan::create([
+                    'id_iuran' => $iuran->id,
+                    'id_golongan' => $golonganId,
+                    'nominal' => $nominal,
+                ]);
+            }
+        }
+
+        return redirect()->route('iuran.index')->with('success', 'Iuran berhasil diperbarui');
     }
 
     /**

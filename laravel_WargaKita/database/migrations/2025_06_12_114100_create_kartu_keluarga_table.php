@@ -13,9 +13,16 @@ return new class extends Migration
     {
         Schema::create('kartu_keluarga', function (Blueprint $table) {
             $table->char('no_kk', 16)->primary()->unique();
+            $table->text('alamat');
             $table->foreignId('id_rt')->constrained('rukun_tetangga')->onDelete('restrict');
+            $table->string('rw');
+            $table->string('kelurahan');
+            $table->string('kecamatan');
+            $table->string('kabupaten');
+            $table->string('provinsi');
+            $table->string('kode_pos');
+            $table->date('tgl_terbit');
             $table->foreignId('id_golongan')->constrained('kategori_golongan')->onDelete('restrict');
-            $table->string('kepala_kk');
             $table->timestamps();
         });
     }
