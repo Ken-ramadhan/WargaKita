@@ -307,7 +307,7 @@
                                                         </div>
                                                         <div
                                                             class="modal-footer bg-light border-0 justify-content-end py-2">
-                                                            <button type="button" class="btn btn-secondary"
+                                                            <button type="button" class="btn btn-outline-success"
                                                                 data-bs-dismiss="modal">Tutup</button>
                                                         </div>
                                                     </div>
