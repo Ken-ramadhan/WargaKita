@@ -68,9 +68,6 @@
                                     <div class="dropdown-header">Tambah Data Kartu Keluarga</div>
                                     <a class="dropdown-item" href="#" data-bs-toggle="modal"
                                         data-bs-target="#modalTambahKK">Tambah</a>
-
-                                    <div class="dropdown-header">Halaman Warga</div>
-                                    <a class="dropdown-item" href="{{ route('warga.index') }}">Manajemen Warga</a>
                                 </div>
                             </div>
                         </div>

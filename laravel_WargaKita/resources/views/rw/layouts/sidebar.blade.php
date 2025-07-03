@@ -47,8 +47,15 @@
 
     <li class="nav-item {{ isActive('admin/warga*') }}">
         <a class="nav-link" href="{{ route('warga.index') }}">
-            <i class="fas fa-users"></i>
+            <i class="fas fa-id-card"></i>
             <span>Manajemen Warga</span>
+        </a>
+    </li>
+
+    <li class="nav-item {{ isActive('admin/kartu_keluarga*') }}">
+        <a class="nav-link" href="{{ route('kartu_keluarga.index') }}">
+            <i class="fas fa-users "></i>
+        <span>Kartu Keluarga</span>
         </a>
     </li>
 
@@ -70,13 +77,6 @@
         <a class="nav-link" href="{{ route('tagihan.index') }}">
             <i class="fas fa-file-invoice-dollar"></i>
             <span>Manajemen Keuangan</span>
-        </a>
-    </li>
-
-    <li class="nav-item {{ isActive('admin/kategori_golongan*') }}">
-        <a class="nav-link" href="{{ route('kategori_golongan.index') }}">
-            <i class="fas fa-layer-group"></i>
-            <span>Kategori Golongan</span>
         </a>
     </li>
     <!-- Divider -->

@@ -58,7 +58,6 @@
                                     <div class="dropdown-header">Manajemen Data Warga</div>
                                     <a class="dropdown-item" href="#" data-bs-toggle="modal"
                                         data-bs-target="#modalTambahWarga">Tambah Warga</a>
-                                    <a class="dropdown-item" href="{{ route('kartu_keluarga.index') }}">Kartu Keluarga</a>
                                 </div>
                             </div>
                         </div>

@@ -14,8 +14,10 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->char('nik', 16)->unique();
+            $table->string('nama');
+            $table->string('nomor_rw');
             $table->string('password');
-            $table->foreignId('id_roles')->constrained('roles')->onDelete('restrict');
+            $table->enum('role',['admin','rw','rt','warga'])->default('warga');
             $table->timestamps();
         });
 

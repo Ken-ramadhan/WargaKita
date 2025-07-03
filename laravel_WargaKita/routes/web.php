@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LoginController;
 use App\Http\Controllers\Rw\DashboardController;
 use App\Http\Controllers\Rw\IuranController;
 use App\Http\Controllers\Rw\Kartu_keluargaController;
@@ -18,7 +19,11 @@ use Illuminate\Support\Facades\Route;
 
 
 
-// halaman Backend
+
+
+
+Route::middleware(['auth', 'role:rw'])->group(function () {
+
 Route::get('/admin', [DashboardController::class, 'index'])->name('dashboard');
 Route::resource('admin/warga', WargaController::class);
 Route::resource('admin/kartu_keluarga', Kartu_keluargaController::class);
@@ -29,9 +34,12 @@ Route::resource('admin/iuran', IuranController::class);
 Route::resource('admin/kategori_golongan', Kategori_golonganController::class);
 Route::resource('admin/pengeluaran', PengeluaranController::class);
 Route::get('admin/laporan_pengeluaran_bulanan/{bulan}/{tahun}', [LaporanController::class, 'pengeluaran_bulanan'])->name('pengeluaran_bulanan');
+});
 
 
-
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [LoginController::class, 'login'])->name('login.post');
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 
 

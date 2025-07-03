@@ -23,7 +23,9 @@ class User extends Authenticatable
     protected $fillable = [
         'nik',
         'password',
-        'id_role',
+        'nama',
+        'nomor_rwp',
+        'role',
     ];
     /**
      * The attributes that should be hidden for serialization.
@@ -48,8 +50,4 @@ class User extends Authenticatable
         ];
     }
 
-     public function roles(): BelongsTo
-    {
-        return $this->belongsTo(Roles::class,'id_role', 'id_role');
-    }
 }
