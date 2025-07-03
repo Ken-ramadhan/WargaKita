@@ -34,7 +34,7 @@ class Kartu_keluargaController extends Controller
         ->withQueryString();
 
     $rukun_tetangga = Rukun_tetangga::all();
-    $kategori_golongan = Kategori_golongan::all();
+    $kategori_golongan = Kategori_golongan::getEnumNama();
     $warga = Warga::all();
     $title = 'Kartu Keluarga';
 
@@ -56,41 +56,39 @@ class Kartu_keluargaController extends Controller
     public function store(Request $request)
 {
     // Validasi input
-    $request->validate(
-        [
-            'no_kk'      => 'required|unique:kartu_keluarga,no_kk|size:16',
-            'alamat'     => 'required|string',
-            'id_rt'      => 'required|exists:rukun_tetangga,id',
-            'rw'         => 'required|max:5',
-            'kelurahan'  => 'required|string|max:100',
-            'kecamatan'  => 'required|string|max:100',
-            'kabupaten'  => 'required|string|max:100',
-            'provinsi'   => 'required|string|max:100',
-            'kode_pos'   => 'required|string|max:10',
-            'tgl_terbit' => 'required|date',
-            'id_golongan' => 'required|exists:kategori_golongan,id',
-            'jenis'      => 'required'
-        ],
-        [
-            'no_kk.required'      => 'Nomor KK harus diisi.',
-            'no_kk.unique'        => 'Nomor KK sudah terdaftar.',
-            'no_kk.size'          => 'Nomor KK harus terdiri dari 16 digit.',
-            'alamat.required'     => 'Alamat harus diisi.',
-            'id_rt.required'      => 'Nomor RT harus diisi.',
-            'id_rt.exists'        => 'Nomor RT tidak ditemukan.',
-            'rw.required'         => 'Nomor RW harus diisi.',
-            'kelurahan.required'  => 'Kelurahan harus diisi.',
-            'kecamatan.required'  => 'Kecamatan harus diisi.',
-            'kabupaten.required'  => 'Kabupaten harus diisi.',
-            'provinsi.required'   => 'Provinsi harus diisi.',
-            'kode_pos.required'   => 'Kode pos harus diisi.',
-            'tgl_terbit.required' => 'Tanggal terbit harus diisi.',
-            'tgl_terbit.date'     => 'Format tanggal terbit tidak valid.',
-            'id_golongan.required' => 'Golongan harus dipilih.',
-            'id_golongan.exists'   => 'Golongan tidak ditemukan.',
-            'jenis.required'        => 'Jenis harus dipilih.',
-        ]
-    );
+    // $request->validate(
+    //     [
+    //         'no_kk'      => 'required|unique:kartu_keluarga,no_kk|size:16',
+    //         'alamat'     => 'required|string',
+    //         'id_rt'      => 'required|exists:rukun_tetangga,id',
+    //         'rw'         => 'required|max:5',
+    //         'kelurahan'  => 'required|string|max:100',
+    //         'kecamatan'  => 'required|string|max:100',
+    //         'kabupaten'  => 'required|string|max:100',
+    //         'provinsi'   => 'required|string|max:100',
+    //         'kode_pos'   => 'required|string|max:10',
+    //         'tgl_terbit' => 'required|date',
+    //         'golongan' => 'required',
+    //         'jenis'      => 'required'
+    //     ],
+    //     [
+    //         'no_kk.required'      => 'Nomor KK harus diisi.',
+    //         'no_kk.unique'        => 'Nomor KK sudah terdaftar.',
+    //         'no_kk.size'          => 'Nomor KK harus terdiri dari 16 digit.',
+    //         'alamat.required'     => 'Alamat harus diisi.',
+    //         'id_rt.required'      => 'Nomor RT harus diisi.',
+    //         'id_rt.exists'        => 'Nomor RT tidak ditemukan.',
+    //         'rw.required'         => 'Nomor RW harus diisi.',
+    //         'kelurahan.required'  => 'Kelurahan harus diisi.',
+    //         'kecamatan.required'  => 'Kecamatan harus diisi.',
+    //         'kabupaten.required'  => 'Kabupaten harus diisi.',
+    //         'provinsi.required'   => 'Provinsi harus diisi.',
+    //         'kode_pos.required'   => 'Kode pos harus diisi.',
+    //         'tgl_terbit.required' => 'Tanggal terbit harus diisi.',
+    //         'tgl_terbit.date'     => 'Format tanggal terbit tidak valid.',
+    //         'jenis.required'        => 'Jenis harus dipilih.',
+    //     ]
+    // );
 
     // Simpan data ke database
     Kartu_keluarga::create([
@@ -104,7 +102,7 @@ class Kartu_keluargaController extends Controller
         'provinsi'   => $request->provinsi,
         'kode_pos'   => $request->kode_pos,
         'tgl_terbit' => $request->tgl_terbit,
-        'id_golongan' => $request->id_golongan,
+        'golongan' => $request->golongan,
         'jenis'      => $request->jenis,
     ]);
 
@@ -149,7 +147,7 @@ class Kartu_keluargaController extends Controller
         'provinsi'     => 'required|string|max:100',
         'kode_pos'     => 'required|string|max:10',
         'tgl_terbit'   => 'required|date',
-        'id_golongan'  => 'required|exists:kategori_golongan,id',
+        'golongan'  => 'required',
         'jenis'        => 'required',
     ], [
         'no_kk.required'      => 'Nomor KK harus diisi.',
@@ -166,8 +164,7 @@ class Kartu_keluargaController extends Controller
         'kode_pos.required'   => 'Kode pos harus diisi.',
         'tgl_terbit.required' => 'Tanggal terbit harus diisi.',
         'tgl_terbit.date'     => 'Format tanggal terbit tidak valid.',
-        'id_golongan.required' => 'Golongan harus dipilih.',
-        'id_golongan.exists'   => 'Golongan tidak ditemukan.',
+        'golongan.required' => 'Golongan harus dipilih.',
         'jenis.required'        => 'Jenis harus dipilih.',
     ]);
 
@@ -186,7 +183,7 @@ class Kartu_keluargaController extends Controller
         'provinsi'     => $request->provinsi,
         'kode_pos'     => $request->kode_pos,
         'tgl_terbit'   => $request->tgl_terbit,
-        'id_golongan'  => $request->id_golongan,
+        'golongan'  => $request->golongan,
         'jenis'        => $request->jenis,
     ]);
 

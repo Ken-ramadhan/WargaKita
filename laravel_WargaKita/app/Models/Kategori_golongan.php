@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Kategori_golongan extends Model
 {
@@ -10,8 +11,13 @@ class Kategori_golongan extends Model
     protected $table = 'kategori_golongan';
     protected $fillable = [
         'nama',
-        'keterangan',
+        
     ];
+
+   public static function getEnumNama()
+    {
+        return ['kampung', 'kavling', 'kost', 'kantor', 'kontrakan', 'umkm'];
+    }
 
     public function iuranGolongan()
     {

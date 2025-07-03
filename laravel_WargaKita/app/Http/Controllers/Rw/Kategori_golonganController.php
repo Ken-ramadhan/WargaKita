@@ -5,12 +5,15 @@ use App\Http\Controllers\Controller;
 
 use App\Models\Kategori_golongan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class Kategori_golonganController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+
+
     public function index(Request $request)
 {
     $search = $request->input('search');

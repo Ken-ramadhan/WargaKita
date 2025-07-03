@@ -77,6 +77,7 @@ class WargaController extends Controller
                 'kewarganegaraan' => 'required',
                 'nama_ayah' => 'required|string|max:255',
                 'nama_ibu' => 'required|string|max:255',
+                'jenis' => 'required|in:penduduk,pendatang',
             ],
             [
                 'nik.required' => 'NIK harus diisi.',
@@ -105,6 +106,8 @@ class WargaController extends Controller
                 'nama_ibu.required' => 'Nama ibu harus diisi.',
                 'golongan_darah.required' => 'Golongan darah harus diisi.',
                 'kewarganegaraan.required' => 'Kewarganegaraan harus diisi.',
+                'jenis.required' => 'Jenis harus diisi.',
+                'jenis.in' => 'Jenis tidak valid.',
             ]
         );
 
@@ -134,6 +137,7 @@ class WargaController extends Controller
             'kewarganegaraan' => $request->kewarganegaraan,
             'nama_ayah' => $request->nama_ayah,
             'nama_ibu' => $request->nama_ibu,
+            'jenis' => $request->jenis,
         ]);
         return redirect()->route('warga.index')->with('success', 'Data Warga Berhasil Ditambahkan');
     }
@@ -187,6 +191,7 @@ class WargaController extends Controller
             'kewarganegaraan' => 'required',
             'nama_ayah' => 'required|string|max:255',
             'nama_ibu' => 'required|string|max:255',
+            'jenis' => 'required|in:penduduk,pendatang',
             
 
         ], [
@@ -208,6 +213,8 @@ class WargaController extends Controller
             'kewarganegaraan.required' => 'Kewarganegaraan harus dipilih.',
             'nama_ayah.required' => 'Nama ayah harus diisi.',
             'nama_ibu.required' => 'Nama ibu harus diisi.',
+            'jenis.required' => 'Jenis harus dipilih.',
+            'jenis.in' => 'Jenis harus penduduk atau pendatang.',
         ]);
 
         // 2. Jika validasi gagal, kembali ke halaman & buka modal edit
@@ -236,6 +243,7 @@ class WargaController extends Controller
             'kewarganegaraan' => $request->kewarganegaraan,
             'nama_ayah' => $request->nama_ayah,
             'nama_ibu' => $request->nama_ibu,
+            'jenis' => $request->jenis,
         ]);
 
         // 4. Redirect dengan pesan sukses

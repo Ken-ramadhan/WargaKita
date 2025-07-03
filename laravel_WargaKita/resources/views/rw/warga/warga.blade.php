@@ -75,6 +75,7 @@
                                             <th scope="col">JENIS KELAMIN</th>
                                             <th scope="col">TANGGAL LAHIR</th>
                                             <th scope="col">HUBUNGAN</th>
+                                            <th scope="col">JENIS WARGA</th>
                                             <th scope="col">AKSI</th>
                                         </tr>
                                     </thead>
@@ -88,6 +89,7 @@
                                                 <td>{{ strtoupper($item->nama) }}</td>
                                                 <td class="text-center">{{ $item->jenis_kelamin }}</td>
                                                 <td>{{ $item->tanggal_lahir }}</td>
+                                                <td>{{ $item->jenis }}</td>
                                                 <td>{{ $item->status_hubungan_dalam_keluarga }}</td>
                                                 <td class="text-center align-middle">
                                                     <div class="d-flex justify-content-center gap-1 flex-wrap">
@@ -96,16 +98,18 @@
                                                             onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
                                                             @csrf
                                                             @method('DELETE')
-                                                            <button type="submit"
-                                                                class="btn btn-danger btn-sm">Hapus</button>
+                                                            <button type="submit" class="btn btn-danger btn-sm">
+                                                                <i class="fas fa-trash-alt"></i> <!-- Ikon hapus -->
+                                                            </button>
                                                         </form>
 
                                                         <button type="button" class="btn btn-warning btn-sm"
                                                             data-bs-toggle="modal"
                                                             data-bs-target="#modalEditwarga{{ $item->nik }}">
-                                                            Edit
+                                                            <i class="fas fa-edit"></i> <!-- Ikon edit -->
                                                         </button>
                                                     </div>
+
                                                 </td>
                                             </tr>
 
@@ -166,10 +170,6 @@
                                                                         <select name="jenis_kelamin"
                                                                             class="form-select @error('jenis_kelamin') is-invalid @enderror"
                                                                             required>
-                                                                            <option
-                                                                                value="{{ old('jenis_kelamin', $item->jenis_kelamin) }}">
-                                                                                {{ old('jenis_kelamin', $item->jenis_kelamin) }}
-                                                                            </option>
                                                                             <option value="Laki-laki"
                                                                                 {{ old('jenis_kelamin', $item->jenis_kelamin) == 'Laki-laki' ? 'selected' : '' }}>
                                                                                 Laki-laki</option>
@@ -249,12 +249,14 @@
                                                                     </div>
 
                                                                     <!-- Status Perkawinan -->
-                                                                     <div class="col-md-6">
+                                                                    <div class="col-md-6">
                                                                         <label class="form-label">Status Perkawinan</label>
                                                                         <select name="status_perkawinan"
                                                                             class="form-select @error('status_perkawinan') is-invalid @enderror"
                                                                             required>
-                                                                            <option value="status_perkawinan">{{ old('status_perkawinan', $item->status_perkawinan) }}</option>
+                                                                            <option value="status_perkawinan">
+                                                                                {{ old('status_perkawinan', $item->status_perkawinan) }}
+                                                                            </option>
                                                                             <option value="menikah"
                                                                                 {{ old('status_perkawinan', $item->status_perkawinan) == 'menikah' ? 'selected' : '' }}>
                                                                                 Menikah</option>
@@ -316,30 +318,26 @@
                                                                             </div>
                                                                         @enderror
                                                                     </div>
-                                                                    
+
                                                                     <!-- Kewarganegaraan -->
                                                                     <div class="col-md-6">
                                                                         <label class="form-label">Kewarganegaraan</label>
                                                                         <select name="kewarganegaraan"
                                                                             class="form-select @error('kewarganegaraan') is-invalid @enderror"
                                                                             required>
-                                                                            <option
-                                                                                value="{{ old('kewarganegaraan', $item->kewarganegaraan) }}">
-                                                                                {{ old('kewarganegaraan', $item->kewarganegaraan) }}
-                                                                            </option>
                                                                             <option value="WNI"
                                                                                 {{ old('kewarganegaraan', $item->kewarganegaraan) == 'WNI' ? 'selected' : '' }}>
-                                                                                Laki-laki</option>
+                                                                                WNI</option>
                                                                             <option value="WNA"
                                                                                 {{ old('kewarganegaraan', $item->kewarganegaraan) == 'WNA' ? 'selected' : '' }}>
-                                                                                Perempuan</option>
+                                                                                WNA</option>
                                                                         </select>
                                                                         @error('kewarganegaraan')
                                                                             <div class="invalid-feedback">{{ $message }}
                                                                             </div>
                                                                         @enderror
                                                                     </div>
-                                                                    
+
                                                                     <!-- Nama Ayah -->
                                                                     <div class="col-md-6">
                                                                         <label class="form-label">Nama Ayah</label>
@@ -365,6 +363,26 @@
                                                                             </div>
                                                                         @enderror
                                                                     </div>
+
+                                                                    <!-- Jenis Warga -->
+                                                                    <div class="col-md-6">
+                                                                        <label class="form-label">Jenis Warga</label>
+                                                                        <select name="jenis"
+                                                                            class="form-select @error('jenis') is-invalid @enderror"
+                                                                            required>
+                                                                            <option value="penduduk"
+                                                                                {{ old('jenis', $item->jenis) == 'penduduk' ? 'selected' : '' }}>
+                                                                                Penduduk</option>
+                                                                            <option value="pendatang"
+                                                                                {{ old('jenis', $item->jenis) == 'pendatang' ? 'selected' : '' }}>
+                                                                                Pendatang</option>
+                                                                        </select>
+                                                                        @error('jenis')
+                                                                            <div class="invalid-feedback">{{ $message }}
+                                                                            </div>
+                                                                        @enderror
+                                                                    </div>
+
 
 
                                                                 </div>
@@ -562,6 +580,26 @@
                                                         WNA</option>
                                                 </select>
                                                 @error('kewarganegaraan')
+                                                    @if (old('form_type') === 'tambah')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                    @endif
+                                                @enderror
+                                            </div>
+
+                                            <!-- Jenis Warga -->
+                                            <div class="mb-3">
+                                                <label class="form-label">Jenis Warga</label>
+                                                <select name="jenis" class="form-select {{ $errorIfTambah('jenis') }}"
+                                                    required>
+                                                    <option value="">-- Pilih --</option>
+                                                    <option value="penduduk"
+                                                        {{ old('jenis') == 'penduduk' ? 'selected' : '' }}>
+                                                        Penduduk</option>
+                                                    <option value="pendatang"
+                                                        {{ old('jenis') == 'pendatang' ? 'selected' : '' }}>
+                                                        Pendatang</option>
+                                                </select>
+                                                @error('jenis')
                                                     @if (old('form_type') === 'tambah')
                                                         <div class="invalid-feedback">{{ $message }}</div>
                                                     @endif

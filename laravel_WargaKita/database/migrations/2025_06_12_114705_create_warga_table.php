@@ -32,6 +32,7 @@ return new class extends Migration
             $table->enum('kewarganegaraan',['WNI', 'WNA']);
             $table->string('nama_ayah');
             $table->string('nama_ibu');
+            $table->enum('jenis', ['penduduk','pendatang']);
             $table->timestamps();
         });
     }

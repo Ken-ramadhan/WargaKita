@@ -11,14 +11,8 @@ class Pengumuman extends Model
     protected $table = 'pengumuman';
     protected $fillable = [
         'judul',
-        'kateogri',
+        'kategori',
         'isi',
         'tanggal',
-        'id_rt',
     ];
-
-    public function rukuntetangga(): BelongsTo
-    {
-        return $this->belongsTo(Rukun_tetangga::class,'id_rt', 'id');
-    }
 }

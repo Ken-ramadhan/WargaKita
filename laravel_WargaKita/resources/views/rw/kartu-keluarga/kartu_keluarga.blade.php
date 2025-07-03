@@ -107,7 +107,7 @@
                                                 <td>{{ $kk->alamat }}</td>
                                                 <td>{{ $kk->rukunTetangga->nomor_rt ?? '-' }}</td>
                                                 <td>{{ $kk->rw }}</td>
-                                                <td>{{ $kk->golongan->nama }}</td>
+                                                <td>{{ $kk->golongan }}</td>
                                                 <td class="text-center align-middle">
                                                     <div class="d-flex justify-content-center gap-1 flex-wrap">
                                                         <form action="{{ route('kartu_keluarga.destroy', $kk->no_kk) }}"
@@ -116,19 +116,20 @@
                                                             @csrf
                                                             @method('DELETE')
                                                             <button type="submit"
-                                                                class="btn btn-danger btn-sm">Hapus</button>
+                                                                class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> <!-- Ikon hapus --></button>
                                                         </form>
 
                                                         <button type="button" class="btn btn-warning btn-sm"
                                                             data-bs-toggle="modal"
                                                             data-bs-target="#modalEditkk{{ $kk->no_kk }}">
-                                                            Edit
+                                                           <i class="fas fa-edit"></i> <!-- Ikon edit -->
                                                         </button>
 
                                                         <button type="button" class="btn btn-success btn-sm"
                                                             data-bs-toggle="modal"
                                                             data-bs-target="#modalDetailkk{{ $kk->no_kk }}">
-                                                            Detail
+                                                             <i class="fas fa-eye"></i>
+
                                                         </button>
                                                     </div>
                                                 </td>
@@ -208,16 +209,16 @@
 
                                                             <div class="col-md-6">
                                                                 <label class="form-label">Kategori Golongan</label>
-                                                                <select name="id_golongan"
+                                                                <select name="golongan"
                                                                     class="form-select @error('id_golongan') is-invalid @enderror"
                                                                     required>
                                                                     <option value="">-- Pilih Kategori --</option>
-                                                                    @foreach ($kategori_golongan as $golongan)
-                                                                        <option value="{{ $golongan->id }}"
-                                                                            {{ $kk->id_golongan == $golongan->id ? 'selected' : '' }}>
-                                                                            {{ $golongan->nama }}
-                                                                        </option>
-                                                                    @endforeach
+                                                                   @foreach ($kategori_golongan as $golongan)
+                                                                <option value="{{ $golongan }}"
+                                                                    {{ old('golongan',$kk->golongan) == $golongan ? 'selected' : '' }}>
+                                                                    {{ ucfirst($golongan) }}
+                                                                </option>
+                                                            @endforeach
                                                                 </select>
                                                                 @error('id_golongan')
                                                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -294,28 +295,6 @@
                                                                     <div class="invalid-feedback">{{ $message }}</div>
                                                                 @enderror
                                                             </div>
-
-                                                            <div class="col-md-6">
-                                                                <label class="form-label">Jenis KK</label>
-                                                                <select name="jenis"
-                                                                    class="form-select @error('jenis') is-invalid @enderror"
-                                                                    required>
-                                                                    <option
-                                                                        value="{{ old('jenis', $item->jenis) }}">
-                                                                        {{ old('jenis', $item->jenis) }}
-                                                                    </option>
-                                                                    <option value="penduduk"
-                                                                        {{ old('jenis', $item->jenis) == 'penduduk' ? 'selected' : '' }}>
-                                                                        Penduduk</option>
-                                                                    <option value="pendatang"
-                                                                        {{ old('jenis', $item->jenis) == 'pendatang' ? 'selected' : '' }}>
-                                                                        Pendatang</option>
-                                                                </select>
-                                                                @error('jenis')
-                                                                    <div class="invalid-feedback">{{ $message }}
-                                                                    </div>
-                                                                @enderror
-                                                            </div>
                                                         </div>
 
                                                         <div class="modal-footer bg-light border-0">
@@ -366,6 +345,8 @@
                                                         </p>
                                                         <p class="mb-1"><strong>RT/RW:</strong>
                                                             {{ $kk->rukunTetangga->nomor_rt }}/{{ $kk->rw }}</p>
+                                                        <p class="mb-1"><strong>Golongan:</strong>
+                                                            {{ $kk->golongan }}</p>
                                                         <p class="mb-1"><strong>kode Pos:</strong>
                                                             {{ $kk->kode_pos }}</p>
                                                     </div>
@@ -403,6 +384,7 @@
                                                                 <th>Status Kawin</th>
                                                                 <th>Hubungan</th>
                                                                 <th>Gol Darah</th>
+                                                                <th>Jenis Warga</th>
                                                                 <th>Nama Ayah</th>
                                                                 <th>Nama Ibu</th>
                                                             </tr>
@@ -423,8 +405,9 @@
                                                                     <td>{{ $data->pekerjaan }}</td>
                                                                     <td>{{ $data->status_perkawinan }}</td>
                                                                     <td>{{ $data->status_hubungan_dalam_keluarga }}</td>
-                                                                    <td>{{ $data->golongan_darah }}
-                                                                    <td>{{ $data->nama_ayah }}
+                                                                    <td>{{ $data->golongan_darah }}</td>
+                                                                    <td>{{ $data->jenis }}</td>
+                                                                    <td>{{ $data->nama_ayah }}</td>
                                                                     <td>{{ $data->nama_ibu }}
                                                                     </td>
                                                                 </tr>
@@ -523,40 +506,27 @@
                                                 </div>
 
                                                 <div class="col-md-6">
-                                                        <label class="form-label">Kategori Golongan</label>
-                                                        <select name="kategori_golongan"
-                                                            class="form-select {{ $errors->has('kategori_golongan') && old('form_type') === 'kk_tambah' ? 'is-invalid' : '' }} {{ old('kategori_golongan') }}" required>
-                                                            <option value="">-- Pilih --</option>
-                                                            <option value="kampung"
-                                                                {{ old('kategori_golongan') == 'kampung' ? 'selected' : '' }}>
-                                                                Kampung</option>
-                                                            <option value="kavling"
-                                                                {{ old('kategori_golongan') == 'kavling' ? 'selected' : '' }}>
-                                                                Kavling</option>
+                                                    <label class="form-label">Kategori Golongan</label>
+                                                    <select name="golongan"
+                                                        class="form-select {{ $errors->has('kategori_golongan') && old('form_type') === 'kk_tambah' ? 'is-invalid' : '' }} {{ old('kategori_golongan') }}"
+                                                        required>
+                                                            <option value="">-- Pilih Golongan --</option>
+                                                            @foreach ($kategori_golongan as $golongan)
+                                                                <option value="{{ $golongan }}"
+                                                                    {{ old('golongan') == $golongan ? 'selected' : '' }}>
+                                                                    {{ ucfirst($golongan) }}
+                                                                </option>
+                                                            @endforeach
 
-                                                            <option value="kost"
-                                                                {{ old('kategori_golongan') == 'kost' ? 'selected' : '' }}>
-                                                                Kost</option>
 
-                                                            <option value="kantor"
-                                                                {{ old('kategori_golongan') == 'kantor' ? 'selected' : '' }}>
-                                                                Kantor</option>
 
-                                                            <option value="kontrakan"
-                                                                {{ old('kategori_golongan') == 'kontrakan' ? 'selected' : '' }}>
-                                                                Kontrakan</option>
-
-                                                            <option value="umkm"
-                                                                {{ old('kategori_golongan') == 'umkm' ? 'selected' : '' }}>
-                                                                Umkm</option>
-
-                                                        </select>
-                                                        @if ($errors->has('jenis') && old('form_type') === 'kk_tambah')
-                                                            <div class="invalid-feedback">
-                                                                {{ $errors->first('jenis') }}
-                                                            </div>
-                                                        @endif
-                                                    </div>
+                                                    </select>
+                                                    @if ($errors->has('kategori_golongan') && old('form_type') === 'kk_tambah')
+                                                        <div class="invalid-feedback">
+                                                            {{ $errors->first('kategori_golongan') }}
+                                                        </div>
+                                                    @endif
+                                                </div>
 
                                                 <div class="col-md-12">
                                                     <label class="form-label">Alamat</label>
@@ -632,25 +602,7 @@
                                                         <div class="invalid-feedback">{{ $errors->first('tgl_terbit') }}
                                                         </div>
                                                     @endif
-                                                    <div class="col-md-6">
-                                                        <label class="form-label">Jenis</label>
-                                                        <select name="jenis"
-                                                            class="form-select {{ $errors->has('jenis') && old('form_type') === 'kk_tambah' ? 'is-invalid' : '' }} {{ old('jenis') }}" required>
-                                                            <option value="">-- Pilih --</option>
-                                                            <option value="penduduk"
-                                                                {{ old('jenis') == 'penduduk' ? 'selected' : '' }}>
-                                                                Penduduk</option>
-                                                            <option value="Pendatang"
-                                                                {{ old('jenis_kelamin') == 'Pendatang' ? 'selected' : '' }}>
-                                                                Pendatang</option>
 
-                                                        </select>
-                                                        @if ($errors->has('jenis') && old('form_type') === 'kk_tambah')
-                                                            <div class="invalid-feedback">
-                                                                {{ $errors->first('jenis') }}
-                                                            </div>
-                                                        @endif
-                                                    </div>
                                                 </div>
                                             </div>
 

@@ -29,6 +29,7 @@ class Warga extends Model
         'kewarganegaraan',
         'nama_ayah',
         'nama_ibu',
+        'jenis',
     ];
 
     public function kartuKeluarga(): BelongsTo

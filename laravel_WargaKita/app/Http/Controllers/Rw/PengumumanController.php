@@ -43,17 +43,14 @@ class PengumumanController extends Controller
     ->orderBy('created_at', 'desc')
     ->paginate(5)
     ->withQueryString();
-
-    $rukun_tetangga = Rukun_tetangga::all();
     $title = 'Pengumuman';
 
     $daftar_tahun = Pengumuman::selectRaw('YEAR(tanggal) as tahun')->distinct()->orderByDesc('tahun')->pluck('tahun');
     $daftar_bulan = range(1, 12);
     $daftar_kategori = Pengumuman::select('kategori')->distinct()->pluck('kategori');
-
+    //  dd($request->all());
     return view('rw.pengumuman.pengumuman', compact(
         'pengumuman',
-        'rukun_tetangga',
         'title',
         'daftar_tahun',
         'daftar_bulan',
@@ -94,26 +91,24 @@ class PengumumanController extends Controller
 
         $request->validate([
             'judul' => 'required|string|max:255',
-            'subjek' => 'nullable|string|max:255',
+            'kategori' => 'required|string|max:255',
             'isi' => 'required|string',
             'tanggal' => 'required|date',
-            'id_rt' => 'required|exists:rukun_tetangga,id',
         ], [
             'judul.required' => 'Judul pengumuman harus diisi.',
+            'kategori.required' => 'Kategori pengumuman harus diisi.',
             'isi.required' => 'Isi pengumuman harus diisi.',
             'tanggal.required' => 'Tanggal pengumuman harus diisi.',
-            'id_rt.required' => 'Rukun Tetangga harus dipilih.',
-            'id_rt.exists' => 'Rukun Tetangga yang dipilih tidak valid.',
 
         ]);
 
         Pengumuman::create([
             'judul' => $request->judul,
-            'subjek' => $request->subjek,
+            'kategori' => $request->kategori,
             'isi' => $request->isi,
             'tanggal' => $request->tanggal,
-            'id_rt' => $request->id_rt,
         ]);
+       
         return redirect()->route('pengumuman.index')->with('success', 'Pengumuman berhasil ditambahkan.');
     }
 
@@ -133,7 +128,7 @@ class PengumumanController extends Controller
     public function edit(string $id)
     {
         //
-        $pengumuman = Pengumuman::findOrFail($id);
+        $pengumuman = Pengumuman::findOrFail($id); 
         return view('pengumuman.edit', compact('pengumuman'));
     }
 
@@ -146,23 +141,20 @@ class PengumumanController extends Controller
         $pengumuman = Pengumuman::findOrFail($id);
         $request->validate([
             'judul' => 'required|string|max:255',
-            'subjek' => 'nullable|string|max:255',
+            'kategori' => 'string|max:255',
             'isi' => 'required|string',
             'tanggal' => 'required|date',
-            'id_rt' => 'required|exists:rukun_tetangga,id',
         ], [
             'judul.required' => 'Judul pengumuman harus diisi.',
             'isi.required' => 'Isi pengumuman harus diisi.',
             'tanggal.required' => 'Tanggal pengumuman harus diisi.',
-            'id_rt.required' => 'Rukun Tetangga harus dipilih.',
-            'id_rt.exists' => 'Rukun Tetangga yang dipilih tidak valid.',
+            'kategori.required' => 'Kategori pengumuman harus diisi.',
         ]);
         $pengumuman->update([
             'judul' => $request->judul,
-            'subjek' => $request->subjek,
+            'kategori' => $request->kategori,
             'isi' => $request->isi,
             'tanggal' => $request->tanggal,
-            'id_rt' => $request->id_rt,
         ]);
         return redirect()->route('pengumuman.index')->with('success', 'Pengumuman berhasil diperbarui.');
     }

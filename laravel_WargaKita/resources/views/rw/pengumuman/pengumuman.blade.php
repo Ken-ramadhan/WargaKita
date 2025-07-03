@@ -236,25 +236,6 @@
                                                                         </div>
                                                                     @enderror
                                                                 </div>
-
-                                                                <div class="mb-3">
-                                                                    <label for="id_rt{{ $data->id }}"
-                                                                        class="form-label">No RT</label>
-                                                                    <select name="id_rt" id="id_rt{{ $data->id }}"
-                                                                        class="form-control @error('id_rt') is-invalid @enderror"
-                                                                        required>
-                                                                        @foreach ($rukun_tetangga as $rt)
-                                                                            <option value="{{ $rt->id }}"
-                                                                                {{ $data->id_rt == $rt->id ? 'selected' : '' }}>
-                                                                                RT {{ $rt->nomor_rt }}
-                                                                            </option>
-                                                                        @endforeach
-                                                                    </select>
-                                                                    @error('id_rt')
-                                                                        <div class="invalid-feedback">{{ $message }}
-                                                                        </div>
-                                                                    @enderror
-                                                                </div>
                                                             </div>
 
                                                             <div class="modal-footer">
@@ -287,9 +268,7 @@
                                                                 <li><strong>kategori:</strong> <span
                                                                         class="ms-1">{{ $data->kategori ?? '-' }}</span>
                                                                 </li>
-                                                                <li><strong>RT Tujuan:</strong> <span class="ms-1">RT
-                                                                        {{ $data->rukuntetangga->nomor_rt ?? '-' }}</span>
-                                                                </li>
+                                                                
                                                                 <li><strong>Tanggal:</strong> <span
                                                                         class="ms-1">{{ \Carbon\Carbon::parse($data->tanggal)->isoFormat('dddd, D MMMM Y') }}</span>
                                                                 </li>
@@ -385,23 +364,6 @@
                                                     value="{{ old('tanggal') }}"
                                                     class="form-control @error('tanggal') is-invalid @enderror">
                                                 @error('tanggal')
-                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-
-                                            <div class="mb-3">
-                                                <label for="id_rt" class="form-label">No RT</label>
-                                                <select name="id_rt" id="id_rt"
-                                                    class="form-control @error('id_rt') is-invalid @enderror" required>
-                                                    <option value="">-- Pilih No RT --</option>
-                                                    @foreach ($rukun_tetangga as $rt)
-                                                        <option value="{{ $rt->id }}"
-                                                            {{ old('id_rt') == $rt->id ? 'selected' : '' }}>
-                                                            RT {{ $rt->nomor_rt }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                                @error('id_rt')
                                                     <div class="invalid-feedback">{{ $message }}</div>
                                                 @enderror
                                             </div>

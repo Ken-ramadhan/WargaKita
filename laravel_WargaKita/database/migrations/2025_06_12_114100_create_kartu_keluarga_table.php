@@ -23,8 +23,7 @@ return new class extends Migration
             $table->string('provinsi');
             $table->string('kode_pos');
             $table->date('tgl_terbit');
-            $table->foreignId('id_golongan')->constrained('kategori_golongan')->onDelete('restrict');
-            $table->enum('jenis', ['penduduk','pendatang']);
+            $table->enum('golongan', ['kampung','kavling','kost','kantor','kontrakan','umkm']);
             $table->timestamps();
         });
     }

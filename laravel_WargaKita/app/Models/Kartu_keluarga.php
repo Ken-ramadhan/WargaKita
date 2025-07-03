@@ -18,7 +18,7 @@ class Kartu_keluarga extends Model
         'no_kk',
         'alamat',
         'id_rt',
-        'id_rw',
+        'rw',
         'kelurahan',
         'kecamatan',
         'kabupaten',
@@ -26,7 +26,6 @@ class Kartu_keluarga extends Model
         'kode_pos',
         'tgl_terbit',
         'id_golongan',
-        'jenis'
     ];
 
     
