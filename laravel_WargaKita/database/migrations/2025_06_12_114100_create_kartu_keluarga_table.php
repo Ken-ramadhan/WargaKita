@@ -15,6 +15,7 @@ return new class extends Migration
             $table->char('no_kk', 16)->primary()->unique();
             $table->text('alamat');
             $table->foreignId('id_rt')->constrained('rukun_tetangga')->onDelete('restrict');
+            // $table->foreignId('id_rw')->constrained('rw')->onDelete('restrict');
             $table->string('rw');
             $table->string('kelurahan');
             $table->string('kecamatan');
@@ -23,6 +24,7 @@ return new class extends Migration
             $table->string('kode_pos');
             $table->date('tgl_terbit');
             $table->foreignId('id_golongan')->constrained('kategori_golongan')->onDelete('restrict');
+            $table->enum('jenis', ['penduduk','pendatang']);
             $table->timestamps();
         });
     }

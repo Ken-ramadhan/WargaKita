@@ -11,7 +11,7 @@ class Pengumuman extends Model
     protected $table = 'pengumuman';
     protected $fillable = [
         'judul',
-        'subjek',
+        'kateogri',
         'isi',
         'tanggal',
         'id_rt',

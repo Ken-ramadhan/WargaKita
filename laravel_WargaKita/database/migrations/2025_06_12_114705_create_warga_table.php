@@ -26,9 +26,10 @@ return new class extends Migration
             $table->string('agama');
             $table->string('pendidikan');
             $table->string('pekerjaan');
-            $table->string('status_perkawinan');
+            $table->enum('status_perkawinan',['belum menikah', 'menikah', 'cerai_hidup', 'cerai_mati']);
             $table->enum('status_hubungan_dalam_keluarga', ['kepala keluarga','istri','anak',]);
             $table->enum('golongan_darah', ['A', 'B', 'AB', 'O']);
+            $table->enum('kewarganegaraan',['WNI', 'WNA']);
             $table->string('nama_ayah');
             $table->string('nama_ibu');
             $table->timestamps();

@@ -26,6 +26,7 @@ class Warga extends Model
         'status_perkawinan',
         'status_hubungan_dalam_keluarga',
         'golongan_darah',
+        'kewarganegaraan',
         'nama_ayah',
         'nama_ibu',
     ];

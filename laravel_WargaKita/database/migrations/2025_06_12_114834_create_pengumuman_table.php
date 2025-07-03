@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('pengumuman', function (Blueprint $table) {
             $table->id();
             $table->string('judul');
-            $table->string('subjek')->nullable();
+            $table->string('kategori')->nullable();
             $table->text('isi');
             $table->dateTime('tanggal');
             $table->foreignId('id_rt')->constrained('rukun_tetangga')->onDelete('restrict');

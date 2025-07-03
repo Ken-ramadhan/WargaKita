@@ -18,7 +18,7 @@ class Kartu_keluarga extends Model
         'no_kk',
         'alamat',
         'id_rt',
-        'rw',
+        'id_rw',
         'kelurahan',
         'kecamatan',
         'kabupaten',
@@ -26,6 +26,7 @@ class Kartu_keluarga extends Model
         'kode_pos',
         'tgl_terbit',
         'id_golongan',
+        'jenis'
     ];
 
     
@@ -48,6 +49,10 @@ class Kartu_keluarga extends Model
     public function warga(): HasMany
     {
         return $this->hasMany(Warga::class, 'no_kk', 'no_kk');
+    }
+    public function rw(): HasMany
+    {
+        return $this->hasMany(Rw::class, 'id_rw', 'id');
     }
 
 }

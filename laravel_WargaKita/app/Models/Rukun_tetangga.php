@@ -32,4 +32,11 @@ class Rukun_tetangga extends Model
         return $this->hasMany(Pengeluaran::class, 'id_rt');
     }
 
+    public function kartu_keluarga(): HasMany
+    {
+        return $this->hasMany(Kartu_keluarga::class, 'id_rt');
+    }
+
+    
+
 }
