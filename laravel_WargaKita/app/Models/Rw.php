@@ -11,13 +11,14 @@ class Rw extends Model
     protected $table = 'rw';
     protected $fillable = 
     [
+        'nik',
         'nomor_rw',
         'nama_ketua_rw',
         'masa_jabatan',
     ];
 
 
-    public function rw(): BelongsTo
+    public function kartu_keluarga(): BelongsTo
     {
         return $this->belongsTo(Kartu_keluarga::class, 'id_rw');
     }

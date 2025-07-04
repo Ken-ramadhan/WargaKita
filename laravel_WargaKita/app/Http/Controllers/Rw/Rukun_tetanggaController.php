@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Rw;
 use App\Http\Controllers\Controller;
 
 use App\Models\Rukun_tetangga;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class Rukun_tetanggaController extends Controller
@@ -34,19 +35,33 @@ class Rukun_tetanggaController extends Controller
     {
         //
         $request->validate([
+            'nik' => 'required|unique:rukun_tetangga,nik',
             'nomor_rt' => 'required|string',
             'nama_ketua_rt' => 'required|string|max:255',
             'masa_jabatan' => 'required|string|max:255',
         ], [
+            'nik.required' => 'NIK harus diisi.',
+            'nik.unique' => 'NIK sudah terdaftar.',
             'nomor_rt.required' => 'Nomor Rukun Tetangga harus diisi.',
             'nama_ketua_rt.required' => 'Nama Ketua Rukun Tetangga harus diisi.',
             'masa_jabatan.required' => 'Masa Jabatan harus diisi.',
         ]);
 
         Rukun_tetangga::create([
+            'nik' => $request->nik,
             'nomor_rt' => $request->nomor_rt,
             'nama_ketua_rt' => $request->nama_ketua_rt,
             'masa_jabatan' => $request->masa_jabatan,
+        ]);
+
+        $id_rt = Rukun_tetangga::where('nik', $request->nik)->value('id');
+
+        User::create([
+            'nik' => $request->nik,
+            'nama' => $request->nama_ketua_rt,
+            'password' => bcrypt('password'),
+            'id_rt' => $id_rt,
+            'role' => 'rt',
         ]);
         return redirect()->route('rukun_tetangga.index')->with('success', 'Rukun Tetangga berhasil ditambahkan.');
     }
@@ -78,6 +93,7 @@ class Rukun_tetanggaController extends Controller
     {
         //
         $request->validate([
+            "nik" => 'required',
             'nomor_rt' => 'required|string|max:255',
             'nama_ketua_rt' => 'required|string|max:255',
             'masa_jabatan' => 'required|string|max:255',
@@ -88,6 +104,7 @@ class Rukun_tetanggaController extends Controller
         ]);
         $rukun_tetangga = Rukun_tetangga::findOrFail($id);
         $rukun_tetangga->update([
+            'nik' => $request->nik,
             'nomor_rt' => $request->nomor_rt,
             'nama_ketua_rt' => $request->nama_ketua_rt,
             'masa_jabatan' => $request->masa_jabatan,

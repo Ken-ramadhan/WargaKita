@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Warga;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -30,11 +31,21 @@ class LoginController extends Controller
                 return redirect()->route('admin.dashboard.dashboard');
             } elseif ($role === 'rw') {
                 return redirect()->route('dashboard');
-            } elseif ($role === 'warga') {
-                return redirect()->route('warga.dashboard.dashboard');
+            }elseif ($role === 'rt'){
+                return view('rt.dashboard.dashboard');
+            }
+             elseif ($role === 'warga') {
+                if (!Warga::where('nik', $request->nik)->exists()){
+                    return back()->withErrors([
+                        'nik' => 'NIK tidak terdaftar.',
+                    ]);
+                }
+                return redirect()->route('dashboard-main');
             }
 
-            return redirect('/');
+dd(Auth::user());
+
+            return view('login.login');
         }
 
         return back()->withErrors([

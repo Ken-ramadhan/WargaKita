@@ -15,7 +15,9 @@ return new class extends Migration
             $table->id();
             $table->char('nik', 16)->unique();
             $table->string('nama');
-            $table->string('nomor_rw');
+            $table->string('nomor_rw')->nullable();
+            $table->unsignedBigInteger('id_rt')->nullable();
+            $table->foreign('id_rt')->references('id')->on('rukun_tetangga')->onDelete('cascade');
             $table->string('password');
             $table->enum('role',['admin','rw','rt','warga'])->default('warga');
             $table->timestamps();

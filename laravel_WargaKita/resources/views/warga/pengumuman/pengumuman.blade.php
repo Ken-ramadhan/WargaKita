@@ -66,7 +66,7 @@
                     <select name="kategori" class="form-select form-select-sm w-auto flex-fill">
                         <option value="">Semua Kategori</option>
                         @foreach ($daftar_kategori as $kategori)
-                            <option value="{{ $kategori }}" {{ request('kategori') == $subjek ? 'selected' : '' }}>
+                            <option value="{{ $kategori }}" {{ request('kategori') == $kategori? 'selected' : '' }}>
                                 {{ $kategori }}</option>
                         @endforeach
                     </select>
@@ -91,7 +91,7 @@
                                     <tr class="text-center">
                                         <th scope="col">NO</th>
                                         <th scope="col">JUDUL</th>
-                                        <th scope="col">Subjek</th>
+                                        <th scope="col">Kategori</th>
                                         <th scope="col">RINGKASAN ISI</th>
                                         <th scope="col">TANGGAL</th>
                                         <th scope="col" class="text-center">AKSI</th>
@@ -102,7 +102,7 @@
                                     <tr>
                                         <th scope="row">{{ $loop->iteration }}</th>
                                         <td>{{ $data->judul }}</td>
-                                        <td>{{ $data->subjek }}</td>
+                                        <td>{{ $data->kategori }}</td>
                                         <td class="px-3">
                                             {{ \Illuminate\Support\Str::limit($data->isi, 50, '...') }}
                                         </td>
@@ -136,12 +136,12 @@
                                                     <h4 class="fw-bold text-success mb-3">{{ $data->judul }}</h4>
 
                                                     <ul class="list-unstyled mb-3 small">
-                                                        <li><strong>Subjek:</strong> <span
-                                                                class="ms-1">{{ $data->subjek ?? '-' }}</span>
+                                                        <li><strong>Kategori:</strong> <span
+                                                                class="ms-1">{{ $data->kategori ?? '-' }}</span>
                                                         </li>
-                                                        <li><strong>RT Tujuan:</strong> <span class="ms-1">RT
+                                                        {{-- <li><strong>RT Tujuan:</strong> <span class="ms-1">RT
                                                                 {{ $data->rukuntetangga->nomor_rt ?? '-' }}</span>
-                                                        </li>
+                                                        </li> --}}
                                                         <li><strong>Tanggal:</strong> <span
                                                                 class="ms-1">{{ \Carbon\Carbon::parse($data->tanggal)->isoFormat('dddd, D MMMM Y') }}</span>
                                                         </li>

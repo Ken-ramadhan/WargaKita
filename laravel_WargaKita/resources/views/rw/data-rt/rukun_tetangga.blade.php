@@ -58,7 +58,7 @@
                                 <thead class="text-center">
                                     <tr>
                                         <th scope="col">No</th>
-                                        <th scope="col">ID</th>
+                                        <th scope="col">NIK</th>
                                         <th scope="col">NOMOR RT</th>
                                         <th scope="col">NAMA KETUA RT</th>
                                         <th scope="col">MASA JABATAN</th>
@@ -69,7 +69,7 @@
                                     @foreach ($rukun_tetangga as $rt)
                                         <tr>
                                             <th scope="row">{{ $loop->iteration }}</th>
-                                            <th scope="row">{{ $rt->id }}</th>
+                                            <th scope="row">{{ $rt->nik }}</th>
                                             <td>{{ $rt->nomor_rt }}</td>
                                             <td>{{ $rt->nama_ketua_rt }}</td>
                                             <td>{{ $rt->masa_jabatan }}</td>
@@ -79,12 +79,12 @@
                                                     {{-- Alert Konfirmasi Hapus --}}
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                                    <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> <!-- Ikon hapus --></button>
                                                     {{-- Alert Error --}}
                                                 </form>
                                                 <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal"
                                                     data-bs-target="#modalEditRT{{ $rt->id }}">
-                                                    Edit
+                                                    <i class="fas fa-edit"></i> <!-- Ikon edit -->
                                                 </button>
                                             </td>
                                             
@@ -119,6 +119,16 @@
                                                         @csrf
                                                         @method('PUT')
                                                         <div class="modal-body">
+                                                            <div class="mb-3">
+                                                                
+                                                                <label for="nik{{ $rt->id }}"
+                                                                    class="form-label">Nik</label>
+                                                                <input type="text" class="form-control" name="nik"
+                                                                    id="nik{{ $rt->id }}"
+                                                                    value="{{ $rt->nik }}" required readonly>
+                                                            </div>
+
+
                                                             <div class="mb-3">
                                                                 <label for="nomor_rt{{ $rt->id }}"
                                                                     class="form-label">Nomor RT</label>
@@ -187,6 +197,18 @@
                                         {{-- Form Tambah Warga --}}
                                         <form action="{{ route('rukun_tetangga.store') }}" method="POST" class="p-4">
                                             @csrf
+
+                                            <div class="mb-3">
+                                                <label for="nik" class="form-label">Nik</label>
+                                                <input type="text" name="nik" id="nik" maxlength="16" required
+                                                    value="{{ old('nik') }}"
+                                                    class="form-control @error('nik') is-invalid @enderror"
+                                                    placeholder="Contoh: 1234567890987654">
+                                                <small class="form-text text-muted">Masukkan Nik</small>
+                                                @error('nik')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
 
                                             <div class="mb-3">
                                                 <label for="nomor_rt" class="form-label">Nomor rt</label>

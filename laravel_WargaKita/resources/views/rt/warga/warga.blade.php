@@ -1,4 +1,4 @@
-@extends('rw.layouts.app')
+@extends('rt.layouts.app')
 @section('title', $title)
 
 @section('content')
@@ -8,7 +8,7 @@
     <div id="content">
 
         {{-- top bar --}}
-        @include('rw.layouts.topbar')
+        @include('rt.layouts.topbar')
 
         {{-- top bar end --}}
 
@@ -73,8 +73,8 @@
                                             <th scope="col">NAMA</th>
                                             <th scope="col">JENIS KELAMIN</th>
                                             <th scope="col">TANGGAL LAHIR</th>
-                                            <th scope="col">JENIS WARGA</th>
                                             <th scope="col">HUBUNGAN</th>
+                                            <th scope="col">JENIS WARGA</th>
                                             <th scope="col">AKSI</th>
                                         </tr>
                                     </thead>
@@ -603,19 +603,6 @@
                                                         <div class="invalid-feedback">{{ $message }}</div>
                                                     @endif
                                                 @enderror
-                                            </div>
-
-                                            <div class="mb-3">
-                                                <label class="form-label">Nomor RT</label>
-                                                <select name="id_rt" class="form-select {{ $errorIfTambah('id_rt') }}">
-                                                    <option value="">-- Pilih RT --</option>
-                                                    @foreach ($rukun_tetangga as $rt)
-                                                        <option value="{{ $rt->id }}"
-                                                            {{ old('id_rt') == $rt->id ? 'selected' : '' }}>
-                                                            RT {{ $rt->nomor_rt }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
                                             </div>
 
                                         </div>

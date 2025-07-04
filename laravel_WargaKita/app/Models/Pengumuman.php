@@ -14,5 +14,11 @@ class Pengumuman extends Model
         'kategori',
         'isi',
         'tanggal',
+        'id_rt'
     ];
+
+     public function rt()
+    {
+        return $this->belongsTo(Rukun_tetangga::class, 'id_rt');
+    }
 }

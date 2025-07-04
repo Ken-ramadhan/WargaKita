@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('rukun_tetangga', function (Blueprint $table) {
             $table->id();
+            $table->char('nik', 16)->unique();
             $table->string('nomor_rt');
             $table->string('nama_ketua_rt');
             $table->string('masa_jabatan');

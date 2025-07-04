@@ -24,9 +24,26 @@ class User extends Authenticatable
         'nik',
         'password',
         'nama',
-        'nomor_rwp',
+        'nomor_rw',
         'role',
+        'id_rt',
     ];
+
+    public function warga()
+{
+    return $this->belongsTo(Warga::class,'nik','nik');
+}
+
+ public function rukunTetangga()
+{
+    return $this->belongsTo(Rukun_tetangga::class,'id_rt','id_rt');
+}
+
+// public function rw()
+// {
+//     return $this->belongsTo(Rw::class,'id_rw','id_rw');
+// }
+
     /**
      * The attributes that should be hidden for serialization.
      *
