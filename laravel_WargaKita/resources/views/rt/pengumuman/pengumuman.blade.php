@@ -1,4 +1,4 @@
-@extends('rw.layouts.app')
+@extends('rt.layouts.app')
 <style>
     .modal-body {
         max-height: 80vh;
@@ -21,7 +21,7 @@
     <div id="content">
 
         {{-- top bar --}}
-        @include('rw.layouts.topbar')
+        @include('rt.layouts.topbar')
 
         {{-- top bar end --}}
 
@@ -32,7 +32,7 @@
 
             <div class="row">
 
-                <form action="{{ route('pengumuman.index') }}" method="GET" class="row g-2 align-items-center px-3 pb-2">
+                <form action="{{ route('rt_pengumuman.index') }}" method="GET" class="row g-2 align-items-center px-3 pb-2">
                     <div class="col-md-5 col-sm-12">
                         <div class="input-group input-group-sm">
                             <input type="text" name="search" value="{{ request('search') }}" class="form-control"
@@ -66,7 +66,7 @@
                             @endforeach
                         </select>
                         <button type="submit" class="btn btn-sm btn-primary">Filter</button>
-                        <a href="{{ route('pengumuman.index') }}" class="btn btn-secondary btn-sm">Reset</a>
+                        <a href="{{ route('rt_pengumuman.index') }}" class="btn btn-secondary btn-sm">Reset</a>
                     </div>
                 </form>
 
@@ -121,7 +121,7 @@
 
                                                 <td class="text-center align-item-center">
                                                     {{-- Tombol Aksi: Hapus, Edit, Detail --}}
-                                                    <form action="{{ route('pengumuman.destroy', $data->id) }}"
+                                                    <form action="{{ route('rt_pengumuman.destroy', $data->id) }}"
                                                         method="POST" class="d-inline"
                                                         onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengumuman ini?')">
                                                         @csrf
@@ -172,7 +172,7 @@
                                                             <button type="button" class="btn-close btn-close-white"
                                                                 data-bs-dismiss="modal" aria-label="Tutup"></button>
                                                         </div>
-                                                        <form action="{{ route('pengumuman.update', $data->id) }}"
+                                                        <form action="{{ route('rt_pengumuman.update', $data->id) }}"
                                                             method="POST">
                                                             @csrf
                                                             @method('PUT')
@@ -277,7 +277,6 @@
                                                                     </li>
                                                                 @endif
                                                             </ul>
-                                                            
 
                                                             <hr class="my-2">
 
@@ -329,7 +328,7 @@
                                             aria-label="Tutup"></button>
                                     </div>
 
-                                    <form action="{{ route('pengumuman.store') }}" method="POST">
+                                    <form action="{{ route('rt_pengumuman.store') }}" method="POST">
                                         @csrf
                                         <div class="modal-body px-4" style="max-height: 70vh; overflow-y: auto;">
                                             <div class="mb-3">

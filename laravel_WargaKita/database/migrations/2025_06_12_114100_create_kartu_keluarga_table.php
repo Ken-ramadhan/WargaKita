@@ -15,8 +15,7 @@ return new class extends Migration
             $table->char('no_kk', 16)->primary()->unique();
             $table->text('alamat');
             $table->foreignId('id_rt')->constrained('rukun_tetangga')->onDelete('restrict');
-            // $table->foreignId('id_rw')->constrained('rw')->onDelete('restrict');
-            $table->string('rw');
+            $table->foreignId('id_rw')->constrained('rw')->onDelete('restrict');
             $table->string('kelurahan');
             $table->string('kecamatan');
             $table->string('kabupaten');

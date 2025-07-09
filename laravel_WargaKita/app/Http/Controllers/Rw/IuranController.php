@@ -68,7 +68,7 @@ class IuranController extends Controller
         if ($request->jenis === 'otomatis') {
             foreach ($request->nominal as $golonganId => $nominal) {
                 IuranGolongan::create([
-                    'id_iuran' => $iuran->id,
+                    'id_iuran' => $iuran->id, 
                     'id_golongan' => $golonganId,
                     'nominal' => $nominal,
                 ]);

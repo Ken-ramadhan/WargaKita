@@ -14,12 +14,29 @@ class Rw extends Model
         'nik',
         'nomor_rw',
         'nama_ketua_rw',
-        'masa_jabatan',
+        'mulai_menjabat',
+        'akhir_jabatan',
+        'id_rw'
     ];
 
 
-    public function kartu_keluarga(): BelongsTo
+    public function kartu_keluarga()
     {
-        return $this->belongsTo(Kartu_keluarga::class, 'id_rw');
+        return $this->hasMany(Kartu_keluarga::class, 'id_rw');
+    }
+
+    public function user()
+    {
+        return $this->hasMany(User::class, 'id_rw', 'id');
+    }
+
+    public function pengumuman()
+    {
+        return $this->hasMany(Pengumuman::class, 'id_rw', 'id');
+    }
+
+     public function rukunTetangga()
+    {
+        return $this->hasMany(Rukun_tetangga::class, 'id_rw', 'id');
     }
 }

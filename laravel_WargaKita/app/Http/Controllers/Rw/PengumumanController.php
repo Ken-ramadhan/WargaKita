@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Pengumuman;
 use App\Models\Rukun_tetangga;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PengumumanController extends Controller
 {
@@ -87,29 +88,23 @@ class PengumumanController extends Controller
      */
     public function store(Request $request)
     {
-        //
-
         $request->validate([
-            'judul' => 'required|string|max:255',
-            'kategori' => 'required|string|max:255',
-            'isi' => 'required|string',
+            'judul' => 'required',
+            'isi' => 'required',
+            'kategori' => 'required',
             'tanggal' => 'required|date',
-        ], [
-            'judul.required' => 'Judul pengumuman harus diisi.',
-            'kategori.required' => 'Kategori pengumuman harus diisi.',
-            'isi.required' => 'Isi pengumuman harus diisi.',
-            'tanggal.required' => 'Tanggal pengumuman harus diisi.',
-
         ]);
 
         Pengumuman::create([
             'judul' => $request->judul,
-            'kategori' => $request->kategori,
             'isi' => $request->isi,
+            'kategori' => $request->kategori,
             'tanggal' => $request->tanggal,
+            'id_rw' => Auth::user()->id_rw,
+            'id_rt' => null
         ]);
-       
-        return redirect()->route('pengumuman.index')->with('success', 'Pengumuman berhasil ditambahkan.');
+
+        return back()->with('success', 'Pengumuman RW berhasil dibuat.');
     }
 
     /**

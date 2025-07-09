@@ -19,7 +19,7 @@
             <div class="row ">
 
                 <!-- Form Filter - Sejajar dan Hemat Ruang -->
-                <form method="GET" action="{{ route('kartu_keluarga.index') }}" class="row g-2 align-items-center px-3 pb-2">
+                <form method="GET" action="{{ route('rt_kartu_keluarga.index') }}" class="row g-2 align-items-center px-3 pb-2">
                     <!-- Kolom Pencarian -->
                     <div class="col-md-5 col-sm-12">
                         <div class="input-group input-group-sm">
@@ -33,8 +33,8 @@
 
                     <!-- Tombol Aksi -->
                     <div class="col-md-4 col-sm-6 d-flex gap-2">
-                        <button class="btn btn-sm btn-primary">Terapkan</button>
-                        <a href="{{ route('kartu_keluarga.index') }}" class="btn btn-sm btn-secondary">Reset</a>
+                        <button class="btn btn-sm btn-primary">Filter</button>
+                        <a href="{{ route('rt_kartu_keluarga.index') }}" class="btn btn-sm btn-secondary">Reset</a>
                     </div>
                 </form>
 
@@ -46,18 +46,10 @@
                         <!-- Card Header - Dropdown -->
                         <div class="card-header py-2 d-flex flex-row align-items-center justify-content-between">
                             <h6 class="m-0 font-weight-bold text-primary">Tabel Daftar Kartu Keluarga</h6>
-                            <div class="dropdown no-arrow">
-                                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                    aria-labelledby="dropdownMenuLink">
-                                    <div class="dropdown-header">Tambah Data Kartu Keluarga</div>
-                                    <a class="dropdown-item" href="#" data-bs-toggle="modal"
-                                        data-bs-target="#modalTambahKK">Tambah</a>
-                                </div>
-                            </div>
+                            <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#modalTambahKK">
+                                    <i class="fas fa-plus"></i>
+                                </button>
                         </div>
                         <!-- Card Body -->
                         <div class="card-body">
@@ -96,7 +88,7 @@
                                                 <td>{{ $kk->golongan }}</td>
                                                 <td class="text-center align-middle">
                                                     <div class="d-flex justify-content-center gap-1 flex-wrap">
-                                                        <form action="{{ route('kartu_keluarga.destroy', $kk->no_kk) }}"
+                                                        <form action="{{ route('rt_kartu_keluarga.destroy', $kk->no_kk) }}"
                                                             method="POST"
                                                             onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
                                                             @csrf
@@ -140,7 +132,7 @@
                                         aria-labelledby="modalEditkkLabel{{ $kk->no_kk }}" aria-hidden="true">
                                         <div class="modal-dialog modal-xl modal-dialog-scrollable">
                                             <div class="modal-content shadow border-0">
-                                                <form action="{{ route('kartu_keluarga.update', $kk->no_kk) }}"
+                                                <form action="{{ route('rt_kartu_keluarga.update', $kk->no_kk) }}"
                                                     method="POST">
                                                     @csrf
                                                     @method('PUT')
@@ -427,7 +419,7 @@
 
                             <div class="modal-dialog modal-xl modal-dialog-scrollable">
                                 <div class="modal-content shadow border-0">
-                                    <form action="{{ route('kartu_keluarga.store') }}" method="POST">
+                                    <form action="{{ route('rt_kartu_keluarga.store') }}" method="POST">
                                         @csrf
                                         <input type="hidden" name="form_type" value="kk_tambah">
                                         <div class="modal-header bg-primary text-white">

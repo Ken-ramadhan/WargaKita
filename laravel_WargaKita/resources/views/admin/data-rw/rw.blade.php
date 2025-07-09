@@ -1,4 +1,4 @@
-@extends('rw.layouts.app')
+@extends('admin.layouts.app')
 
 @section('title', $title)
 
@@ -22,7 +22,7 @@
     <div id="content">
 
         {{-- top bar --}}
-        @include('rw.layouts.topbar')
+        @include('admin.layouts.topbar')
 
         {{-- top bar end --}}
 
@@ -37,10 +37,10 @@
                     <div class="card shadow mb-4">
                         <!-- Card Header - Dropdown -->
                         <div class="card-header d-flex flex-row align-items-center justify-content-between">
-                            <h6 class="m-0 font-weight-bold text-primary">Tabel Rukun Tetangga</h6>
+                            <h6 class="m-0 font-weight-bold text-primary">Tabel RW</h6>
                             {{-- <!-- Tombol Tambah Warga tanpa dropdown --}}
                             <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                data-bs-target="#modalTambahRt">
+                                data-bs-target="#modalTambahRW">
                                 <i class="fas fa-plus"></i>
                             </button>
 
@@ -53,26 +53,26 @@
                                         <tr>
                                             <th scope="col">No</th>
                                             <th scope="col">NIK</th>
-                                            <th scope="col">NOMOR RT</th>
-                                            <th scope="col">NAMA KETUA RT</th>
+                                            <th scope="col">NOMOR RW</th>
+                                            <th scope="col">NAMA KETUA RW</th>
                                             <th scope="col">MULAI MENJABAT</th>
                                             <th scope="col">AKHIR JABATAN</th>
                                             <th scope="col">AKSI</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($rukun_tetangga as $rt)
+                                        @foreach ($rw as $data)
                                             <tr>
                                                 <th scope="row">{{ $loop->iteration }}</th>
-                                                <th scope="row">{{ $rt->nik }}</th>
-                                                <td>{{ $rt->nomor_rt }}</td>
-                                                <td>{{ $rt->nama_ketua_rt }}</td>
-                                                <td>{{ $rt->mulai_menjabat }}</td>
-                                                <td>{{ $rt->akhir_jabatan }}</td>
+                                                <th scope="row">{{ $data->nik }}</th>
+                                                <td>{{ $data->nomor_rw }}</td>
+                                                <td>{{ $data->nama_ketua_rw }}</td>
+                                                <td>{{ $data->mulai_menjabat }}</td>
+                                                <td>{{ $data->akhir_jabatan }}</td>
                                                 <td>
-                                                    <form action="{{ route('rukun_tetangga.destroy', $rt->id) }}" method="POST"
+                                                    <form action="{{ route('data_rw.destroy', $data->id) }}" method="POST"
                                                         class="d-inline"
-                                                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus RT ini?')">
+                                                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus RW ini?')">
                                                         {{-- Alert Konfirmasi Hapus --}}
                                                         @csrf
                                                         @method('DELETE')
@@ -82,7 +82,7 @@
                                                     </form>
                                                     <button type="button" class="btn btn-warning btn-sm"
                                                         data-bs-toggle="modal"
-                                                        data-bs-target="#modalEditRT{{ $rt->id }}">
+                                                        data-bs-target="#modalEditRW{{ $data->id }}">
                                                         <i class="fas fa-edit"></i> <!-- Ikon edit -->
                                                     </button>
                                                 </td>
@@ -102,29 +102,29 @@
 
 
                                             <!-- Modal Edit RT -->
-                                            <div class="modal fade" id="modalEditRT{{ $rt->id }}" tabindex="-1"
-                                                aria-labelledby="modalEditRTLabel{{ $rt->id }}" aria-hidden="true">
+                                            <div class="modal fade" id="modalEditRW{{ $data->id }}" tabindex="-1"
+                                                aria-labelledby="modalEditRWLabel{{ $data->id }}" aria-hidden="true">
                                                 <div class="modal-dialog">
                                                     <div class="modal-content shadow-lg">
                                                         <div class="modal-header bg-warning text-white">
                                                             <h5 class="modal-title"
-                                                                id="modalEditRTLabel{{ $rt->id }}">Edit Data RT
+                                                                id="modalEditRWLabel{{ $data->id }}">Edit Data RW
                                                             </h5>
                                                             <button type="button" class="btn-close btn-close-white"
                                                                 data-bs-dismiss="modal" aria-label="Tutup"></button>
                                                         </div>
-                                                        <form action="{{ route('rukun_tetangga.update', $rt->id) }}"
+                                                        <form action="{{ route('data_rw.update', $data->id) }}"
                                                             method="POST">
                                                             @csrf
                                                             @method('PUT')
                                                             <div class="modal-body">
                                                                 <div class="mb-3">
 
-                                                                    <label for="nik{{ $rt->id }}"
+                                                                    <label for="nik{{ $data->id }}"
                                                                         class="form-label">Nik</label>
                                                                     <input type="text" class="form-control"
-                                                                        name="nik" id="nik{{ $rt->id }}"
-                                                                        value="{{ $rt->nik }}" required readonly>
+                                                                        name="nik" id="nik{{ $data->id }}"
+                                                                        value="{{ $data->nik }}" required readonly>
                                                                     @error('nik')
                                                                         <div class="invalid-feedback">{{ $message }}
                                                                         </div>
@@ -133,25 +133,25 @@
 
 
                                                                 <div class="mb-3">
-                                                                    <label for="nomor_rt{{ $rt->id }}"
-                                                                        class="form-label">Nomor RT</label>
+                                                                    <label for="nomor_rw{{ $data->id }}"
+                                                                        class="form-label">Nomor RW</label>
                                                                     <input type="text" class="form-control"
-                                                                        name="nomor_rt" id="nomor_rt{{ $rt->id }}"
-                                                                        value="{{ $rt->nomor_rt }}" required>
-                                                                    @error('nomor_rt')
+                                                                        name="nomor_rw" id="nomor_rw{{ $data->id }}"
+                                                                        value="{{ $data->nomor_rw }}" required>
+                                                                    @error('nomor_rw')
                                                                         <div class="invalid-feedback">{{ $message }}
                                                                         </div>
                                                                     @enderror
                                                                 </div>
 
                                                                 <div class="mb-3">
-                                                                    <label for="nama_ketua_rt{{ $rt->id }}"
-                                                                        class="form-label">Nama Ketua RT</label>
+                                                                    <label for="nama_ketua_rw{{ $data->id }}"
+                                                                        class="form-label">Nama Ketua RW</label>
                                                                     <input type="text" class="form-control"
-                                                                        name="nama_ketua_rt"
-                                                                        id="nama_ketua_rt{{ $rt->id }}"
-                                                                        value="{{ $rt->nama_ketua_rt }}" required>
-                                                                    @error('nama_ketua_rt')
+                                                                        name="nama_ketua_rw"
+                                                                        id="nama_ketua_rw{{ $data->id }}"
+                                                                        value="{{ $data->nama_ketua_rw }}" required>
+                                                                    @error('nama_ketua_rw')
                                                                         <div class="invalid-feedback">{{ $message }}
                                                                         </div>
                                                                     @enderror
@@ -159,11 +159,11 @@
 
 
                                                                 <div class="mb-3">
-                                                                    <label for="mulai_menjabat{{ $rt->id }}" class="form-label">Mulai
+                                                                    <label for="mulai_menjabat{{ $data->id }}" class="form-label">Mulai
                                                                         Masa Jabatan</label>
                                                                     <input type="date" name="mulai_menjabat"
-                                                                        id="mulai_menjabat{{ $rt->id }}" maxlength="16" required
-                                                                        value="{{ $rt->mulai_menjabat }}"
+                                                                        id="mulai_menjabat{{ $data->id }}" maxlength="16" required
+                                                                        value="{{ $data->mulai_menjabat }}"
                                                                         class="form-control @error('mulai_menjabat') is-invalid @enderror"
                                                                         placeholder="Contoh: 2023-2025">
                                                                     <small class="form-text text-muted">Masukkan Masa Mulai
@@ -175,11 +175,11 @@
                                                                 </div>
 
                                                                 <div class="mb-3">
-                                                                    <label for="akhir_jabatan{{ $rt->id }}" class="form-label">Akhir
+                                                                    <label for="akhir_jabatan{{ $data->id }}" class="form-label">Akhir
                                                                         Masa Jabatan</label>
                                                                     <input type="date" name="akhir_jabatan"
-                                                                        id="akhir_jabatan{{ $rt->id }}" maxlength="16" required
-                                                                        value="{{ $rt->akhir_jabatan }}"
+                                                                        id="akhir_jabatan{{ $data->id }}" maxlength="16" required
+                                                                        value="{{ $data->akhir_jabatan }}"
                                                                         class="form-control @error('akhir_jabatan') is-invalid @enderror"
                                                                         placeholder="Contoh: 2023-2025">
                                                                     <small class="form-text text-muted">Masukkan Masa Akhir
@@ -209,30 +209,30 @@
                         <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 px-3">
                             <!-- Info Kustom -->
                             <div class="text-muted mb-2">
-                                Menampilkan {{ $rukun_tetangga->firstItem() }}-{{ $rukun_tetangga->lastItem() }} dari
+                                Menampilkan {{ $rw->firstItem() }}-{{ $rw->lastItem() }} dari
                                 total
-                                {{ $rukun_tetangga->total() }} data
+                                {{ $rw->total() }} data
                             </div>
 
                             <!-- Tombol Pagination -->
                             <div>
-                                {{ $rukun_tetangga->links('pagination::bootstrap-5') }}
+                                {{ $rw->links('pagination::bootstrap-5') }}
                             </div>
                         </div>
 
                         <!-- Modal Tambah RT -->
-                        <div class="modal fade" id="modalTambahRt" tabindex="-1" aria-labelledby="modalTambahRtLabel"
+                        <div class="modal fade" id="modalTambahRW" tabindex="-1" aria-labelledby="modalTambahRWLabel"
                             aria-hidden="true">
                             <div class="modal-dialog modal-lg">
                                 <div class="modal-content shadow-lg">
                                     <div class="modal-header bg-primary text-white">
-                                        <h5 class="modal-title" id="modalTambahRtLabel">Tambah Data RT</h5>
+                                        <h5 class="modal-title" id="modalTambahRtLabel">Tambah Data RW</h5>
                                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                                             aria-label="Tutup"></button>
                                     </div>
                                     <div class="modal-body">
                                         {{-- Form Tambah Warga --}}
-                                        <form action="{{ route('rukun_tetangga.store') }}" method="POST" class="p-4">
+                                        <form action="{{ route('data_rw.store') }}" method="POST" class="p-4">
                                             @csrf
 
                                             <div class="mb-3">
@@ -248,25 +248,25 @@
                                             </div>
 
                                             <div class="mb-3">
-                                                <label for="nomor_rt" class="form-label">Nomor rt</label>
-                                                <input type="text" name="nomor_rt" id="nomor_rt" maxlength="16"
-                                                    required value="{{ old('nomor_rt') }}"
-                                                    class="form-control @error('nomor_rt') is-invalid @enderror"
+                                                <label for="nomor_rw" class="form-label">Nomor Rw</label>
+                                                <input type="text" name="nomor_rw" id="nomor_rw" maxlength="16"
+                                                    required value="{{ old('nomor_rw') }}"
+                                                    class="form-control @error('nomor_rw') is-invalid @enderror"
                                                     placeholder="Contoh: 01">
-                                                <small class="form-text text-muted">Masukkan Nomor rt</small>
-                                                @error('nomor_rt')
+                                                <small class="form-text text-muted">Masukkan Nomor rw</small>
+                                                @error('nomor_rw')
                                                     <div class="invalid-feedback">{{ $message }}</div>
                                                 @enderror
                                             </div>
 
                                             <div class="mb-3">
-                                                <label for="nama_ketua_rt" class="form-label">Nama Ketua RT</label>
-                                                <input type="text" name="nama_ketua_rt" id="nama_ketua_rt"
-                                                    maxlength="16" required value="{{ old('nama_ketua_rt') }}"
-                                                    class="form-control @error('nama_ketua_rt') is-invalid @enderror"
+                                                <label for="nama_ketua_rw" class="form-label">Nama Ketua RW</label>
+                                                <input type="text" name="nama_ketua_rw" id="nama_ketua_rw"
+                                                    maxlength="16" required value="{{ old('nama_ketua_rw') }}"
+                                                    class="form-control @error('nama_ketua_rw') is-invalid @enderror"
                                                     placeholder="Contoh: Budi">
                                                 <small class="form-text text-muted">Masukkan Nama Ketua RT</small>
-                                                @error('nama_ketua_rt')
+                                                @error('nama_ketua_rw')
                                                     <div class="invalid-feedback">{{ $message }}</div>
                                                 @enderror
                                             </div>

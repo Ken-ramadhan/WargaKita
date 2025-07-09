@@ -16,9 +16,12 @@ return new class extends Migration
             $table->char('nik', 16)->unique();
             $table->string('nomor_rw');
             $table->string('nama_ketua_rw');
-            $table->string('masa_jabatan');
+            $table->date('mulai_menjabat');
+            $table->date('akhir_jabatan');
             $table->timestamps();
         });
+
+        
     }
 
     /**

@@ -25,24 +25,27 @@ class User extends Authenticatable
         'password',
         'nama',
         'nomor_rw',
+        'id_rw',
         'role',
         'id_rt',
     ];
 
-    public function warga()
+// Di User.php
+public function warga()
 {
-    return $this->belongsTo(Warga::class,'nik','nik');
+    return $this->belongsTo(Warga::class, 'nik', 'nik');
 }
+
 
  public function rukunTetangga()
 {
-    return $this->belongsTo(Rukun_tetangga::class,'id_rt','id_rt');
+    return $this->belongsTo(Rukun_tetangga::class,'id_rt','id');
 }
 
-// public function rw()
-// {
-//     return $this->belongsTo(Rw::class,'id_rw','id_rw');
-// }
+public function rw()
+{
+    return $this->belongsTo(Rw::class,'id_rw','id');
+}
 
     /**
      * The attributes that should be hidden for serialization.

@@ -18,7 +18,7 @@
             <!-- Content Row -->
 
             <div class="row">
-                <form action="{{ route('warga.index') }}" method="GET" class="row g-2 align-items-center px-3 pb-2">
+                <form action="{{ route('rt_warga.index') }}" method="GET" class="row g-2 align-items-center px-3 pb-2">
                     <div class="col-md-5 col-sm-12">
                         <div class="input-group input-group-sm">
                             <input type="text" name="search" value="{{ request('search') }}" class="form-control"
@@ -36,8 +36,8 @@
                             <option value="Perempuan" {{ request('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>
                                 Perempuan</option>
                         </select>
-                        <button class="btn btn-sm btn-primary">Terapkan</button>
-                        <a href="{{ route('warga.index') }}" class="btn btn-sm btn-secondary">Reset</a>
+                        <button class="btn btn-sm btn-primary">Filter</button>
+                        <a href="{{ route('rt_warga.index') }}" class="btn btn-sm btn-secondary">Reset</a>
                     </div>
                 </form>
 
@@ -48,18 +48,10 @@
                         <!-- Card Header - Dropdown -->
                         <div class="card-header py-2 d-flex flex-row align-items-center justify-content-between">
                             <h6 class="m-0 font-weight-bold text-primary">Tabel Daftar Warga</h6>
-                            <div class="dropdown no-arrow">
-                                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                    aria-labelledby="dropdownMenuLink">
-                                    <div class="dropdown-header">Manajemen Data Warga</div>
-                                    <a class="dropdown-item" href="#" data-bs-toggle="modal"
-                                        data-bs-target="#modalTambahWarga">Tambah Warga</a>
-                                </div>
-                            </div>
+                            <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#modalTambahWarga">
+                                <i class="fas fa-plus"></i>
+                            </button>
                         </div>
                         <!-- Card Body -->
                         <div class="card-body">
@@ -68,13 +60,14 @@
                                     <thead>
                                         <tr>
                                             <th scope="col">NO</th>
-                                            <th scope="col">NIK</th>
                                             <th scope="col">NO KK</th>
+                                            <th scope="col">NIK</th>
                                             <th scope="col">NAMA</th>
                                             <th scope="col">JENIS KELAMIN</th>
                                             <th scope="col">TANGGAL LAHIR</th>
                                             <th scope="col">HUBUNGAN</th>
                                             <th scope="col">JENIS WARGA</th>
+                                            <th scope="col">RT</th>
                                             <th scope="col">AKSI</th>
                                         </tr>
                                     </thead>
@@ -83,16 +76,17 @@
                                         @foreach ($warga as $item)
                                             <tr>
                                                 <th scope="row">{{ $loop->iteration }}</th>
-                                                <td>{{ $item->nik }}</td>
                                                 <td>{{ $item->kartuKeluarga->no_kk }}</td>
+                                                <td>{{ $item->nik }}</td>
                                                 <td>{{ strtoupper($item->nama) }}</td>
                                                 <td class="text-center">{{ $item->jenis_kelamin }}</td>
                                                 <td>{{ $item->tanggal_lahir }}</td>
                                                 <td>{{ $item->jenis }}</td>
                                                 <td>{{ $item->status_hubungan_dalam_keluarga }}</td>
+                                                <td>{{ $item->kartuKeluarga->rukunTetangga->nomor_rt }}</td>
                                                 <td class="text-center align-middle">
                                                     <div class="d-flex justify-content-center gap-1 flex-wrap">
-                                                        <form action="{{ route('warga.destroy', $item->nik) }}"
+                                                        <form action="{{ route('rt_warga.destroy', $item->nik) }}"
                                                             method="POST"
                                                             onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
                                                             @csrf
@@ -127,12 +121,20 @@
                                                                 data-bs-dismiss="modal" aria-label="Tutup"></button>
                                                         </div>
 
-                                                        <form action="{{ route('warga.update', $item->nik) }}"
+                                                        <form action="{{ route('rt_warga.update', $item->nik) }}"
                                                             method="POST">
                                                             @csrf
                                                             @method('PUT')
                                                             <div class="modal-body px-4 py-4">
                                                                 <div class="row g-3">
+
+                                                                    <!-- No KK -->
+                                                                    <div class="col-md-6">
+                                                                        <label class="form-label">Nomor KK</label>
+                                                                        <input type="text" name="no_kk"
+                                                                            class="form-control"
+                                                                            value="{{ $item->no_kk }}" readonly>
+                                                                    </div>
 
                                                                     <!-- NIK -->
                                                                     <div class="col-md-6">
@@ -142,13 +144,6 @@
                                                                             value="{{ $item->nik }}" readonly>
                                                                     </div>
 
-                                                                    <!-- No KK -->
-                                                                    <div class="col-md-6">
-                                                                        <label class="form-label">Nomor KK</label>
-                                                                        <input type="text" name="no_kk"
-                                                                            class="form-control"
-                                                                            value="{{ $item->no_kk }}" readonly>
-                                                                    </div>
 
                                                                     <!-- Nama -->
                                                                     <div class="col-md-6">
@@ -433,7 +428,7 @@
                                             aria-label="Tutup"></button>
                                     </div>
 
-                                    <form action="{{ route('warga.store') }}" method="POST">
+                                    <form action="{{ route('rt_warga.store') }}" method="POST">
                                         @csrf
                                         <input type="hidden" name="form_type" value="tambah">
                                         <div class="modal-body px-4" style="max-height: 70vh; overflow-y: auto;">
@@ -449,8 +444,8 @@
                                             @endphp
 
                                             @foreach ([
-            'nik' => 'NIK',
             'no_kk' => 'Nomor KK',
+            'nik' => 'NIK',
             'nama' => 'Nama Lengkap',
             'tempat_lahir' => 'Tempat Lahir',
             'tanggal_lahir' => 'Tanggal Lahir',

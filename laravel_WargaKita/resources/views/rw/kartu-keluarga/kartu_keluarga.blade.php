@@ -45,7 +45,7 @@
 
                     <!-- Tombol Aksi -->
                     <div class="col-md-4 col-sm-6 d-flex gap-2">
-                        <button class="btn btn-sm btn-primary">Terapkan</button>
+                        <button class="btn btn-sm btn-primary">Filter</button>
                         <a href="{{ route('kartu_keluarga.index') }}" class="btn btn-sm btn-secondary">Reset</a>
                     </div>
                 </form>
@@ -58,18 +58,12 @@
                         <!-- Card Header - Dropdown -->
                         <div class="card-header py-2 d-flex flex-row align-items-center justify-content-between">
                             <h6 class="m-0 font-weight-bold text-primary">Tabel Daftar Kartu Keluarga</h6>
-                            <div class="dropdown no-arrow">
-                                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                    aria-labelledby="dropdownMenuLink">
-                                    <div class="dropdown-header">Tambah Data Kartu Keluarga</div>
-                                    <a class="dropdown-item" href="#" data-bs-toggle="modal"
-                                        data-bs-target="#modalTambahKK">Tambah</a>
-                                </div>
-                            </div>
+                            
+                                <!-- Tombol Tambah Kartu Keluarga tanpa dropdown -->
+                                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#modalTambahKK">
+                                    <i class="fas fa-plus"></i>
+                                </button>
                         </div>
                         <!-- Card Body -->
                         <div class="card-body">
@@ -103,7 +97,7 @@
                                                 </td>
                                                 <td>{{ $kk->alamat }}</td>
                                                 <td>{{ $kk->rukunTetangga->nomor_rt ?? '-' }}</td>
-                                                <td>{{ $kk->rw }}</td>
+                                                <td>{{ $kk->rw->nomor_rw }}</td>
                                                 <td>{{ $kk->golongan }}</td>
                                                 <td class="text-center align-middle">
                                                     <div class="d-flex justify-content-center gap-1 flex-wrap">
@@ -112,20 +106,21 @@
                                                             onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
                                                             @csrf
                                                             @method('DELETE')
-                                                            <button type="submit"
-                                                                class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> <!-- Ikon hapus --></button>
+                                                            <button type="submit" class="btn btn-danger btn-sm"><i
+                                                                    class="fas fa-trash-alt"></i>
+                                                                <!-- Ikon hapus --></button>
                                                         </form>
 
                                                         <button type="button" class="btn btn-warning btn-sm"
                                                             data-bs-toggle="modal"
                                                             data-bs-target="#modalEditkk{{ $kk->no_kk }}">
-                                                           <i class="fas fa-edit"></i> <!-- Ikon edit -->
+                                                            <i class="fas fa-edit"></i> <!-- Ikon edit -->
                                                         </button>
 
                                                         <button type="button" class="btn btn-success btn-sm"
                                                             data-bs-toggle="modal"
                                                             data-bs-target="#modalDetailkk{{ $kk->no_kk }}">
-                                                             <i class="fas fa-eye"></i>
+                                                            <i class="fas fa-eye"></i>
 
                                                         </button>
                                                     </div>
@@ -177,16 +172,6 @@
                                                             </div>
 
                                                             <div class="col-md-6">
-                                                                <label class="form-label">RW</label>
-                                                                <input type="text" name="rw" maxlength="5"
-                                                                    required value="{{ old('rw', $kk->rw) }}"
-                                                                    class="form-control @error('rw') is-invalid @enderror">
-                                                                @error('rw')
-                                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                                @enderror
-                                                            </div>
-
-                                                            <div class="col-md-6">
                                                                 <label class="form-label">No RT</label>
                                                                 <select name="id_rt"
                                                                     class="form-select @error('id_rt') is-invalid @enderror"
@@ -210,12 +195,12 @@
                                                                     class="form-select @error('id_golongan') is-invalid @enderror"
                                                                     required>
                                                                     <option value="">-- Pilih Kategori --</option>
-                                                                   @foreach ($kategori_golongan as $golongan)
-                                                                <option value="{{ $golongan }}"
-                                                                    {{ old('golongan',$kk->golongan) == $golongan ? 'selected' : '' }}>
-                                                                    {{ ucfirst($golongan) }}
-                                                                </option>
-                                                            @endforeach
+                                                                    @foreach ($kategori_golongan as $golongan)
+                                                                        <option value="{{ $golongan }}"
+                                                                            {{ old('golongan', $kk->golongan) == $golongan ? 'selected' : '' }}>
+                                                                            {{ ucfirst($golongan) }}
+                                                                        </option>
+                                                                    @endforeach
                                                                 </select>
                                                                 @error('id_golongan')
                                                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -478,15 +463,6 @@
                                                     @endif
                                                 </div>
 
-                                                <div class="col-md-6">
-                                                    <label class="form-label">RW</label>
-                                                    <input type="text" name="rw" maxlength="5" required
-                                                        value="{{ old('form_type') === 'kk_tambah' ? old('rw') : '' }}"
-                                                        class="form-control {{ $errors->has('rw') && old('form_type') === 'kk_tambah' ? 'is-invalid' : '' }}">
-                                                    @if ($errors->has('rw') && old('form_type') === 'kk_tambah')
-                                                        <div class="invalid-feedback">{{ $errors->first('rw') }}</div>
-                                                    @endif
-                                                </div>
 
                                                 <div class="col-md-6">
                                                     <label class="form-label">No RT</label>
@@ -507,13 +483,13 @@
                                                     <select name="golongan"
                                                         class="form-select {{ $errors->has('kategori_golongan') && old('form_type') === 'kk_tambah' ? 'is-invalid' : '' }} {{ old('kategori_golongan') }}"
                                                         required>
-                                                            <option value="">-- Pilih Golongan --</option>
-                                                            @foreach ($kategori_golongan as $golongan)
-                                                                <option value="{{ $golongan }}"
-                                                                    {{ old('golongan') == $golongan ? 'selected' : '' }}>
-                                                                    {{ ucfirst($golongan) }}
-                                                                </option>
-                                                            @endforeach
+                                                        <option value="">-- Pilih Golongan --</option>
+                                                        @foreach ($kategori_golongan as $golongan)
+                                                            <option value="{{ $golongan }}"
+                                                                {{ old('golongan') == $golongan ? 'selected' : '' }}>
+                                                                {{ ucfirst($golongan) }}
+                                                            </option>
+                                                        @endforeach
 
 
 

@@ -16,8 +16,11 @@ return new class extends Migration
             $table->char('nik', 16)->unique();
             $table->string('nomor_rt');
             $table->string('nama_ketua_rt');
-            $table->string('masa_jabatan');
+            $table->date('mulai_menjabat');
+            $table->date('akhir_jabatan');
             $table->string('alamat_rt')->nullable();
+            $table->foreign('id_rw')->references('id')->on('rw')->onDelete('cascade');
+            $table->unsignedBigInteger('id_rw');
             $table->timestamps();
         });
     }

@@ -14,13 +14,14 @@ class Rukun_tetangga extends Model
         'nik',
         'nomor_rt',
         'nama_ketua_rt',
-        'masa_jabatan',
-        'alamat_rt,'
+        'mulai_menjabat',
+        'akhir_jabatan',
+        'id_rw',
     ];
 
     public function warga(): HasMany
     {
-        return $this->hasMany(Warga::class);
+        return $this->hasMany(Warga::class, 'id_rt');
     }
 
     public function pengumuman()
@@ -36,6 +37,10 @@ class Rukun_tetangga extends Model
     public function kartu_keluarga(): HasMany
     {
         return $this->hasMany(Kartu_keluarga::class, 'id_rt');
+    }
+    public function rw()
+    {
+        return $this->belongsTo(Rw::class, 'id_rw', 'id');
     }
 
     public function user()

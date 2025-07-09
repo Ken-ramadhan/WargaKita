@@ -10,44 +10,51 @@ class LoginController extends Controller
 {
     public function showLoginForm()
     {
-        return view('login.login'); // Sesuaikan dengan view login
+        return view('login.login');
     }
 
     public function login(Request $request)
     {
-        // Validasi input
         $credentials = $request->validate([
             'nik' => 'required',
             'password' => 'required',
         ]);
 
-        // Coba login pakai NIK + Password
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            $role = Auth::user()->role;
+            $user = Auth::user();
+            $role = $user->role;
 
-            if ($role === 'admin') {
-                return redirect()->route('admin.dashboard.dashboard');
-            } elseif ($role === 'rw') {
-                return redirect()->route('dashboard');
-            }elseif ($role === 'rt'){
-                return view('rt.dashboard.dashboard');
-            }
-             elseif ($role === 'warga') {
-                if (!Warga::where('nik', $request->nik)->exists()){
+            // Logika filter khusus untuk warga:
+            if ($role === 'warga') {
+                // Ambil data warga terkait
+                $warga = $user->warga;
+
+                // Jika tidak punya relasi data warga atau bukan kepala keluarga ➜ logout lagi
+                if (!$warga || strtolower($warga->status_hubungan_dalam_keluarga) !== 'kepala keluarga') {
+                    Auth::logout();
                     return back()->withErrors([
-                        'nik' => 'NIK tidak terdaftar.',
+                        'nik' => 'Hanya Kepala Keluarga yang bisa login.',
                     ]);
                 }
+
                 return redirect()->route('dashboard-main');
             }
 
-dd(Auth::user());
+            // Role lain ➜ lanjut biasa
+            if ($role === 'admin') {
+                return redirect()->route('dashboard-admin');
+            } elseif ($role === 'rw') {
+                return redirect()->route('dashboard-rw');
+            } elseif ($role === 'rt') {
+                return redirect()->route('dashboard-rt');
+            }
 
-            return view('login.login');
+            return redirect('/login');
         }
 
+        // Jika gagal login
         return back()->withErrors([
             'nik' => 'NIK atau password salah.',
         ]);

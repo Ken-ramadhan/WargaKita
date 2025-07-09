@@ -19,7 +19,8 @@ return new class extends Migration
             $table->string('kategori');
             $table->text('isi');
             $table->dateTime('tanggal');
-            $table->foreignId('id_rt')->nullable()->constrained('rukun_tetangga')->nullOnDelete();
+            $table->foreignId('id_rw')->nullable()->constrained('rw')->onDelete('cascade');
+            $table->foreignId('id_rt')->nullable()->constrained('rukun_tetangga')->onDelete('cascade');
             $table->timestamps();
         });
     }

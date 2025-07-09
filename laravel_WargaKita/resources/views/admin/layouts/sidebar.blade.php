@@ -45,33 +45,21 @@
     <!-- Nav lainnya -->
     {{-- ... semua item lainnya tetap seperti sebelumnya ... --}}
 
-    <li class="nav-item {{ isActive('rt/rt_warga*') }}">
-        <a class="nav-link" href="{{ route('rt_warga.index') }}">
-            <i class="fas fa-id-card"></i>
-            <span>Manajemen Warga</span>
+
+    <li class="nav-item {{ isActive('admin/data_rt*') }}">
+        <a class="nav-link" href="{{ route('data_rt.index') }}">
+            <i class="fas fa-house-user"></i>
+            <span>Data RT</span>
         </a>
     </li>
 
-    <li class="nav-item {{ isActive('rt/rt_kartu_keluarga*') }}">
-        <a class="nav-link" href="{{ route('rt_kartu_keluarga.index') }}">
-            <i class="fas fa-users "></i>
-        <span>Kartu Keluarga</span>
+    <li class="nav-item {{ isActive('admin/data_rw*') }}">
+        <a class="nav-link" href="{{ route('data_rw.index') }}">
+            <i class="fas fa-solid fa-users"></i>
+            <span>Data RW</span>
         </a>
     </li>
 
-    <li class="nav-item {{ isActive('rt/rt_pengumuman*') }}">
-        <a class="nav-link" href="{{ route('rt_pengumuman.index') }}">
-            <i class="fas fa-bullhorn"></i>
-            <span>Pengumuman</span>
-        </a>
-    </li>
-
-    <li class="nav-item {{ isActive('rt/tagihan*') }}">
-        <a class="nav-link" href="{{ route('tagihan.index') }}">
-            <i class="fas fa-file-invoice-dollar"></i>
-            <span>Manajemen Keuangan</span>
-        </a>
-    </li>
     <!-- Divider -->
     <hr class="sidebar-divider d-none d-md-block">
 

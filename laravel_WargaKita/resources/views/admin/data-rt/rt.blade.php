@@ -1,4 +1,4 @@
-@extends('rw.layouts.app')
+@extends('admin.layouts.app')
 
 @section('title', $title)
 
@@ -22,7 +22,7 @@
     <div id="content">
 
         {{-- top bar --}}
-        @include('rw.layouts.topbar')
+        @include('admin.layouts.topbar')
 
         {{-- top bar end --}}
 
@@ -70,7 +70,7 @@
                                                 <td>{{ $rt->mulai_menjabat }}</td>
                                                 <td>{{ $rt->akhir_jabatan }}</td>
                                                 <td>
-                                                    <form action="{{ route('rukun_tetangga.destroy', $rt->id) }}" method="POST"
+                                                    <form action="{{ route('data_rt.destroy', $rt->id) }}" method="POST"
                                                         class="d-inline"
                                                         onsubmit="return confirm('Apakah Anda yakin ingin menghapus RT ini?')">
                                                         {{-- Alert Konfirmasi Hapus --}}
@@ -113,7 +113,7 @@
                                                             <button type="button" class="btn-close btn-close-white"
                                                                 data-bs-dismiss="modal" aria-label="Tutup"></button>
                                                         </div>
-                                                        <form action="{{ route('rukun_tetangga.update', $rt->id) }}"
+                                                        <form action="{{ route('data_rt.update', $rt->id) }}"
                                                             method="POST">
                                                             @csrf
                                                             @method('PUT')
@@ -232,7 +232,7 @@
                                     </div>
                                     <div class="modal-body">
                                         {{-- Form Tambah Warga --}}
-                                        <form action="{{ route('rukun_tetangga.store') }}" method="POST" class="p-4">
+                                        <form action="{{ route('data_rt.store') }}" method="POST" class="p-4">
                                             @csrf
 
                                             <div class="mb-3">

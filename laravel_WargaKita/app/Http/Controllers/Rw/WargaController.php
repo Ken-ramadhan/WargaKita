@@ -82,7 +82,6 @@ class WargaController extends Controller
                 'nama_ayah' => 'required|string|max:255',
                 'nama_ibu' => 'required|string|max:255',
                 'jenis' => 'required|in:penduduk,pendatang',
-                'id_rt' => 'required|exists:rukun_tetangga,id',
             ],
             [
                 'nik.required' => 'NIK harus diisi.',
@@ -113,9 +112,6 @@ class WargaController extends Controller
                 'kewarganegaraan.required' => 'Kewarganegaraan harus diisi.',
                 'jenis.required' => 'Jenis harus diisi.',
                 'jenis.in' => 'Jenis tidak valid.',
-                'id_rt.required' => 'RT harus diisi.',
-                'id_rt.exists' => 'RT tidak ditemukan.',
-                ''
             ]
         );
 
@@ -125,6 +121,8 @@ class WargaController extends Controller
                 ->withInput()
                 ->with('showModal', 'tambah');
         }
+
+        $kk = Kartu_keluarga::where('no_kk', $request->no_kk)->firstOrFail();
 
 
         // membuat data warga baru
@@ -145,15 +143,17 @@ class WargaController extends Controller
             'kewarganegaraan' => $request->kewarganegaraan,
             'nama_ayah' => $request->nama_ayah,
             'nama_ibu' => $request->nama_ibu,
-            'jenis' => $request->jenis,
-            'id_rt' => $request->id_rt
+            'jenis' => $request->jenis, 
+            'id_rt' => $kk->id_rt,
+            'id_rw' => $kk->id_rw
         ]);
 
         User::create([
             'nik' => $request->nik,
             'nama' => $request->nama,
             'password' => bcrypt('123456'), // password default
-            'id_rt' => $request->id_rt,
+            'id_rt' => $kk->id_rt,
+            'id_rw' => $kk->id_rw,
             'role' => 'warga',
         ]);
 
@@ -248,6 +248,7 @@ class WargaController extends Controller
 
         // 3. Cari dan update data
         $warga = Warga::findOrFail($nik);
+        $kk = Kartu_keluarga::where('no_kk', $request->no_kk)->firstOrFail();
 
         $warga->update([
             'nik' => $request->nik,
@@ -265,13 +266,15 @@ class WargaController extends Controller
             'nama_ayah' => $request->nama_ayah,
             'nama_ibu' => $request->nama_ibu,
             'jenis' => $request->jenis,
-            'id_rt' => $request->id_rt,
+            'id_rt' => $kk->id_rt,
+            'id_rw' => $kk->id_rw
         ]);
 
         User::where('nik', $nik)->update([
             'nik' => $request->nik,
             'nama' => $request->nama,
-            'id_rt' => $request->id_rt
+            'id_rt' => $kk->id_rt,
+            'id_rw' => $kk->id_rw 
         ]);
 
 

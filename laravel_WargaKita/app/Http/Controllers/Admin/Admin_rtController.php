@@ -1,14 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Rw;
-use App\Http\Controllers\Controller;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Rukun_tetangga;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
-class Rukun_tetanggaController extends Controller
+class Admin_rtController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,7 +17,7 @@ class Rukun_tetanggaController extends Controller
         //
         $rukun_tetangga = Rukun_tetangga::paginate(5);
         $title = 'Rukun Tetangga';
-        return view('rw.data-rt.rukun_tetangga', compact('rukun_tetangga', 'title'));
+        return view('admin.data-rt.rt', compact('rukun_tetangga', 'title'));
     }
 
     /**
@@ -33,42 +32,42 @@ class Rukun_tetanggaController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-{
-    $request->validate([
-        'nik' => 'required|unique:rukun_tetangga,nik',
-        'nomor_rt' => 'required|string',
-        'nama_ketua_rt' => 'required|string|max:255',
-        'mulai_menjabat'=> 'required',
-        'akhir_jabatan' => 'required',
-    ]);
+    {
+        //
+        $request->validate([
+            'nik' => 'required|unique:rukun_tetangga,nik',
+            'nomor_rt' => 'required|string',
+            'nama_ketua_rt' => 'required|string|max:255',
+            'mulai_menjabat'=> ' required',
+            'akhir_jabatan' => 'required',
+        ], [
+            'nik.required' => 'NIK harus diisi.',
+            'nik.unique' => 'NIK sudah terdaftar.',
+            'nomor_rt.required' => 'Nomor Rukun Tetangga harus diisi.',
+            'nama_ketua_rt.required' => 'Nama Ketua Rukun Tetangga harus diisi.',
+            'mulai_menjabat.required' => 'Mulai Menjabat harus diisi.',
+            'akhir_jabatan.required' => 'Akhir Menjabat harus diisi.',
+        ]);
 
-    $id_rw = Auth::user()->id_rw;
-    if (!$id_rw) {
-        abort(403, 'ID RW tidak ditemukan di akun yang login.');
+        Rukun_tetangga::create([
+            'nik' => $request->nik,
+            'nomor_rt' => $request->nomor_rt,
+            'nama_ketua_rt' => $request->nama_ketua_rt,
+            'mulai_menjabat' => $request->mulai_menjabat,
+            'akhir_jabatan' => $request->akhir_jabatan,
+        ]);
+
+        $id_rt = Rukun_tetangga::where('nik', $request->nik)->value('id');
+
+        User::create([
+            'nik' => $request->nik,
+            'nama' => $request->nama_ketua_rt,
+            'password' => bcrypt('password'),
+            'id_rt' => $id_rt,
+            'role' => 'rt',
+        ]);
+        return redirect()->route('data_rt.index')->with('success', 'Rukun Tetangga berhasil ditambahkan.');
     }
-
-    Rukun_tetangga::create([
-        'nik' => $request->nik,
-        'nomor_rt' => $request->nomor_rt,
-        'nama_ketua_rt' => $request->nama_ketua_rt,
-        'mulai_menjabat' => $request->mulai_menjabat,
-        'akhir_jabatan' => $request->akhir_jabatan,
-        'id_rw' => $id_rw,
-    ]);
-
-    $id_rt = Rukun_tetangga::where('nik', $request->nik)->value('id');
-
-    User::create([
-        'nik' => $request->nik,
-        'nama' => $request->nama_ketua_rt,
-        'password' => bcrypt('password'),
-        'id_rt' => $id_rt,
-        'role' => 'rt',
-    ]);
-
-    return redirect()->route('rukun_tetangga.index')->with('success', 'Rukun Tetangga berhasil ditambahkan.');
-}
-
 
     /**
      * Display the specified resource.
@@ -77,7 +76,7 @@ class Rukun_tetanggaController extends Controller
     {
         //
         $rukun_tetangga = Rukun_tetangga::findOrFail($id);
-        return view('rukun_tetangga.show', compact('rukun_tetangga'));
+        return view('data_rt.show', compact('rukun_tetangga'));
     }
 
     /**
@@ -87,7 +86,7 @@ class Rukun_tetanggaController extends Controller
     {
         //
         $rukun_tetangga = Rukun_tetangga::findOrFail($id);
-        return view('rukun_tetangga.edit', compact('rukun_tetangga'));
+        return view('data_rt.edit', compact('rukun_tetangga'));
     }
 
     /**
@@ -116,7 +115,7 @@ class Rukun_tetanggaController extends Controller
             'mulai_menjabat' => $request->mulai_menjabat,
             'akhir_jabatan' => $request->akhir_jabatan,
         ]);
-        return redirect()->route('rukun_tetangga.index')->with('success', 'Rukun Tetangga berhasil diperbarui.');
+        return redirect()->route('data_rt.index')->with('success', 'Rukun Tetangga berhasil diperbarui.');
     }
     /**
      * Remove the specified resource from storage.

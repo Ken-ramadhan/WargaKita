@@ -20,16 +20,6 @@ return new class extends Migration
                 ->on('kartu_keluarga')
                 ->onDelete('restrict')
                 ->onUpdate('cascade');
-
-            // Tambahkan kolom RT ID
-            $table->unsignedBigInteger('id_rt')->nullable();
-
-            $table->foreign('id_rt')
-                ->references('id')
-                ->on('rukun_tetangga')
-                ->onDelete('set null')
-                ->onUpdate('cascade');
-
             $table->string('nama');
             $table->enum('jenis_kelamin', ['laki-laki', 'perempuan']);
             $table->string('tempat_lahir');

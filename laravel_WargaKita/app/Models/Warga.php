@@ -30,7 +30,6 @@ class Warga extends Model
         'nama_ayah',
         'nama_ibu',
         'jenis',
-        'id_rt', // tambahkan ini
     ];
 
     public function kartuKeluarga(): BelongsTo
@@ -38,13 +37,11 @@ class Warga extends Model
         return $this->belongsTo(Kartu_keluarga::class, 'no_kk', 'no_kk');
     }
 
-    public function user(): HasOne
-    {
-        return $this->hasOne(User::class, 'nik', 'nik');
-    }
+    public function user(): BelongsTo
+{
+    return $this->belongsTo(User::class, 'nik', 'nik');
+}
 
-    public function rukunTetangga(): BelongsTo
-    {
-        return $this->belongsTo(Rukun_tetangga::class, 'id_rt');
-    }
+
+    
 }
