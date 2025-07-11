@@ -8,6 +8,7 @@ use App\Http\Controllers\Rt\Rt_kartu_keluargaController;
 use App\Http\Controllers\Rt\Rt_wargaController;
 use App\Http\Controllers\Rt\Rt_dashboardController;
 use App\Http\Controllers\Rt\Rt_pengumumanController;
+use App\Http\Controllers\Rt\RtiuranController;
 use App\Http\Controllers\Rw\DashboardController;
 use App\Http\Controllers\Rw\IuranController;
 use App\Http\Controllers\Rw\Kartu_keluargaController;
@@ -31,7 +32,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 });
 
 
-Route::middleware(['auth', 'role:rw'])->group(function () {
+// Route::middleware(['auth', 'role:rw'])->group(function () {
 
     Route::get('/rw', [DashboardController::class, 'index'])->name('dashboard-rw');
     Route::resource('rw/warga', WargaController::class);
@@ -43,15 +44,16 @@ Route::middleware(['auth', 'role:rw'])->group(function () {
     Route::resource('rw/kategori_golongan', Kategori_golonganController::class);
     Route::resource('rw/pengeluaran', PengeluaranController::class);
     Route::get('rw/laporan_pengeluaran_bulanan/{bulan}/{tahun}', [LaporanController::class, 'pengeluaran_bulanan'])->name('pengeluaran_bulanan');
-});
+// });
 
 
-Route::middleware(['auth', 'role:rt'])->group(function () {
+// Route::middleware(['auth', 'role:rt'])->group(function () {
     Route::get('/rt', [Rt_dashboardController::class, 'index'])->name('dashboard-rt');
     Route::resource('rt/rt_kartu_keluarga', Rt_kartu_keluargaController::class);
     Route::resource('rt/rt_warga', Rt_wargaController::class);
     Route::resource('rt/rt_pengumuman', Rt_pengumumanController::class);
-});
+    Route::resource('rt/rt_iuran', RtiuranController::class);
+// });
 
 
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');

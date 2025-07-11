@@ -1,4 +1,4 @@
-@extends('rw.layouts.app')
+@extends('rt.layouts.app')
 
 @section('title', $title)
 
@@ -7,7 +7,7 @@
     <div id="content">
 
         {{-- top bar --}}
-        @include('rw.layouts.topbar')
+        @include('rt.layouts.topbar')
 
         {{-- top bar end --}}
 

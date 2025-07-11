@@ -33,7 +33,7 @@
                     <div class="col-md-5 col-sm-12">
                         <div class="input-group input-group-sm">
                             <input type="text" name="search" value="{{ request('search') }}" class="form-control"
-                                placeholder="Cari Data Iuran...">
+                                placeholder="Cari Data Iuran..."> {{-- Changed "Pengeluaran" to "Iuran" --}}
                             <button class="btn btn-primary" type="submit">
                                 <i class="fas fa-search"></i>
                             </button>
@@ -87,7 +87,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @forelse ($iuran->where('jenis', 'manual') as $item)
+                                        @forelse ($iuran->where('jenis', 'manual') as $item) {{-- Filter here for manual --}}
                                             <tr>
                                                 <th scope="row">{{ $loop->iteration }}</th>
                                                 <td>Rp{{ number_format($item->nominal, 0, ',', '.') }}</td>
@@ -163,12 +163,11 @@
                                     <thead>
                                         <tr>
                                             <th scope="col">No</th>
-                                            {{-- Tambahkan kembali kolom NOMINAL umum di sini --}}
-                                            <th scope="col">NOMINAL TOTAL</th>
                                             {{-- Kolom nominal per golongan --}}
                                             @foreach ($kategori_golongan as $golongan)
                                                 <th scope="col">Nominal {{ $golongan->nama }}</th>
                                             @endforeach
+                                            {{-- Hapus kolom NOMINAL umum di sini --}}
                                             <th scope="col">NAMA IURAN</th>
                                             <th scope="col">TGL TAGIH</th>
                                             <th scope="col">TGL TEMPO</th>
@@ -177,19 +176,15 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @forelse ($iuran->where('jenis', 'otomatis') as $item)
+                                        @forelse ($iuran->where('jenis', 'otomatis') as $item) {{-- Filter here for automatic --}}
                                             <tr>
                                                 <th scope="row">{{ $loop->iteration }}</th>
-                                                {{-- Menampilkan total nominal dari iuran_golongan --}}
-                                                <td>
-                                                    Rp{{ number_format(optional($item->iuran_golongan)->sum('nominal') ?? 0, 0, ',', '.') }}
-                                                </td>
                                                 {{-- Menampilkan nominal per golongan --}}
                                                 @foreach ($kategori_golongan as $golongan)
                                                     <td>
                                                         {{-- Pastikan relasi iuran_golongan di-load di controller --}}
                                                         {{-- Gunakan firstWhere() untuk mencari langsung berdasarkan golongan_id --}}
-                                                        Rp{{ number_format(optional($item->iuran_golongan->firstWhere('id_golongan', $golongan->id))->nominal ?? 0, 0, ',', '.') }}
+                                                        Rp{{ number_format($item->iuran_golongan->firstWhere('id_golongan', $golongan->id)->nominal ?? 0, 0, ',', '.') }}
                                                     </td>
                                                 @endforeach
                                                 <td>{{ $item->nama }}</td>
@@ -217,8 +212,8 @@
                                             </tr>
                                         @empty
                                             <tr>
-                                                {{-- Hitung colspan yang benar: 1 (No) + 1 (NOMINAL TOTAL) + jumlah kategori_golongan + 4 (NAMA IURAN, TGL TAGIH, TGL TEMPO, JENIS, AKSI) --}}
-                                                <td colspan="{{ 1 + 1 + count($kategori_golongan) + 4 }}" class="text-center">Tidak ada data iuran otomatis.</td>
+                                                {{-- Hitung colspan yang benar: 5 kolom tetap + jumlah kategori_golongan --}}
+                                                <td colspan="{{ 5 + count($kategori_golongan) }}" class="text-center">Tidak ada data iuran otomatis.</td>
                                             </tr>
                                         @endforelse
                                     </tbody>
@@ -292,7 +287,7 @@
                             <div class="mb-3">
                                 <label class="form-label">Jenis Iuran</label>
                                 <select name="jenis" class="form-select" id="jenisEdit{{ $item->id }}"
-                                    onchange="toggleEditFields('{{ addslashes($item->id) }}')">
+                                    onchange="toggleEditFields('{{ addslashes($item->id) }}')"> {{-- Pastikan ID string --}}
                                     <option value="otomatis" {{ $item->jenis == 'otomatis' ? 'selected' : '' }}>Otomatis</option>
                                     <option value="manual" {{ $item->jenis == 'manual' ? 'selected' : '' }}>Manual</option>
                                 </select>
@@ -301,10 +296,10 @@
                             <div id="otomatisFieldsEdit{{ $item->id }}"
                                 style="{{ $item->jenis == 'otomatis' ? '' : 'display: none' }}">
                                 @foreach ($kategori_golongan as $golongan)
-                                    <label class="form-label">Nominal {{ $golongan->nama }}</label>
+                                    <label class="form-label">{{ $golongan->nama }}</label>
                                     <input type="number" name="nominal[{{ $golongan->id }}]" class="form-control mb-2"
                                         placeholder="Masukkan nominal {{ $golongan->nama }}"
-                                        value="{{ old('nominal.' . $golongan->id, optional($item->iuran_golongan->firstWhere('id_golongan', $golongan->id))->nominal ?? '') }}">
+                                        value="{{ old('nominal.' . $golongan->id, $item->iuran_golongan->firstWhere('id_golongan', $golongan->id)->nominal ?? '') }}">
                                 @endforeach
                             </div>
 
@@ -392,19 +387,14 @@
                             </select>
                         </div>
 
-                        {{-- Bagian untuk input nominal otomatis (per golongan) --}}
                         <div id="otomatis-fields" class="mb-3" style="{{ old('jenis') === 'manual' ? 'display: none;' : '' }}">
                             @foreach ($kategori_golongan as $golongan)
-                                <div class="mb-2"> {{-- Tambahkan div untuk setiap input agar rapi --}}
-                                    <label class="form-label">Nominal {{ $golongan->nama }}</label>
-                                    <input type="number" name="nominal[{{ $golongan->id }}]"
-                                        class="form-control" placeholder="Masukkan nominal {{ $golongan->nama }}"
-                                        value="{{ old('nominal.' . $golongan->id) }}">
-                                </div>
+                                <label class="form-label">{{ $golongan->nama }}</label>
+                                <input type="number" name="nominal[{{ $golongan->id }}]"
+                                    class="form-control mb-2" placeholder="Masukkan nominal {{ $golongan->nama }}"
+                                    value="{{ old('nominal.' . $golongan->id) }}"required>
                             @endforeach
                         </div>
-
-                        {{-- Bagian untuk input nominal manual --}}
                         <div class="mb-3" id="manual-field" style="{{ old('jenis') === 'otomatis' ? 'display: none;' : '' }}">
                             <label class="form-label">Nominal</label>
                             <input type="number" name="nominal_manual" class="form-control"
@@ -451,43 +441,36 @@
             }
 
             const jenis = jenisSelect.value;
-            // Dapatkan semua input nominal otomatis
-            const otomatisInputs = otomatisFields.querySelectorAll('input[type="number"][name^="nominal["]');
-            // Dapatkan input nominal manual
-            const manualInput = manualField.querySelector('input[name="nominal_manual"]');
-
 
             if (jenis === 'otomatis') {
                 otomatisFields.style.display = 'block';
                 manualField.style.display = 'none';
 
-                // Aktifkan input otomatis dan tambahkan required
-                otomatisInputs.forEach(input => {
-                    input.removeAttribute('disabled');
-                    input.setAttribute('required', 'required');
-                });
-
-                // Nonaktifkan input manual dan hapus required
+                // Hapus atribut 'required' dari input manual saat disembunyikan
+                const manualInput = manualField.querySelector('input');
                 if (manualInput) {
-                    manualInput.setAttribute('disabled', 'true');
                     manualInput.removeAttribute('required');
                     manualInput.value = ''; // Kosongkan nilai saat disembunyikan
                 }
+
+                // Tambahkan atribut 'required' ke input otomatis saat ditampilkan
+                otomatisFields.querySelectorAll('input[type="number"]').forEach(input => {
+                    input.setAttribute('required', 'required');
+                });
 
             } else { // jenis === 'manual'
                 otomatisFields.style.display = 'none';
                 manualField.style.display = 'block';
 
-                // Nonaktifkan input otomatis dan hapus required
-                otomatisInputs.forEach(input => {
-                    input.setAttribute('disabled', 'true');
+                // Hapus atribut 'required' dari input otomatis saat disembunyikan
+                otomatisFields.querySelectorAll('input[type="number"]').forEach(input => {
                     input.removeAttribute('required');
                     input.value = ''; // Kosongkan nilai saat disembunyikan
                 });
 
-                // Aktifkan input manual dan tambahkan required
+                // Tambahkan atribut 'required' ke input manual saat ditampilkan
+                const manualInput = manualField.querySelector('input');
                 if (manualInput) {
-                    manualInput.removeAttribute('disabled');
                     manualInput.setAttribute('required', 'required');
                 }
             }
@@ -506,40 +489,36 @@
             }
 
             const jenisEdit = jenisEditSelect.value;
-            // Dapatkan semua input nominal otomatis di modal edit
-            const otomatisEditInputs = otomatisFieldsEdit.querySelectorAll('input[type="number"][name^="nominal["]');
-            // Dapatkan input nominal manual di modal edit
-            const manualEditInput = manualFieldEdit.querySelector('input[name="nominal_manual"]');
 
             if (jenisEdit === 'otomatis') {
                 otomatisFieldsEdit.style.display = 'block';
                 manualFieldEdit.style.display = 'none';
 
-                // Aktifkan input otomatis dan tambahkan required
-                otomatisEditInputs.forEach(input => {
-                    input.removeAttribute('disabled');
+                // Hapus atribut 'required' dari input manual edit saat disembunyikan
+                const manualEditInput = manualFieldEdit.querySelector('input');
+                if (manualEditInput) {
+                    manualEditInput.removeAttribute('required');
+                    // Tidak perlu mengosongkan nilai di sini, karena mungkin ada old input dari database
+                }
+
+                // Tambahkan atribut 'required' ke input otomatis edit saat ditampilkan
+                otomatisFieldsEdit.querySelectorAll('input[type="number"]').forEach(input => {
                     input.setAttribute('required', 'required');
                 });
-
-                // Nonaktifkan input manual dan hapus required
-                if (manualEditInput) {
-                    manualEditInput.setAttribute('disabled', 'true');
-                    manualEditInput.removeAttribute('required');
-                }
 
             } else { // jenisEdit === 'manual'
                 otomatisFieldsEdit.style.display = 'none';
                 manualFieldEdit.style.display = 'block';
 
-                // Nonaktifkan input otomatis dan hapus required
-                otomatisEditInputs.forEach(input => {
-                    input.setAttribute('disabled', 'true');
+                // Hapus atribut 'required' dari input otomatis edit saat disembunyikan
+                otomatisFieldsEdit.querySelectorAll('input[type="number"]').forEach(input => {
                     input.removeAttribute('required');
+                    // Tidak perlu mengosongkan nilai di sini, karena mungkin ada old input dari database
                 });
 
-                // Aktifkan input manual dan tambahkan required
+                // Tambahkan atribut 'required' ke input manual edit saat ditampilkan
+                const manualEditInput = manualFieldEdit.querySelector('input');
                 if (manualEditInput) {
-                    manualEditInput.removeAttribute('disabled');
                     manualEditInput.setAttribute('required', 'required');
                 }
             }

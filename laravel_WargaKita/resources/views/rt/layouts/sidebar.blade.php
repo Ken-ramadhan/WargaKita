@@ -66,8 +66,8 @@
         </a>
     </li>
 
-    <li class="nav-item {{ isActive('rt/tagihan*') }}">
-        <a class="nav-link" href="{{ route('tagihan.index') }}">
+    <li class="nav-item {{ isActive('rt/rt_iuran*') }}">
+        <a class="nav-link" href="{{ route('rt_iuran.index') }}">
             <i class="fas fa-file-invoice-dollar"></i>
             <span>Manajemen Keuangan</span>
         </a>

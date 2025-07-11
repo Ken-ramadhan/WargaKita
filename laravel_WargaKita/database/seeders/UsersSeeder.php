@@ -82,7 +82,7 @@ class UsersSeeder extends Seeder
 
         // RW
         User::create([
-            'nik' => '  ',
+            'nik' => '  0000000000000000',
             'nama' => 'Budi Hartono',
             'password' => Hash::make('password'),
             'role' => 'rw',
