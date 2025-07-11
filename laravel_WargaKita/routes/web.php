@@ -1,6 +1,13 @@
 <?php
 
+use App\Http\Controllers\Admin\Admin_dashboardController;
+use App\Http\Controllers\Admin\Admin_rtController;
+use App\Http\Controllers\Admin\Admin_rwController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\Rt\Rt_kartu_keluargaController;
+use App\Http\Controllers\Rt\Rt_wargaController;
+use App\Http\Controllers\Rt\Rt_dashboardController;
+use App\Http\Controllers\Rt\Rt_pengumumanController;
 use App\Http\Controllers\Rw\DashboardController;
 use App\Http\Controllers\Rw\IuranController;
 use App\Http\Controllers\Rw\Kartu_keluargaController;
@@ -16,34 +23,48 @@ use App\Http\Controllers\Warga\PengumumanWargaController;
 use Illuminate\Support\Facades\Route;
 
 
-
-
-
-
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/admin', [Admin_dashboardController::class, 'index'])->name('dashboard-admin');
+    Route::resource('admin/data_rt', Admin_rtController::class);
+    Route::resource('admin/data_rw', Admin_rwController::class);
+    
+});
 
 
 Route::middleware(['auth', 'role:rw'])->group(function () {
 
-Route::get('/admin', [DashboardController::class, 'index'])->name('dashboard');
-Route::resource('admin/warga', WargaController::class);
-Route::resource('admin/kartu_keluarga', Kartu_keluargaController::class);
-Route::resource('admin/rukun_tetangga', Rukun_tetanggaController::class);
-Route::resource('admin/pengumuman', PengumumanController::class);
-Route::resource('admin/tagihan', TagihanController::class);
-Route::resource('admin/iuran', IuranController::class);
-Route::resource('admin/kategori_golongan', Kategori_golonganController::class);
-Route::resource('admin/pengeluaran', PengeluaranController::class);
-Route::get('admin/laporan_pengeluaran_bulanan/{bulan}/{tahun}', [LaporanController::class, 'pengeluaran_bulanan'])->name('pengeluaran_bulanan');
+    Route::get('/rw', [DashboardController::class, 'index'])->name('dashboard-rw');
+    Route::resource('rw/warga', WargaController::class);
+    Route::resource('rw/kartu_keluarga', Kartu_keluargaController::class);
+    Route::resource('rw/rukun_tetangga', Rukun_tetanggaController::class);
+    Route::resource('rw/pengumuman', PengumumanController::class);
+    Route::resource('rw/tagihan', TagihanController::class);
+    Route::resource('rw/iuran', IuranController::class);
+    Route::resource('rw/kategori_golongan', Kategori_golonganController::class);
+    Route::resource('rw/pengeluaran', PengeluaranController::class);
+    Route::get('rw/laporan_pengeluaran_bulanan/{bulan}/{tahun}', [LaporanController::class, 'pengeluaran_bulanan'])->name('pengeluaran_bulanan');
+});
+
+
+Route::middleware(['auth', 'role:rt'])->group(function () {
+    Route::get('/rt', [Rt_dashboardController::class, 'index'])->name('dashboard-rt');
+    Route::resource('rt/rt_kartu_keluarga', Rt_kartu_keluargaController::class);
+    Route::resource('rt/rt_warga', Rt_wargaController::class);
+    Route::resource('rt/rt_pengumuman', Rt_pengumumanController::class);
 });
 
 
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->name('login.post');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+// Route::post('/warga/update-password', [WargaController::class, 'updatePassword'])->name('warga.updatePassword');
 
 
 
 
-// Halaman Front end
-Route::get('/', [DashboardWargaController::class, 'index'])->name('dashboard-main');
-Route::get('pengumuman', [PengumumanWargaController::class, 'index'])->name('pengumuman-main');
+
+Route::middleware(['auth', 'role:warga'])->group(function () {
+
+    Route::get('/', [DashboardWargaController::class, 'index'])->name('dashboard-main');
+    Route::get('/warga/warga_pengumuman', [PengumumanWargaController::class, 'index'])->name('pengumuman-main');
+});

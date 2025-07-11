@@ -77,25 +77,18 @@
                         <!-- Card Header - Dropdown -->
                         <div class="card-header py-2 d-flex flex-row align-items-center justify-content-between">
                             <h6 class="m-0 font-weight-bold text-primary">Tabel Pengumuman</h6>
-                            <div class="dropdown no-arrow">
-                                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                    aria-labelledby="dropdownMenuLink">
-                                    <div class="dropdown-header">Pengumuman</div>
-                                    <a class="dropdown-item" href="#" data-bs-toggle="modal"
-                                        data-bs-target="#modalTambahPengumuman">Tambah</a>
-                                </div>
-                            </div>
+                            {{-- <!-- Tombol Tambah Pengumuman tanpa dropdown --}}
+                            <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#modalTambahPengumuman">
+                                <i class="fas fa-plus"></i>
+                            </button>
                         </div>
                         <!-- Card Body -->
                         <div class="card-body">
                             <div class="table-responsive table-container">
                                 <table class="table table-sm scroll-table text-nowrap table-hover">
                                     <thead>
-                                        <tr class="text-center">
+                                        <tr>
                                             <th scope="col">NO</th>
                                             {{-- <th scope="col">ID</th> --}}
                                             <th scope="col">JUDUL</th>
@@ -106,7 +99,7 @@
 
                                         </tr>
                                     </thead>
-                                    <tbody class="text-center">
+                                    <tbody>
                                         @foreach ($pengumuman as $data)
                                             <tr>
                                                 <th scope="row">{{ $loop->iteration }}</th>
@@ -115,18 +108,18 @@
                                                 <td>{{ $data->kategori }}</td>
 
                                                 {{-- Menggunakan Str::limit untuk membatasi panjang teks --}}
-                                                <td class="px-3">
+                                                <td>
                                                     {{ \Illuminate\Support\Str::limit($data->isi, 50, '...') }}
                                                 </td>
 
                                                 {{-- Menggunakan Carbon untuk format hari tanggal bulan dan tahun --}}
-                                                <td class="px-3">
+                                                <td>
                                                     {{ \Carbon\Carbon::parse($data->tanggal)->translatedFormat('l, d F Y') }}
                                                 </td>
 
 
 
-                                                <td class="text-center px-3 align-item-center">
+                                                <td class="text-center align-item-center">
                                                     {{-- Tombol Aksi: Hapus, Edit, Detail --}}
                                                     <form action="{{ route('pengumuman.destroy', $data->id) }}"
                                                         method="POST" class="d-inline"
@@ -272,7 +265,19 @@
                                                                 <li><strong>Tanggal:</strong> <span
                                                                         class="ms-1">{{ \Carbon\Carbon::parse($data->tanggal)->isoFormat('dddd, D MMMM Y') }}</span>
                                                                 </li>
+                                                                @if ($data->id_rt)
+                                                                    <li>
+                                                                        <strong>RT:</strong>
+                                                                        {{ $data->rukunTetangga->nomor_rt ?? '-' }}
+                                                                    </li>
+                                                                @else
+                                                                    <li>
+                                                                        <strong>RW:</strong>
+                                                                        {{ $data->rw->nomor_rw ?? '-' }}
+                                                                    </li>
+                                                                @endif
                                                             </ul>
+                                                            
 
                                                             <hr class="my-2">
 

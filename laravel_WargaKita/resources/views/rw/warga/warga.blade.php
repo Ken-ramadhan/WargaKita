@@ -36,7 +36,7 @@
                             <option value="Perempuan" {{ request('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>
                                 Perempuan</option>
                         </select>
-                        <button class="btn btn-sm btn-primary">Terapkan</button>
+                        <button class="btn btn-sm btn-primary">Filter</button>
                         <a href="{{ route('warga.index') }}" class="btn btn-sm btn-secondary">Reset</a>
                     </div>
                 </form>
@@ -48,18 +48,12 @@
                         <!-- Card Header - Dropdown -->
                         <div class="card-header py-2 d-flex flex-row align-items-center justify-content-between">
                             <h6 class="m-0 font-weight-bold text-primary">Tabel Daftar Warga</h6>
-                            <div class="dropdown no-arrow">
-                                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                    aria-labelledby="dropdownMenuLink">
-                                    <div class="dropdown-header">Manajemen Data Warga</div>
-                                    <a class="dropdown-item" href="#" data-bs-toggle="modal"
-                                        data-bs-target="#modalTambahWarga">Tambah Warga</a>
-                                </div>
-                            </div>
+
+                            {{-- <!-- Tombol Tambah Warga tanpa dropdown --}}
+                            <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#modalTambahWarga">
+                                <i class="fas fa-plus"></i>
+                            </button>
                         </div>
                         <!-- Card Body -->
                         <div class="card-body">
@@ -68,13 +62,14 @@
                                     <thead>
                                         <tr>
                                             <th scope="col">NO</th>
-                                            <th scope="col">NIK</th>
                                             <th scope="col">NO KK</th>
+                                            <th scope="col">NIK</th>
                                             <th scope="col">NAMA</th>
                                             <th scope="col">JENIS KELAMIN</th>
                                             <th scope="col">TANGGAL LAHIR</th>
-                                            <th scope="col">HUBUNGAN</th>
                                             <th scope="col">JENIS WARGA</th>
+                                            <th scope="col">HUBUNGAN</th>
+                                            <th scope="col">RT</th>
                                             <th scope="col">AKSI</th>
                                         </tr>
                                     </thead>
@@ -83,13 +78,14 @@
                                         @foreach ($warga as $item)
                                             <tr>
                                                 <th scope="row">{{ $loop->iteration }}</th>
-                                                <td>{{ $item->nik }}</td>
                                                 <td>{{ $item->kartuKeluarga->no_kk }}</td>
+                                                <td>{{ $item->nik }}</td>
                                                 <td>{{ strtoupper($item->nama) }}</td>
                                                 <td class="text-center">{{ $item->jenis_kelamin }}</td>
                                                 <td>{{ $item->tanggal_lahir }}</td>
                                                 <td>{{ $item->jenis }}</td>
                                                 <td>{{ $item->status_hubungan_dalam_keluarga }}</td>
+                                                <td>{{ $item->kartuKeluarga->rukunTetangga->nomor_rt }}</td>
                                                 <td class="text-center align-middle">
                                                     <div class="d-flex justify-content-center gap-1 flex-wrap">
                                                         <form action="{{ route('warga.destroy', $item->nik) }}"
@@ -449,8 +445,8 @@
                                             @endphp
 
                                             @foreach ([
-            'nik' => 'NIK',
             'no_kk' => 'Nomor KK',
+            'nik' => 'NIK',
             'nama' => 'Nama Lengkap',
             'tempat_lahir' => 'Tempat Lahir',
             'tanggal_lahir' => 'Tanggal Lahir',
@@ -604,6 +600,19 @@
                                                     @endif
                                                 @enderror
                                             </div>
+
+                                            {{-- <div class="mb-3">
+                                                <label class="form-label">Nomor RT</label>
+                                                <select name="id_rt" class="form-select {{ $errorIfTambah('id_rt') }}">
+                                                    <option value="">-- Pilih RT --</option>
+                                                    @foreach ($rukun_tetangga as $rt)
+                                                        <option value="{{ $rt->id }}"
+                                                            {{ old('id_rt') == $rt->id ? 'selected' : '' }}>
+                                                            RT {{ $rt->nomor_rt }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div> --}}
 
                                         </div>
 

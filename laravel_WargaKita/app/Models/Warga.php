@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Warga extends Model
 {
-    //
     protected $table = 'warga';
     protected $primaryKey = 'nik';
     public $incrementing = false;
     protected $keyType = 'string';
+
     protected $fillable = [
         'nik',
         'no_kk',
@@ -34,6 +34,14 @@ class Warga extends Model
 
     public function kartuKeluarga(): BelongsTo
     {
-        return $this->belongsTo(Kartu_keluarga::class,'no_kk', 'no_kk');
+        return $this->belongsTo(Kartu_keluarga::class, 'no_kk', 'no_kk');
     }
+
+    public function user(): BelongsTo
+{
+    return $this->belongsTo(User::class, 'nik', 'nik');
+}
+
+
+    
 }

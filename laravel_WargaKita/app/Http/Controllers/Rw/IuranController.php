@@ -5,25 +5,37 @@ namespace App\Http\Controllers\Rw;
 use App\Http\Controllers\Controller;
 use App\Models\Iuran;
 use App\Models\Rukun_tetangga;
-use App\Models\IuranGolongan;
-use App\Models\Kategori_golongan;
+use App\Models\IuranGolongan; // Tetap diperlukan jika Anda masih memiliki iuran otomatis di RW
+use App\Models\Kategori_golongan; // Tetap diperlukan jika Anda masih memiliki iuran otomatis di RW
 use Illuminate\Http\Request;
 
 class IuranController extends Controller
 {
     /**
-     * Menampilkan daftar iuran, kategori golongan, dan data RT.
-     * Memuat relasi iuran_golongan untuk iuran otomatis.
+     * Menampilkan daftar iuran (manual dan otomatis) untuk halaman RW.
      */
-    public function index()
+    public function index(Request $request)
     {
         // PENTING: Eager load relasi 'iuran_golongan' untuk mencegah error 'sum() on null'
         // saat mengakses data nominal per golongan di Blade.
-        $iuran = Iuran::with('iuran_golongan')->paginate(5);
+        $search = $request->input('search');
+        $rtFilter = $request->input('rt');
+
+        $iuran = Iuran::with('iuran_golongan')
+                            ->when($search, function ($query) use ($search) {
+                                $query->where('nama', 'like', '%' . $search . '%');
+                            })
+                            // Anda bisa tambahkan filter RT jika kolom id_rt ada di tabel iuran
+                            // ->when($rtFilter, function ($query) use ($rtFilter) {
+                            //     $query->where('id_rt', $rtFilter);
+                            // })
+                            ->paginate(5); // Gunakan pagination umum
+
         $kategori_golongan = Kategori_golongan::all();
         $rt = Rukun_tetangga::all();
         $title = 'Iuran';
 
+        // Kirimkan semua data yang relevan ke view
         return view('rw.iuran.iuran', compact('iuran', 'kategori_golongan', 'rt', 'title'));
     }
 
@@ -33,10 +45,6 @@ class IuranController extends Controller
      */
     public function store(Request $request)
     {
-        // Debugging: Tampilkan semua data yang diterima dari form.
-        // Aktifkan baris ini jika Anda ingin melihat data request secara keseluruhan.
-        // dd($request->all());
-
         // Validasi input dari form
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
@@ -65,20 +73,15 @@ class IuranController extends Controller
             'tgl_tagih' => $request->tgl_tagih,
             'tgl_tempo' => $request->tgl_tempo,
             'jenis' => $request->jenis,
-            // PERBAIKAN DI SINI: Gunakan $request->nominal_manual jika jenisnya manual
             'nominal' => $request->jenis === 'manual' ? $request->nominal_manual : null,
         ]);
 
         // Jika jenis iuran adalah 'otomatis', simpan nominal per golongan
         if ($request->jenis === 'otomatis') {
-            // Menggunakan operator null coalescing (?? []) untuk memastikan $request->nominal adalah array
-            // jika tidak ada atau null, mencegah error foreach().
             foreach ($request->nominal ?? [] as $golonganId => $nominal) {
-                // Pastikan $nominal adalah angka atau set ke 0 jika kosong/null
                 $nominalValue = is_numeric($nominal) ? $nominal : 0;
-
                 IuranGolongan::create([
-                    'nama' => $iuran->nama, // Menggunakan nama dari iuran yang baru dibuat
+                    'nama' => $iuran->nama,
                     'id_iuran' => $iuran->id,
                     'id_golongan' => $golonganId,
                     'nominal' => $nominalValue,
@@ -86,7 +89,7 @@ class IuranController extends Controller
             }
         }
 
-        // Redirect kembali ke halaman index dengan pesan sukses
+        // PERBAIKAN DI SINI: Redirect ke route iuran.index (untuk RW)
         return redirect()->route('iuran.index')->with('success', 'Iuran berhasil ditambahkan');
     }
 
@@ -95,13 +98,10 @@ class IuranController extends Controller
      */
     public function edit(string $id)
     {
-        // PENTING: Eager load relasi 'iuran_golongan' saat mengedit juga,
-        // agar data nominal per golongan tersedia untuk form edit.
         $iuran = Iuran::with('iuran_golongan')->findOrFail($id);
         $kategori_golongan = Kategori_golongan::all();
 
-        // Mengembalikan view edit dengan data iuran dan kategori golongan
-        return view('rw.iuran.edit', compact('iuran', 'kategori_golongan')); // Asumsi ada view edit.blade.php
+        return view('rw.iuran.edit', compact('iuran', 'kategori_golongan'));
     }
 
     /**
@@ -109,7 +109,6 @@ class IuranController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        // Validasi input dari form
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
             'tgl_tagih' => 'required|date',
@@ -140,9 +139,7 @@ class IuranController extends Controller
 
         // Jika jenis iuran adalah 'otomatis'
         if ($request->jenis === 'otomatis') {
-            // Hapus semua iuran golongan yang terkait dengan iuran ini sebelum membuat yang baru
             IuranGolongan::where('id_iuran', $iuran->id)->delete();
-            // Kemudian buat entri IuranGolongan baru berdasarkan input
             foreach ($request->nominal ?? [] as $golonganId => $nominal) {
                 $nominalValue = is_numeric($nominal) ? $nominal : 0;
                 IuranGolongan::create([
@@ -157,7 +154,7 @@ class IuranController extends Controller
             IuranGolongan::where('id_iuran', $iuran->id)->delete();
         }
 
-        // Redirect kembali ke halaman index dengan pesan sukses
+        // PERBAIKAN DI SINI: Redirect ke route iuran.index (untuk RW)
         return redirect()->route('iuran.index')->with('success', 'Iuran berhasil diperbarui');
     }
 
@@ -172,7 +169,7 @@ class IuranController extends Controller
         IuranGolongan::where('id_iuran', $iuran->id)->delete();
         $iuran->delete();
 
-        // Redirect kembali ke halaman index dengan pesan sukses
+        // PERBAIKAN DI SINI: Redirect ke route iuran.index (untuk RW)
         return redirect()->route('iuran.index')->with('success', 'Iuran berhasil dihapus');
     }
 }

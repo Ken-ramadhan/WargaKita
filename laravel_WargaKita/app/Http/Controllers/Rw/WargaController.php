@@ -1,12 +1,15 @@
 <?php
 
 namespace App\Http\Controllers\Rw;
+
 use App\Http\Controllers\Controller;
 
 use App\Models\Kartu_keluarga;
 use App\Models\Rukun_tetangga;
+use App\Models\User;
 use App\Models\Warga;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 
@@ -36,10 +39,10 @@ class WargaController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-
+        $rukun_tetangga = Rukun_tetangga::all();
         $kartu_keluarga = Kartu_keluarga::all();
 
-        return view('rw.warga.warga', compact('warga', 'title', 'kartu_keluarga'));
+        return view('rw.warga.warga', compact('warga', 'title', 'kartu_keluarga','rukun_tetangga'));
     }
 
 
@@ -60,7 +63,8 @@ class WargaController extends Controller
     {
         // validasi input
         // pastikan nik unik, no_kk ada di tabel kartu_keluarga, nama tidak boleh kosong
-        $validator = validator::make($request->all(),
+        $validator = validator::make(
+            $request->all(),
             [
                 'nik' => 'required|unique:warga,nik|max:16',
                 'no_kk' => 'required|exists:kartu_keluarga,no_kk|max:16',
@@ -112,11 +116,13 @@ class WargaController extends Controller
         );
 
         if ($validator->fails()) {
-        return redirect()->back()
-            ->withErrors($validator)
-            ->withInput()
-            ->with('showModal', 'tambah');
-    }
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput()
+                ->with('showModal', 'tambah');
+        }
+
+        $kk = Kartu_keluarga::where('no_kk', $request->no_kk)->firstOrFail();
 
 
         // membuat data warga baru
@@ -137,8 +143,20 @@ class WargaController extends Controller
             'kewarganegaraan' => $request->kewarganegaraan,
             'nama_ayah' => $request->nama_ayah,
             'nama_ibu' => $request->nama_ibu,
-            'jenis' => $request->jenis,
+            'jenis' => $request->jenis, 
+            'id_rt' => $kk->id_rt,
+            'id_rw' => $kk->id_rw
         ]);
+
+        User::create([
+            'nik' => $request->nik,
+            'nama' => $request->nama,
+            'password' => bcrypt('123456'), // password default
+            'id_rt' => $kk->id_rt,
+            'id_rw' => $kk->id_rw,
+            'role' => 'warga',
+        ]);
+
         return redirect()->route('warga.index')->with('success', 'Data Warga Berhasil Ditambahkan');
     }
 
@@ -192,7 +210,8 @@ class WargaController extends Controller
             'nama_ayah' => 'required|string|max:255',
             'nama_ibu' => 'required|string|max:255',
             'jenis' => 'required|in:penduduk,pendatang',
-            
+            'id_rt' => 'required|exists:rt,id',
+
 
         ], [
             'nik.required' => 'NIK harus diisi.',
@@ -215,6 +234,8 @@ class WargaController extends Controller
             'nama_ibu.required' => 'Nama ibu harus diisi.',
             'jenis.required' => 'Jenis harus dipilih.',
             'jenis.in' => 'Jenis harus penduduk atau pendatang.',
+            'id_rt.required' => 'RT harus dipilih.',
+            'id_rt.exists' => 'RT tidak valid.',
         ]);
 
         // 2. Jika validasi gagal, kembali ke halaman & buka modal edit
@@ -227,6 +248,7 @@ class WargaController extends Controller
 
         // 3. Cari dan update data
         $warga = Warga::findOrFail($nik);
+        $kk = Kartu_keluarga::where('no_kk', $request->no_kk)->firstOrFail();
 
         $warga->update([
             'nik' => $request->nik,
@@ -244,7 +266,18 @@ class WargaController extends Controller
             'nama_ayah' => $request->nama_ayah,
             'nama_ibu' => $request->nama_ibu,
             'jenis' => $request->jenis,
+            'id_rt' => $kk->id_rt,
+            'id_rw' => $kk->id_rw
         ]);
+
+        User::where('nik', $nik)->update([
+            'nik' => $request->nik,
+            'nama' => $request->nama,
+            'id_rt' => $kk->id_rt,
+            'id_rw' => $kk->id_rw 
+        ]);
+
+
 
         // 4. Redirect dengan pesan sukses
         return redirect()->route('warga.index')->with('success', 'Data warga berhasil diperbarui.');
@@ -261,6 +294,21 @@ class WargaController extends Controller
         //
         $warga = Warga::findOrFail($nik);
         $warga->delete();
+        User::where('nik', $nik)->delete(); // TANPA FK harus manual
         return redirect()->route('warga.index')->with('success', 'Warga berhasil dihapus.');
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'password' => 'required|confirmed|min:6',
+        ]);
+
+        $user = Auth::user();
+        $userModel = \App\Models\User::find($user->id);
+        $userModel->password = bcrypt($request->password);
+        $userModel->save();
+
+        return back()->with('success', 'Password berhasil diperbarui!');
     }
 }

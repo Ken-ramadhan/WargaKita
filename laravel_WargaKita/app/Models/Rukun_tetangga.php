@@ -11,20 +11,22 @@ class Rukun_tetangga extends Model
     //
     protected $table = 'rukun_tetangga';
     protected $fillable = [
+        'nik',
         'nomor_rt',
         'nama_ketua_rt',
-        'masa_jabatan',
-        'alamat_rt,'
+        'mulai_menjabat',
+        'akhir_jabatan',
+        'id_rw',
     ];
 
     public function warga(): HasMany
     {
-        return $this->hasMany(Warga::class);
+        return $this->hasMany(Warga::class, 'id_rt');
     }
 
-    public function pengumuman(): BelongsToMany
+    public function pengumuman()
     {
-        return $this->belongsToMany(Pengumuman::class);
+        return $this->hasMany(Pengumuman::class, 'id_rt');
     }
 
     public function pengeluaran(): HasMany
@@ -36,7 +38,14 @@ class Rukun_tetangga extends Model
     {
         return $this->hasMany(Kartu_keluarga::class, 'id_rt');
     }
+    public function rw()
+    {
+        return $this->belongsTo(Rw::class, 'id_rw', 'id');
+    }
 
-    
+    public function user()
+    {
+        return $this->hasOne(User::class, 'id_rt', 'id_rt');
+    }
 
 }

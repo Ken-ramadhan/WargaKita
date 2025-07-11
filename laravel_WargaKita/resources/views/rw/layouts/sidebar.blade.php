@@ -45,35 +45,35 @@
     <!-- Nav lainnya -->
     {{-- ... semua item lainnya tetap seperti sebelumnya ... --}}
 
-    <li class="nav-item {{ isActive('admin/warga*') }}">
+    <li class="nav-item {{ isActive('rw/warga*') }}">
         <a class="nav-link" href="{{ route('warga.index') }}">
             <i class="fas fa-id-card"></i>
             <span>Manajemen Warga</span>
         </a>
     </li>
 
-    <li class="nav-item {{ isActive('admin/kartu_keluarga*') }}">
+    <li class="nav-item {{ isActive('rw/kartu_keluarga*') }}">
         <a class="nav-link" href="{{ route('kartu_keluarga.index') }}">
             <i class="fas fa-users "></i>
         <span>Kartu Keluarga</span>
         </a>
     </li>
 
-    <li class="nav-item {{ isActive('admin/rukun_tetangga*') }}">
+    <li class="nav-item {{ isActive('rw/rukun_tetangga*') }}">
         <a class="nav-link" href="{{ route('rukun_tetangga.index') }}">
             <i class="fas fa-house-user"></i>
             <span>Rukun Tetangga</span>
         </a>
     </li>
 
-    <li class="nav-item {{ isActive('admin/pengumuman*') }}">
+    <li class="nav-item {{ isActive('rw/pengumuman*') }}">
         <a class="nav-link" href="{{ route('pengumuman.index') }}">
             <i class="fas fa-bullhorn"></i>
             <span>Pengumuman</span>
         </a>
     </li>
 
-    <li class="nav-item {{ isActive('admin/tagihan*') }}">
+    <li class="nav-item {{ isActive('rw/tagihan*') }}">
         <a class="nav-link" href="{{ route('tagihan.index') }}">
             <i class="fas fa-file-invoice-dollar"></i>
             <span>Manajemen Keuangan</span>
