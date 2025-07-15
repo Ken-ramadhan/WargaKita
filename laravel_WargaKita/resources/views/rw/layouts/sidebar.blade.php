@@ -118,6 +118,12 @@
             <span>Manajemen Keuangan</span>
         </a>
     </li>
+    <li class="nav-item {{ Request::is('rw/iuran*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('iuran.index') }}">
+            <i class="fas fa-file-invoice-dollar"></i>
+            <span>Iuran</span>
+        </a>
+    </li>
     <hr class="sidebar-divider d-none d-md-block">
 
     <div class="text-center">

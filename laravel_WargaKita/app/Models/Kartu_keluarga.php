@@ -34,10 +34,10 @@ class Kartu_keluarga extends Model
     {
         return $this->belongsTo(Rukun_tetangga::class, 'id_rt', 'id');
     }
-
+    
     public function tagihan(): HasMany
     {
-        return $this->hasMany(Tagihan::class);
+        return $this->hasMany(Tagihan::class, 'no_kk', 'no_kk');
     }
 
     public function golongan()
