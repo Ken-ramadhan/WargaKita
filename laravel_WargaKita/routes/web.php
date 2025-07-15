@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/admin', [Admin_dashboardController::class, 'index'])->name('dashboard-admin');
+    Route::get('/admin/dashboard', [Admin_dashboardController::class, 'index'])->name('dashboard-admin');
     Route::resource('admin/data_rt', Admin_rtController::class);
     Route::resource('admin/data_rw', Admin_rwController::class);
     

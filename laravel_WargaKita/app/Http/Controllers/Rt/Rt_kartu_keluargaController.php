@@ -26,7 +26,7 @@ class Rt_kartu_keluargaController extends Controller
         abort(403, 'RT tidak ditemukan. Hubungkan KK dengan RT.');
     }
 
-    $kartuKeluarga = Kartu_keluarga::with(['golongan', 'warga'])
+    $kartuKeluarga = Kartu_keluarga::with(['warga'])
         ->where('id_rt', $rt_id)
         ->when($search, function ($query) use ($search) {
             $query->where('alamat', 'like', '%' . $search . '%')

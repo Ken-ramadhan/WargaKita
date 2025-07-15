@@ -25,7 +25,7 @@ class Kartu_keluarga extends Model
         'provinsi',
         'kode_pos',
         'tgl_terbit',
-        'id_golongan',
+        'golongan',
     ];
 
     
@@ -39,11 +39,6 @@ class Kartu_keluarga extends Model
     {
         return $this->hasMany(Tagihan::class, 'no_kk', 'no_kk');
     }
-
-    public function golongan()
-{
-    return $this->belongsTo(Kategori_golongan::class, 'id_golongan');
-}
 
     public function warga(): HasMany
     {

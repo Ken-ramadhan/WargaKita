@@ -139,27 +139,49 @@
             transform: translateX(-50%);
         }
 
-        .form-control {
-            height: 50px;
+        /* --- Perbaikan Utama di Sini --- */
+        .form-floating .form-control {
+            height: 58px; /* Sedikit lebih tinggi untuk memberi ruang pada ikon dan label */
             font-size: 1rem;
             border-radius: 10px;
             border: 1px solid var(--border);
-            padding: 0 18px;
+            padding: 1rem 18px 0.5rem 18px; /* Sesuaikan padding untuk floating label */
             color: #334155;
             transition: all 0.3s ease;
         }
 
-        .form-control:focus {
+        .form-floating .form-control:focus {
             box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
             border-color: var(--primary);
         }
 
         .form-floating>label {
-            padding: 0 18px;
+            padding: 1rem 18px; /* Sesuaikan padding label agar pas dengan input */
             color: var(--secondary);
             font-weight: 400;
             font-size: 0.95rem;
         }
+
+        /* Styling untuk input dengan ikon di dalam form-floating */
+        .form-floating.has-icon .form-control {
+            padding-left: 45px; /* Beri ruang ekstra untuk ikon di kiri */
+        }
+
+        .form-floating.has-icon>label {
+            padding-left: 45px; /* Sesuaikan padding label juga */
+        }
+
+        .form-floating .input-icon {
+            position: absolute;
+            top: 50%;
+            left: 18px; /* Posisi ikon di kiri */
+            transform: translateY(-50%);
+            color: var(--secondary);
+            font-size: 1.1rem;
+            z-index: 2; /* Pastikan ikon di atas input */
+        }
+        /* --- Akhir Perbaikan Utama --- */
+
 
         .btn-primary {
             background: var(--primary);
@@ -201,7 +223,11 @@
             border: none;
             padding: 0;
             color: var(--secondary);
-            z-index: 10;
+            z-index: 3; /* Tingkatkan z-index agar selalu di atas label dan input */
+            position: absolute; /* Pastikan ini absolut */
+            top: 50%; /* Tengah vertikal */
+            right: 18px; /* Jarak dari kanan */
+            transform: translateY(-50%); /* Penyesuaian vertikal */
         }
 
         .toggle-password-btn:hover {
@@ -337,28 +363,34 @@
                             id="loginForm">
                             @csrf
 
-                            <div class="form-floating mb-3">
+                            <div class="form-floating mb-3 has-icon">
                                 <input type="text" name="nik"
                                     class="form-control @error('nik') is-invalid @enderror" id="floatingNik"
                                     placeholder="NIK" required value="{{ old('nik') }}">
-                                <label for="floatingNik">
-                                    <i class="bi bi-person-badge me-2"></i>NIK
-                                </label>
+                                <label for="floatingNik">NIK</label>
+                                <i class="bi bi-person-badge input-icon"></i>
+                                @error('nik')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
 
-                            <div class="form-floating mb-3 position-relative">
+                            <div class="form-floating mb-3 position-relative has-icon">
                                 <input type="password" name="password"
                                     class="form-control @error('password') is-invalid @enderror" id="floatingPassword"
                                     placeholder="Password" required minlength="6">
-                                <label for="floatingPassword">
-                                    <i class="bi bi-lock me-2"></i>Kata Sandi
-                                </label>
+                                <label for="floatingPassword">Kata Sandi</label>
+                                <i class="bi bi-lock input-icon"></i>
+                                @error('password')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+
                                 <button type="button"
-                                    class="toggle-password-btn position-absolute top-50 end-0 translate-middle-y me-3"
+                                    class="toggle-password-btn"
                                     onclick="togglePassword()">
                                     <i class="bi bi-eye" id="toggleIcon"></i>
                                 </button>
                             </div>
+                            
                             @if ($errors->has('nik') || $errors->has('password'))
                                 <div class="alert alert-danger alert-dismissible fade show mt-2" role="alert">
                                     NIK atau kata sandi salah.
@@ -395,6 +427,8 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('loginForm');
+            // Jika Anda memiliki validasi kustom, bisa ditambahkan di sini
+            // Contoh: form.addEventListener('submit', function(event) { ... });
         });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

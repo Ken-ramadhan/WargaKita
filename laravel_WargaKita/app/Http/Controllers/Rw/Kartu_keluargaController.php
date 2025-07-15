@@ -22,7 +22,7 @@ class Kartu_keluargaController extends Controller
     $filterRt = $request->rt;
     
 
-    $kartu_keluarga = Kartu_keluarga::with('rukunTetangga','golongan' , 'warga')
+    $kartu_keluarga = Kartu_keluarga::with('rukunTetangga' , 'warga')
         ->when($search, function ($query) use ($search) {
             $query->where('no_kk', 'like', '%' . $search . '%')
                 ->orWhere('alamat', 'like', '%' . $search . '%');
@@ -60,7 +60,7 @@ class Kartu_keluargaController extends Controller
 {
     // Validasi input
     $request->validate([
-        // 'no_kk' => 'required|unique:kartu_keluarga,no_kk|size:16',
+        'no_kk' => 'required|unique:kartu_keluarga,no_kk|size:16',
         'alamat'     => 'required|string',
         'id_rt'      => 'required|exists:rukun_tetangga,id',
         'kelurahan'  => 'required|string|max:100',
@@ -133,7 +133,7 @@ class Kartu_keluargaController extends Controller
         'provinsi' => 'required|string|max:100',
         'kode_pos' => 'required|string|max:10',
         'tgl_terbit' => 'required|date',
-        'golongan' => 'required',
+        'golongan' => ['required', Rule::in(Kategori_golongan::getEnumNama())],
     ]);
 
     $kartu_keluarga = Kartu_keluarga::where('no_kk', $no_kk)->firstOrFail();

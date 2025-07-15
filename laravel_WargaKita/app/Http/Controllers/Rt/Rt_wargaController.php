@@ -72,6 +72,7 @@ class Rt_wargaController extends Controller
                 'kewarganegaraan' => 'required',
                 'nama_ayah' => 'required|string|max:255',
                 'nama_ibu' => 'required|string|max:255',
+                
                 'jenis' => 'required|in:penduduk,pendatang',
             ],
             [
@@ -171,61 +172,53 @@ class Rt_wargaController extends Controller
     public function update(Request $request, string $nik)
     {
         // 1. Validasi data
-        // $validator = Validator::make($request->all(), [
-        //     'nik' => [
-        //         'required',
-        //         'digits:16',
-        //         Rule::unique('warga', 'nik')->ignore($nik, 'nik'), // Abaikan nik yang sedang diedit
-        //     ],
-        //     'nama' => 'required|string|max:255',
-        //     'jenis_kelamin' => 'required|in:laki-laki,perempuan',
-        //     'tempat_lahir' => 'required|string|max:255',
-        //     'tanggal_lahir' => 'required|date',
-        //     'agama' => 'required|string|max:50',
-        //     'pendidikan' => 'required|string|max:100',
-        //     'pekerjaan' => 'required|string|max:100',
-        //     'status_perkawinan' => 'required|string|max:50',
-        //     'status_hubungan_dalam_keluarga' => 'required|in:kepala keluarga,istri,anak',
-        //     'golongan_darah' => 'required|in:A,B,AB,O',
-        //     'kewarganegaraan' => 'required',
-        //     'nama_ayah' => 'required|string|max:255',
-        //     'nama_ibu' => 'required|string|max:255',
-        //     'jenis' => 'required|in:penduduk,pendatang',
-        //     'id_rt' => 'required|exists:rt,id',
+        $validator = Validator::make($request->all(), [
+            'nik' => [
+                'required',
+                'digits:16',
+                Rule::unique('warga', 'nik')->ignore($nik, 'nik'), // Abaikan nik yang sedang diedit
+            ],
+            'nama' => 'required|string|max:255',
+            'jenis_kelamin' => 'required|in:laki-laki,perempuan',
+            'tempat_lahir' => 'required|string|max:255',
+            'tanggal_lahir' => 'required|date',
+            'agama' => 'required|string|max:50',
+            'pendidikan' => 'required|string|max:100',
+            'pekerjaan' => 'required|string|max:100',
+            'status_perkawinan' => 'required|string|max:50',
+            'status_hubungan_dalam_keluarga' => 'required|in:kepala keluarga,istri,anak',
+            'golongan_darah' => 'required|in:A,B,AB,O',
+            'kewarganegaraan' => 'required',
+            'nama_ayah' => 'required|string|max:255',
+            'nama_ibu' => 'required|string|max:255',
+            'jenis' => 'required|in:penduduk,pendatang',
+            'id_rt' => 'required|exists:rt,id',
 
 
-        // ], [
-        //     'nik.required' => 'NIK harus diisi.',
-        //     'nik.digits' => 'NIK harus terdiri dari 16 digit.',
-        //     'nik.unique' => 'NIK sudah digunakan.',
-        //     'nama.required' => 'Nama tidak boleh kosong.',
-        //     'jenis_kelamin.required' => 'Jenis kelamin harus dipilih.',
-        //     'tempat_lahir.required' => 'Tempat lahir harus diisi.',
-        //     'tanggal_lahir.required' => 'Tanggal lahir harus diisi.',
-        //     'agama.required' => 'Agama tidak boleh kosong.',
-        //     'pendidikan.required' => 'Pendidikan terakhir harus diisi.',
-        //     'pekerjaan.required' => 'Pekerjaan harus diisi.',
-        //     'status_perkawinan.required' => 'Status perkawinan harus diisi.',
-        //     'status_hubungan_dalam_keluarga.required' => 'Hubungan dengan KK harus dipilih.',
-        //     'status_hubungan_dalam_keluarga.in' => 'Pilih hubungan yang sesuai.',
-        //     'golongan_darah.required' => 'Golongan darah harus dipilih.',
-        //     'golongan_darah.in' => 'Golongan darah harus A, B, AB, atau O.',
-        //     'kewarganegaraan.required' => 'Kewarganegaraan harus dipilih.',
-        //     'nama_ayah.required' => 'Nama ayah harus diisi.',
-        //     'nama_ibu.required' => 'Nama ibu harus diisi.',
-        //     'jenis.required' => 'Jenis harus dipilih.',
-        //     'jenis.in' => 'Jenis harus penduduk atau pendatang.',
-        //     'id_rt.required' => 'RT harus dipilih.',
-        //     'id_rt.exists' => 'RT tidak valid.',
-        // ]);
-
-        // // 2. Jika validasi gagal, kembali ke halaman & buka modal edit
-        // if ($validator->fails()) {
-        //     return redirect()->back()
-        //         ->withErrors($validator)
-        //         ->withInput()
-        //         ->with('open_edit_modal', $nik); // kirim agar modal bisa dibuka kembali
-        // }
+        ], [
+            'nik.required' => 'NIK harus diisi.',
+            'nik.digits' => 'NIK harus terdiri dari 16 digit.',
+            'nik.unique' => 'NIK sudah digunakan.',
+            'nama.required' => 'Nama tidak boleh kosong.',
+            'jenis_kelamin.required' => 'Jenis kelamin harus dipilih.',
+            'tempat_lahir.required' => 'Tempat lahir harus diisi.',
+            'tanggal_lahir.required' => 'Tanggal lahir harus diisi.',
+            'agama.required' => 'Agama tidak boleh kosong.',
+            'pendidikan.required' => 'Pendidikan terakhir harus diisi.',
+            'pekerjaan.required' => 'Pekerjaan harus diisi.',
+            'status_perkawinan.required' => 'Status perkawinan harus diisi.',
+            'status_hubungan_dalam_keluarga.required' => 'Hubungan dengan KK harus dipilih.',
+            'status_hubungan_dalam_keluarga.in' => 'Pilih hubungan yang sesuai.',
+            'golongan_darah.required' => 'Golongan darah harus dipilih.',
+            'golongan_darah.in' => 'Golongan darah harus A, B, AB, atau O.',
+            'kewarganegaraan.required' => 'Kewarganegaraan harus dipilih.',
+            'nama_ayah.required' => 'Nama ayah harus diisi.',
+            'nama_ibu.required' => 'Nama ibu harus diisi.',
+            'jenis.required' => 'Jenis harus dipilih.',
+            'jenis.in' => 'Jenis harus penduduk atau pendatang.',
+            'id_rt.required' => 'RT harus dipilih.',
+            'id_rt.exists' => 'RT tidak valid.',
+        ]);
 
         // 3. Cari dan update data
         $warga = Warga::findOrFail($nik);

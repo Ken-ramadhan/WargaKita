@@ -133,7 +133,9 @@
                                 </thead>
                                 <tbody class="small">
                                     {{-- Loop melalui relasi 'warga' di model Kartu_keluarga --}}
-                                    @forelse($kartuKeluarga->warga as $index => $anggota)
+                                    @forelse($kartuKeluarga->warga->sortByDesc(function($item) {
+                                                                                return $item->status_hubungan_dalam_keluarga === 'kepala keluarga';
+                                                                                    }) as $index => $anggota)
                                         <tr>
                                             <td class="text-center">{{ $index + 1 }}</td>
                                             <td>{{ $anggota->nik }}</td>
