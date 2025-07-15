@@ -20,6 +20,10 @@ class Rt_wargaController extends Controller
         //
         $title = 'Manajemen Warga';
         $search = $request->search;
+        $rt_id = Auth::user()->rukunTetangga->id;
+        $total_warga = Warga::whereHas('kartuKeluarga', function ($query) use ($rt_id) {
+        $query->where('id_rt', $rt_id);
+    })->count();
        $warga = Warga::with('kartuKeluarga')
     ->whereHas('kartuKeluarga', function ($query) {
         $query->where('id_rt', Auth::user()->id_rt);
@@ -32,7 +36,7 @@ class Rt_wargaController extends Controller
     ->paginate(5)
     ->withQueryString();
 
-        return view('rt.warga.warga',compact('title','warga','search'));
+        return view('rt.warga.warga',compact('title','warga','search','total_warga'));
     }
 
     /**
@@ -56,7 +60,7 @@ class Rt_wargaController extends Controller
                 'nik' => 'required|unique:warga,nik|max:16',
                 'no_kk' => 'required|exists:kartu_keluarga,no_kk|max:16',
                 'nama' => 'required|string|max:255',
-                'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
+                'jenis_kelamin' => 'required|in:laki-laki,perempuan',
                 'tempat_lahir' => 'required|string|max:255',
                 'tanggal_lahir' => 'required|date',
                 'agama' => 'required|string|max:255',
@@ -139,7 +143,7 @@ class Rt_wargaController extends Controller
             'role' => 'warga',
         ]);
 
-        return redirect()->route('rt_warga.index')->with('success', 'Data Warga Berhasil Ditambahkan');
+        return redirect()->to($request->redirect_to)->with('success', 'Data Warga Berhasil Ditambahkan');
     }
 
     /**
@@ -166,7 +170,7 @@ class Rt_wargaController extends Controller
      */
     public function update(Request $request, string $nik)
     {
-        // // 1. Validasi data
+        // 1. Validasi data
         // $validator = Validator::make($request->all(), [
         //     'nik' => [
         //         'required',
@@ -174,7 +178,7 @@ class Rt_wargaController extends Controller
         //         Rule::unique('warga', 'nik')->ignore($nik, 'nik'), // Abaikan nik yang sedang diedit
         //     ],
         //     'nama' => 'required|string|max:255',
-        //     'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
+        //     'jenis_kelamin' => 'required|in:laki-laki,perempuan',
         //     'tempat_lahir' => 'required|string|max:255',
         //     'tanggal_lahir' => 'required|date',
         //     'agama' => 'required|string|max:50',
@@ -254,18 +258,19 @@ class Rt_wargaController extends Controller
 
 
         // 4. Redirect dengan pesan sukses
-        return redirect()->route('rt_warga.index')->with('success', 'Data warga berhasil diperbarui.');
+        return redirect()->to($request->redirect_to)->with('success', 'Data warga berhasil diperbarui.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $nik)
+    public function destroy(Request $request,string $nik)
     {
         //
         $warga = Warga::findOrFail($nik);
         $warga->delete();
         User::where('nik', $nik)->delete(); // TANPA FK harus manual
-        return redirect()->route('rt_warga.index')->with('success', 'Warga berhasil dihapus.');
+        return redirect()->to($request->redirect_to)->with('success', 'Warga berhasil dihapus.');
     }
+
 }

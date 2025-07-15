@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Rw;
 
 use App\Http\Controllers\Controller;
-
 use App\Models\Kartu_keluarga;
 use App\Models\Rukun_tetangga;
 use App\Models\User;
@@ -30,30 +29,22 @@ class WargaController extends Controller
                 $query->where('warga.nama', 'like', '%' . $search . '%')
                     ->orWhere('warga.nik', 'like', '%' . $search . '%')
                     ->orWhere('warga.no_kk', 'like', '%' . $search . '%');
-            })->when($filterJenisKelamin, function ($query) use ($filterJenisKelamin) {
+            })
+            ->when($filterJenisKelamin, function ($query) use ($filterJenisKelamin) {
                 $query->where('warga.jenis_kelamin', $filterJenisKelamin);
             })
             ->orderBy('warga.no_kk')
             ->orderBy('warga.nama')
-            ->select('warga.*') // agar paginate tetap berfungsi
+            ->select('warga.*')
             ->paginate(10)
             ->withQueryString();
+        
+         $total_warga = Warga::count();
 
         $rukun_tetangga = Rukun_tetangga::all();
         $kartu_keluarga = Kartu_keluarga::all();
 
-        return view('rw.warga.warga', compact('warga', 'title', 'kartu_keluarga','rukun_tetangga'));
-    }
-
-
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-
+        return view('rw.warga.warga', compact('warga', 'title', 'kartu_keluarga', 'rukun_tetangga','total_warga'));
     }
 
     /**
@@ -61,59 +52,24 @@ class WargaController extends Controller
      */
     public function store(Request $request)
     {
-        // validasi input
-        // pastikan nik unik, no_kk ada di tabel kartu_keluarga, nama tidak boleh kosong
-        $validator = validator::make(
-            $request->all(),
-            [
-                'nik' => 'required|unique:warga,nik|max:16',
-                'no_kk' => 'required|exists:kartu_keluarga,no_kk|max:16',
-                'nama' => 'required|string|max:255',
-                'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
-                'tempat_lahir' => 'required|string|max:255',
-                'tanggal_lahir' => 'required|date',
-                'agama' => 'required|string|max:255',
-                'pendidikan' => 'required|string|max:255',
-                'pekerjaan' => 'required|string|max:255',
-                'status_perkawinan' => 'required|string|max:255',
-                'status_hubungan_dalam_keluarga' => 'required|in:kepala keluarga,istri,anak',
-                'golongan_darah' => 'required|in:A,B,AB,O',
-                'kewarganegaraan' => 'required',
-                'nama_ayah' => 'required|string|max:255',
-                'nama_ibu' => 'required|string|max:255',
-                'jenis' => 'required|in:penduduk,pendatang',
-            ],
-            [
-                'nik.required' => 'NIK harus diisi.',
-                'nik.unique' => 'NIK sudah terdaftar.',
-                'no_kk.required' => 'Nomor KK harus diisi.',
-                'no_kk.exists' => 'Nomor KK tidak ditemukan.',
-                'nama.required' => 'Nama harus diisi.',
-                'jenis_kelamin.required' => 'Jenis kelamin harus dipilih.',
-                'tempat_lahir.required' => 'Tempat lahir harus diisi.',
-                'tanggal_lahir.required' => 'Tanggal lahir harus diisi.',
-                'agama.required' => 'Agama harus diisi.',
-                'pendidikan.required' => 'Pendidikan harus diisi.',
-                'pekerjaan.required' => 'Pekerjaan harus diisi.',
-                'status_perkawinan.required' => 'Status perkawinan harus diisi.',
-                'status_hubungan_dalam_keluarga.required' => 'Status hubungan dalam keluarga harus diisi.',
-                'status_hubungan_dalam_keluarga.in' => 'Status hubungan dalam keluarga tidak valid.',
-                'nik.max' => 'NIK tidak boleh lebih dari 16 karakter.',
-                'no_kk.max' => 'Nomor KK tidak boleh lebih dari 16 karakter.',
-                'nama.max' => 'Nama tidak boleh lebih dari 255 karakter.',
-                'tempat_lahir.max' => 'Tempat lahir tidak boleh lebih dari 255 karakter.',
-                'agama.max' => 'Agama tidak boleh lebih dari 255 karakter.',
-                'pendidikan.max' => 'Pendidikan tidak boleh lebih dari 255 karakter.',
-                'pekerjaan.max' => 'Pekerjaan tidak boleh lebih dari 255 karakter.',
-                'golongan_darah.in' => 'Golongan darah tidak valid.',
-                'nama_ayah.required' => 'Nama ayah harus diisi.',
-                'nama_ibu.required' => 'Nama ibu harus diisi.',
-                'golongan_darah.required' => 'Golongan darah harus diisi.',
-                'kewarganegaraan.required' => 'Kewarganegaraan harus diisi.',
-                'jenis.required' => 'Jenis harus diisi.',
-                'jenis.in' => 'Jenis tidak valid.',
-            ]
-        );
+        $validator = Validator::make($request->all(), [
+            'nik' => 'required|unique:warga,nik|max:16',
+            'no_kk' => 'required|exists:kartu_keluarga,no_kk|max:16',
+            'nama' => 'required|string|max:255',
+            'jenis_kelamin' => 'required|in:laki-laki,perempuan',
+            'tempat_lahir' => 'required|string|max:255',
+            'tanggal_lahir' => 'required|date',
+            'agama' => 'required|string|max:255',
+            'pendidikan' => 'required|string|max:255',
+            'pekerjaan' => 'required|string|max:255',
+            'status_perkawinan' => 'required|string|max:255',
+            'status_hubungan_dalam_keluarga' => 'required|in:kepala keluarga,istri,anak',
+            'golongan_darah' => 'required|in:A,B,AB,O',
+            'kewarganegaraan' => 'required',
+            'nama_ayah' => 'required|string|max:255',
+            'nama_ibu' => 'required|string|max:255',
+            'jenis' => 'required|in:penduduk,pendatang',
+        ]);
 
         if ($validator->fails()) {
             return redirect()->back()
@@ -124,9 +80,21 @@ class WargaController extends Controller
 
         $kk = Kartu_keluarga::where('no_kk', $request->no_kk)->firstOrFail();
 
+        // Cek apakah KK ini sudah memiliki kepala keluarga
+        if ($request->status_hubungan_dalam_keluarga === 'kepala keluarga') {
+            $existingKepala = Warga::where('no_kk', $request->no_kk)
+                ->where('status_hubungan_dalam_keluarga', 'kepala keluarga')
+                ->exists();
 
-        // membuat data warga baru
-        // pastikan no_kk sudah ada di tabel kartu_keluarga
+            if ($existingKepala) {
+                return redirect()->back()
+                    ->withErrors(['status_hubungan_dalam_keluarga' => 'Nomor KK ini sudah memiliki Kepala Keluarga.'])
+                    ->withInput()
+                    ->with('showModal', 'tambah');
+            }
+        }
+
+        // Buat warga baru
         Warga::create([
             'nik' => $request->nik,
             'no_kk' => $request->no_kk,
@@ -143,29 +111,31 @@ class WargaController extends Controller
             'kewarganegaraan' => $request->kewarganegaraan,
             'nama_ayah' => $request->nama_ayah,
             'nama_ibu' => $request->nama_ibu,
-            'jenis' => $request->jenis, 
-            'id_rt' => $kk->id_rt,
-            'id_rw' => $kk->id_rw
-        ]);
-
-        User::create([
-            'nik' => $request->nik,
-            'nama' => $request->nama,
-            'password' => bcrypt('123456'), // password default
+            'jenis' => $request->jenis,
             'id_rt' => $kk->id_rt,
             'id_rw' => $kk->id_rw,
-            'role' => 'warga',
         ]);
 
-        return redirect()->route('warga.index')->with('success', 'Data Warga Berhasil Ditambahkan');
+        // Buat user hanya jika status kepala keluarga
+        if ($request->status_hubungan_dalam_keluarga === 'kepala keluarga') {
+            User::create([
+                'nik' => $request->nik,
+                'nama' => $request->nama,
+                'password' => bcrypt('123456'),
+                'id_rt' => $kk->id_rt,
+                'id_rw' => $kk->id_rw,
+                'role' => 'warga',
+            ]);
+        }
+
+        return redirect()->to($request->redirect_to)->with('success', 'Data Warga Berhasil Ditambahkan');
     }
 
     /**
-     * Display the specified resource.
+     * Show the specified resource.
      */
     public function show(string $id)
     {
-        //
         $warga = Warga::findOrFail($id);
         return view('warga.show', compact('warga'));
     }
@@ -175,8 +145,6 @@ class WargaController extends Controller
      */
     public function edit(string $id)
     {
-        //
-
         $warga = Warga::findOrFail($id);
         return view('warga.edit', compact('warga'));
     }
@@ -184,20 +152,16 @@ class WargaController extends Controller
     /**
      * Update the specified resource in storage.
      */
-
-
-
     public function update(Request $request, string $nik)
     {
-        // 1. Validasi data
         $validator = Validator::make($request->all(), [
             'nik' => [
                 'required',
                 'digits:16',
-                Rule::unique('warga', 'nik')->ignore($nik, 'nik'), // Abaikan nik yang sedang diedit
+                Rule::unique('warga', 'nik')->ignore($nik, 'nik'),
             ],
             'nama' => 'required|string|max:255',
-            'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
+            'jenis_kelamin' => 'required|in:laki-laki,perempuan    ',
             'tempat_lahir' => 'required|string|max:255',
             'tanggal_lahir' => 'required|date',
             'agama' => 'required|string|max:50',
@@ -210,48 +174,48 @@ class WargaController extends Controller
             'nama_ayah' => 'required|string|max:255',
             'nama_ibu' => 'required|string|max:255',
             'jenis' => 'required|in:penduduk,pendatang',
-            'id_rt' => 'required|exists:rt,id',
-
-
-        ], [
-            'nik.required' => 'NIK harus diisi.',
-            'nik.digits' => 'NIK harus terdiri dari 16 digit.',
-            'nik.unique' => 'NIK sudah digunakan.',
-            'nama.required' => 'Nama tidak boleh kosong.',
-            'jenis_kelamin.required' => 'Jenis kelamin harus dipilih.',
-            'tempat_lahir.required' => 'Tempat lahir harus diisi.',
-            'tanggal_lahir.required' => 'Tanggal lahir harus diisi.',
-            'agama.required' => 'Agama tidak boleh kosong.',
-            'pendidikan.required' => 'Pendidikan terakhir harus diisi.',
-            'pekerjaan.required' => 'Pekerjaan harus diisi.',
-            'status_perkawinan.required' => 'Status perkawinan harus diisi.',
-            'status_hubungan_dalam_keluarga.required' => 'Hubungan dengan KK harus dipilih.',
-            'status_hubungan_dalam_keluarga.in' => 'Pilih hubungan yang sesuai.',
-            'golongan_darah.required' => 'Golongan darah harus dipilih.',
-            'golongan_darah.in' => 'Golongan darah harus A, B, AB, atau O.',
-            'kewarganegaraan.required' => 'Kewarganegaraan harus dipilih.',
-            'nama_ayah.required' => 'Nama ayah harus diisi.',
-            'nama_ibu.required' => 'Nama ibu harus diisi.',
-            'jenis.required' => 'Jenis harus dipilih.',
-            'jenis.in' => 'Jenis harus penduduk atau pendatang.',
-            'id_rt.required' => 'RT harus dipilih.',
-            'id_rt.exists' => 'RT tidak valid.',
         ]);
 
-        // 2. Jika validasi gagal, kembali ke halaman & buka modal edit
         if ($validator->fails()) {
             return redirect()->back()
                 ->withErrors($validator)
                 ->withInput()
-                ->with('open_edit_modal', $nik); // kirim agar modal bisa dibuka kembali
+                ->with('open_edit_modal', $nik);
         }
 
-        // 3. Cari dan update data
         $warga = Warga::findOrFail($nik);
         $kk = Kartu_keluarga::where('no_kk', $request->no_kk)->firstOrFail();
 
+        if ($request->status_hubungan_dalam_keluarga === 'kepala keluarga') {
+            $existingKepala = Warga::where('no_kk', $request->no_kk)
+                ->where('nik', '!=', $nik)
+                ->where('status_hubungan_dalam_keluarga', 'kepala keluarga')
+                ->exists();
+
+            if ($existingKepala) {
+                return redirect()->back()
+                    ->withErrors(['status_hubungan_dalam_keluarga' => 'Nomor KK ini sudah memiliki Kepala Keluarga.'])
+                    ->withInput()
+                    ->with('open_edit_modal', $nik);
+            }
+
+            User::updateOrCreate(
+                ['nik' => $request->nik],
+                [
+                    'nama' => $request->nama,
+                    'password' => bcrypt('123456'),
+                    'id_rt' => $kk->id_rt,
+                    'id_rw' => $kk->id_rw,
+                    'role' => 'warga',
+                ]
+            );
+        } else {
+            User::where('nik', $nik)->delete();
+        }
+
         $warga->update([
             'nik' => $request->nik,
+            'no_kk' => $request->no_kk,
             'nama' => $request->nama,
             'jenis_kelamin' => $request->jenis_kelamin,
             'tempat_lahir' => $request->tempat_lahir,
@@ -267,48 +231,22 @@ class WargaController extends Controller
             'nama_ibu' => $request->nama_ibu,
             'jenis' => $request->jenis,
             'id_rt' => $kk->id_rt,
-            'id_rw' => $kk->id_rw
+            'id_rw' => $kk->id_rw,
         ]);
 
-        User::where('nik', $nik)->update([
-            'nik' => $request->nik,
-            'nama' => $request->nama,
-            'id_rt' => $kk->id_rt,
-            'id_rw' => $kk->id_rw 
-        ]);
-
-
-
-        // 4. Redirect dengan pesan sukses
-        return redirect()->route('warga.index')->with('success', 'Data warga berhasil diperbarui.');
+        return redirect()->to($request->redirect_to)->with('success', 'Data warga berhasil diperbarui.');
     }
-
-
-
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $nik)
+    public function destroy(Request $request,string $nik)
     {
-        //
         $warga = Warga::findOrFail($nik);
         $warga->delete();
-        User::where('nik', $nik)->delete(); // TANPA FK harus manual
-        return redirect()->route('warga.index')->with('success', 'Warga berhasil dihapus.');
+        User::where('nik', $nik)->delete();
+
+        return redirect()->to($request->redirect_to)->with('success', 'Warga berhasil dihapus.');
     }
 
-    public function updatePassword(Request $request)
-    {
-        $request->validate([
-            'password' => 'required|confirmed|min:6',
-        ]);
-
-        $user = Auth::user();
-        $userModel = \App\Models\User::find($user->id);
-        $userModel->password = bcrypt($request->password);
-        $userModel->save();
-
-        return back()->with('success', 'Password berhasil diperbarui!');
-    }
 }

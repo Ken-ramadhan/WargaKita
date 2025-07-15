@@ -57,7 +57,7 @@ class UsersSeeder extends Seeder
             'no_kk' => '1234567890123456', // pastikan KK-nya ada!
             'nik' => '4567890987654321',
             'nama' => 'Andi Kurniawan',
-            'jenis_kelamin' => 'Laki-laki',
+            'jenis_kelamin' => 'laki-laki',
             'tempat_lahir' => 'Jakarta',
             'tanggal_lahir' => '2000-01-01',
             'agama' => 'Islam',
@@ -82,7 +82,7 @@ class UsersSeeder extends Seeder
 
         // RW
         User::create([
-            'nik' => '  ',
+            'nik' => '1234567890123452',
             'nama' => 'Budi Hartono',
             'password' => Hash::make('password'),
             'role' => 'rw',

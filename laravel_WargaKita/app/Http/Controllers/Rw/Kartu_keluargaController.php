@@ -20,11 +20,12 @@ class Kartu_keluargaController extends Controller
 {
     $search = $request->search;
     $filterRt = $request->rt;
+    
 
     $kartu_keluarga = Kartu_keluarga::with('rukunTetangga','golongan' , 'warga')
         ->when($search, function ($query) use ($search) {
-            $query->where('kepala_kk', 'like', '%' . $search . '%')
-                ->orWhere('no_kk', 'like', '%' . $search . '%');
+            $query->where('no_kk', 'like', '%' . $search . '%')
+                ->orWhere('alamat', 'like', '%' . $search . '%');
         })
         ->when($filterRt, function ($query) use ($filterRt) {
             $query->whereHas('rukunTetangga', function ($q) use ($filterRt) {
@@ -33,13 +34,14 @@ class Kartu_keluargaController extends Controller
         })
         ->paginate(5)
         ->withQueryString();
-
+    
+    $total_kk = Kartu_keluarga::count();
     $rukun_tetangga = Rukun_tetangga::all();
     $kategori_golongan = Kategori_golongan::getEnumNama();
     $warga = Warga::all();
     $title = 'Kartu Keluarga';
 
-    return view('rw.kartu-keluarga.kartu_keluarga', compact('kartu_keluarga', 'rukun_tetangga', 'kategori_golongan', 'warga', 'title'));
+    return view('rw.kartu-keluarga.kartu_keluarga', compact('kartu_keluarga', 'rukun_tetangga', 'kategori_golongan', 'warga', 'title','total_kk'));
 }
 
 

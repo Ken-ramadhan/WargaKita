@@ -57,6 +57,7 @@ class LoginController extends Controller
         // Jika gagal login
         return back()->withErrors([
             'nik' => 'NIK atau password salah.',
+            'password' => 'NIK atau password salah.',
         ]);
     }
 

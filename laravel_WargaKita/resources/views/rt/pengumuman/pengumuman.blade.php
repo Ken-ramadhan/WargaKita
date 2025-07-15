@@ -61,7 +61,8 @@
                         <select name="kategori" class="form-select form-select-sm">
                             <option value="">Semua kategori</option>
                             @foreach ($daftar_kategori as $kategori)
-                                <option value="{{ $kategori }}" {{ request('kategori') == $kategori ? 'selected' : '' }}>
+                                <option value="{{ $kategori }}"
+                                    {{ request('kategori') == $kategori ? 'selected' : '' }}>
                                     {{ $kategori }}</option>
                             @endforeach
                         </select>
@@ -77,14 +78,22 @@
                         <!-- Card Header - Dropdown -->
                         <div class="card-header py-2 d-flex flex-row align-items-center justify-content-between">
                             <h6 class="m-0 font-weight-bold text-primary">Tabel Pengumuman</h6>
-                            {{-- <!-- Tombol Tambah Pengumuman tanpa dropdown --}}
-                            <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                data-bs-target="#modalTambahPengumuman">
-                                <i class="fas fa-plus"></i>
-                            </button>
                         </div>
                         <!-- Card Body -->
                         <div class="card-body">
+                            <div class="d-flex flex-wrap align-items-center justify-content-between mb-1">
+                                {{-- Total Pengumuman (kiri) --}}
+                                <div class="d-flex align-items-center gap-1 mb-1 mb-sm-0">
+                                    <i class="fas fa-bullhorn me-2 text-primary"></i>
+                                    <span class="fw-semibold text-dark">{{ $total_pengumuman ?? 0 }} Pengumuman</span>
+                                </div>
+
+                                {{-- Tombol tambah (kanan) --}}
+                                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#modalTambahPengumuman">
+                                    <i class="fas fa-plus"></i> Tambah
+                                </button>
+                            </div>
                             <div class="table-responsive table-container">
                                 <table class="table table-sm scroll-table text-nowrap table-hover">
                                     <thead>
@@ -126,7 +135,8 @@
                                                         onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengumuman ini?')">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> <!-- Ikon hapus --></button>
+                                                        <button type="submit" class="btn btn-danger btn-sm"><i
+                                                                class="fas fa-trash-alt"></i> <!-- Ikon hapus --></button>
                                                     </form>
 
                                                     <button type="button" class="btn btn-warning btn-sm"
@@ -261,7 +271,7 @@
                                                                 <li><strong>kategori:</strong> <span
                                                                         class="ms-1">{{ $data->kategori ?? '-' }}</span>
                                                                 </li>
-                                                                
+
                                                                 <li><strong>Tanggal:</strong> <span
                                                                         class="ms-1">{{ \Carbon\Carbon::parse($data->tanggal)->isoFormat('dddd, D MMMM Y') }}</span>
                                                                 </li>
