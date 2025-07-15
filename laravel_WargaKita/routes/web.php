@@ -46,7 +46,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::resource('rw/pengeluaran', PengeluaranController::class);
         Route::get('rw/laporan_pengeluaran_bulanan/{bulan}/{tahun}', [LaporanController::class, 'pengeluaran_bulanan'])->name('pengeluaran_bulanan');
         
-    // });
+     });
 
     Route::middleware(['auth', 'role:rw,rt,warga,admin'])->post('/update-password', [UserController::class, 'updatePassword'])->name('update.password');
 
