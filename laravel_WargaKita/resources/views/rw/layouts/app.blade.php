@@ -196,7 +196,7 @@
 
 @endphp
 
-<body id="page-top" style="overflow: hidden;">
+<body id="page-top">
 
     <!-- Page Wrapper -->
     <div id="wrapper">
@@ -220,8 +220,8 @@
                         <ul class="navbar-nav sidebar sidebar-dark accordion">
                             <hr class="sidebar-divider my-0">
 
-                            <li class="nav-item active">
-                                <a class="nav-link" href="index.html">
+                            <li class="nav-item{{ Request::is('rw') ? 'active' : '' }}">
+                                <a class="nav-link" href="{{ route('dashboard-rw') }}">
                                     <i class="fas fa-fw fa-tachometer-alt"></i>
                                     <span>Dashboard</span>
                                 </a>

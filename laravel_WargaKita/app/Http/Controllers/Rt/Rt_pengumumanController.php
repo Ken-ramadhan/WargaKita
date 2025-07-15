@@ -22,10 +22,17 @@ class Rt_pengumumanController extends Controller
     $bulan = $request->input('bulan');
     $kategori = $request->input('kategori');
 
-    // Ambil ID RT yang login
+    // Ambil ID RT dan RW
     $rtId = Auth::user()->id_rt;
+    $rwId = Auth::user()->rukunTetangga->id_rw;
     
-    $total_pengumuman = Pengumuman::where('id_rt', $rtId)->count();
+    $total_pengumuman = Pengumuman::where(function ($q) use ($rtId, $rwId) {
+        $q->where('id_rt', $rtId)
+          ->orWhere(function ($q2) use ($rwId) {
+              $q2->whereNull('id_rt')
+                 ->where('id_rw', $rwId);
+          });
+    })->count();
 
     // Data list: daftar tahun & kategori unik di RT ini
     $daftar_tahun = Pengumuman::where('id_rt', $rtId)
@@ -41,8 +48,7 @@ class Rt_pengumumanController extends Controller
 
     $daftar_bulan = range(1, 12);
 
-    // Query data
-    $rwId = Auth::user()->rukunTetangga->id_rw;
+    
 
 $pengumuman = Pengumuman::where(function ($q) use ($rtId, $rwId) {
         $q->where('id_rt', $rtId)

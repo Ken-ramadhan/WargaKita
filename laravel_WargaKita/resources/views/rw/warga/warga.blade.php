@@ -31,9 +31,9 @@
                     <div class="col-md-4 col-sm-6 d-flex gap-2">
                         <select name="jenis_kelamin" class="form-select form-select-sm" id="">
                             <option value="">Jenis Kelamin</option>
-                            <option value="Laki-laki" {{ request('jenis_kelamin') == 'Laki-laki' ? 'selected' : '' }}>
+                            <option value="laki-laki" {{ request('jenis_kelamin') == 'laki-laki' ? 'selected' : '' }}>
                                 Laki-laki</option>
-                            <option value="Perempuan" {{ request('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>
+                            <option value="perempuan" {{ request('jenis_kelamin') == 'perempuan' ? 'selected' : '' }}>
                                 Perempuan</option>
                         </select>
                         <button class="btn btn-sm btn-primary">Filter</button>
@@ -170,10 +170,10 @@
                                                                                 {{ old('jenis_kelamin', $item->jenis_kelamin) }}
                                                                             </option>
                                                                             <option value="Laki-laki"
-                                                                                {{ old('jenis_kelamin', $item->jenis_kelamin) == 'Laki-laki' ? 'selected' : '' }}>
+                                                                                {{ old('jenis_kelamin', $item->jenis_kelamin) == 'laki-laki' ? 'selected' : '' }}>
                                                                                 Laki-laki</option>
                                                                             <option value="Perempuan"
-                                                                                {{ old('jenis_kelamin', $item->jenis_kelamin) == 'Perempuan' ? 'selected' : '' }}>
+                                                                                {{ old('jenis_kelamin', $item->jenis_kelamin) == 'perempuan' ? 'selected' : '' }}>
                                                                                 Perempuan</option>
                                                                         </select>
                                                                         @error('jenis_kelamin')

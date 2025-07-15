@@ -80,8 +80,8 @@
 
     <hr class="sidebar-divider my-0">
 
-    <li class="nav-item {{ Request::is('/rt') ? 'active' : '' }}"> {{-- Menggunakan Request::is() untuk aktivasi --}}
-        <a class="nav-link" href="{{ url('/rt') }}">
+    <li class="nav-item {{ Request::is('rt') ? 'active' : '' }}"> {{-- Menggunakan Request::is() untuk aktivasi --}}
+        <a class="nav-link" href="{{ url('rt') }}">
             <i class="fas fa-fw fa-tachometer-alt"></i>
             <span>Dashboard</span></a>
     </li>

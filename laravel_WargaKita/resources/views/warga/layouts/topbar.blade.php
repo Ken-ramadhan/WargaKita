@@ -10,14 +10,11 @@
         $segment = request()->segment(2) ?? request()->segment(1);
 
         $judulHalaman = match ($segment) {
-            'rw' => 'Dashboard',
-            'warga' => 'Manajemen Warga',
-            'pengumuman' => 'Pengumuman',
-            'kartu_keluarga' => 'Kartu Keluarga',
-            'rukun_tetangga' => 'Rukun Tetangga',
+            'lihat_kk' => 'Data Kartu Keluarga',
+            'warga' => 'Dashboard',
+            'warga_pengumuman' => 'Pengumuman',
             'tagihan' => 'Tagihan',
             'iuran' => 'Iuran',
-            'kategori_golongan' => 'Kategori Golongan',
             'pengeluaran' => 'Pengeluaran',
             'laporan_pengeluaran_bulanan' => 'Laporan Pengeluaran Bulanan',
             default => ucwords(str_replace('-', ' ', $segment)),
