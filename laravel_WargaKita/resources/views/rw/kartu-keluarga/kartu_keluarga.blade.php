@@ -526,6 +526,7 @@
                                                                 <option value="laki-laki"
                                                                     {{ (old('jenis_kelamin') ?? $item->jenis_kelamin) == 'laki-laki' ? 'selected' : '' }}>
                                                                     Laki-laki
+                                        
                                                                 </option>
                                                                 <option value="perempuan"
                                                                     {{ (old('jenis_kelamin') ?? $item->jenis_kelamin) == 'perempuan' ? 'selected' : '' }}>
