@@ -146,11 +146,11 @@
                 </div> --}}
             </div>
         </div>
-    </div>
-
-    {{-- Modals for Edit --}}
-    {{-- Kita hanya perlu modal edit untuk iuran manual --}}
-    @foreach ($iuran as $item) {{-- Loop melalui $iuran yang sudah difilter manual --}}
+        
+    
+        {{-- Modals for Edit --}}
+        {{-- Kita hanya perlu modal edit untuk iuran manual --}}
+        @foreach ($iuran as $item) {{-- Loop melalui $iuran yang sudah difilter manual --}}
         <div class="modal fade" id="modalEditIuran{{ $item->id }}" tabindex="-1"
             aria-labelledby="modalEditIuranLabel{{ $item->id }}" aria-hidden="true">
             <div class="modal-dialog">
@@ -308,6 +308,7 @@
                 </div>
             </div>
         </div>
+    </div>
     </div>
 
 @endsection

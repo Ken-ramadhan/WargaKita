@@ -1,157 +1,198 @@
-    @extends('rw.layouts.app')
+<?php
 
-    @section('title', $title)
+namespace App\Http\Controllers\Rw;
 
-    @section('content')
+use App\Http\Controllers\Controller;
+use App\Models\Iuran; // Asumsi model Iuran
+use App\Models\Kartu_keluarga; // Asumsi model Kartu_keluarga
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log; // Untuk debugging dengan Log
 
-        <div id="content">
+class TagihanController extends Controller
+{
+    /**
+     * Menampilkan daftar iuran manual.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\View\View
+     */
+    public function index(Request $request)
+    {
+        $title = 'Data Iuran Manual';
 
-            {{-- top bar --}}
-            @include('rw.layouts.topbar')
+        // Mengambil semua nomor Kartu Keluarga (no_kk) unik dari tabel kartu_keluarga
+        // untuk mengisi dropdown filter.
+        // Asumsi: Model App\Models\KartuKeluarga ada dan memiliki kolom 'no_kk'.
+        $kartuKeluargaForFilter = Kartu_keluarga::select('no_kk')
+                                            ->distinct()
+                                            ->orderBy('no_kk')
+                                            ->get();
 
-            {{-- top bar end --}}
+        // Query dasar untuk iuran manual
+        $query = Iuran::where('jenis', 'manual');
 
-            <div class="container-fluid">
-                <div class="row">
+        // Filter berdasarkan pencarian nama iuran atau nominal
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('nama', 'like', '%' . $search . '%')
+                  ->orWhere('nominal', 'like', '%' . $search . '%');
+            });
+        }
 
-                    {{-- Session messages --}}
-                    @if (session('success'))
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            {{ session('success') }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    @endif
+        // Filter berdasarkan Nomor Kartu Keluarga (no_kk)
+        // PENTING: Agar filter ini berfungsi pada data Iuran,
+        // model Iuran (atau tabel 'iuran') harus memiliki kolom 'no_kk'
+        // atau relasi yang memungkinkan filter berdasarkan no_kk.
+        // Jika tidak, baris `$query->where('no_kk', $kkFilter);` di bawah
+        // akan menyebabkan error "Unknown column 'no_kk' in 'where clause'".
+        // Anda perlu menambahkan kolom 'no_kk' ke tabel 'iuran' jika ini yang Anda inginkan.
+        if ($request->filled('no_kk_filter')) { // Menggunakan nama parameter 'no_kk_filter' untuk kejelasan
+            $kkFilter = $request->input('no_kk_filter');
+            $query->where('no_kk', $kkFilter); // Asumsi: Iuran memiliki kolom 'no_kk'
+        }
 
-                    @if (session('error'))
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            {{ session('error') }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    @endif
 
-                    <form action="{{ route('iuran.index') }}" method="GET" class="row g-2 align-items-center px-3 pb-2">
-                        <div class="col-md-5 col-sm-12">
-                            <div class="input-group input-group-sm">
-                                <input type="text" name="search" value="{{ request('search') }}" class="form-control"
-                                    placeholder="Cari Data Iuran...">
-                                <button class="btn btn-primary" type="submit">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="col-md-4 col-sm-6 d-flex gap-2">
-                            <select name="rt" class="form-select form-select-sm">
-                                <option value="">Semua RT</option>
-                                @foreach ($rt as $item)
-                                    <option value="{{ $item->nomor_rt }}" {{ request('rt') == $item->nomor_rt ? 'selected' : '' }}>
-                                        RT {{ $item->nomor_rt }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            <button type="submit" class="btn btn-sm btn-primary">Filter</button>
-                            <a href="{{ route('iuran.index') }}" class="btn btn-secondary btn-sm">Reset</a>
-                        </div>
-                    </form>
+        // Paginate hasil
+        $iuran = $query->orderBy('tgl_tagih', 'desc')->paginate(10); // Menampilkan 10 item per halaman
 
-                    <!--tabel iuran manual-->
-                    <div class="col-xl-12 col-lg-7">
-                        <div class="card shadow mb-4">
-                            <div class="card-header py-2 d-flex flex-row align-items-center justify-content-between">
-                                <h6 class="m-0 font-weight-bold text-primary">Tabel Daftar Tagihan</h6> {{-- Ubah judul --}}
-                                <div class="dropdown no-arrow">
-                                    <!--tombol titik tiga di kanan-->
-                                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                                    </a>
-                                    <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                        aria-labelledby="dropdownMenuLink">
-                                        <div class="dropdown-header">Data Tagihan</div> {{-- Ubah teks --}}
-                                        <a class="dropdown-item" href="#" data-bs-toggle="modal"
-                                            data-bs-target="#modalTambahTagihan">Tambah</a> {{-- Ubah target modal --}}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <div class="table-responsive table-container">
-                                    <table class="table table-hover table-sm scroll-table text-nowrap">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">No</th>
-                                                <th scope="col">Nama Tagihan</th> {{-- Sesuaikan header --}}
-                                                <th scope="col">Nominal</th> {{-- Sesuaikan header --}}
-                                                <th scope="col">Status</th> {{-- Tambahkan/sesuaikan header --}}
-                                                <th scope="col">Tanggal Dibuat</th> {{-- Sesuaikan header --}}
-                                                <th scope="col">AKSI</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {{-- Menggunakan $tagihan, bukan $iuran --}}
-                                            @forelse ($tagihan as $item)
-                                                <tr>
-                                                    <th scope="row">{{ $loop->iteration }}</th>
-                                                    <td>{{ $item->nama_tagihan ?? 'N/A' }}</td> {{-- Sesuaikan dengan kolom tagihan Anda --}}
-                                                    <td>Rp{{ number_format($item->nominal ?? 0, 0, ',', '.') }}</td> {{-- Sesuaikan dengan kolom tagihan Anda --}}
-                                                    <td><span class="badge bg-info">{{ $item->status ?? 'N/A' }}</span></td> {{-- Sesuaikan dengan kolom tagihan Anda --}}
-                                                    <td>{{ \Carbon\Carbon::parse($item->created_at)->translatedFormat('d F Y') }}</td> {{-- Sesuaikan dengan kolom tagihan Anda --}}
-                                                    <td>
-                                                        <form action="{{ route('tagihan.destroy', $item->id) }}" method="POST" {{-- Ubah route --}}
-                                                            class="d-inline"
-                                                            onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
-                                                        </form>
-                                                        <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal"
-                                                            data-bs-target="#modalEditTagihan{{ $item->id }}"> {{-- Ubah target modal --}}
-                                                            Edit
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            @empty
-                                                <tr>
-                                                    <td colspan="6" class="text-center">Tidak ada data tagihan.</td> {{-- Sesuaikan colspan --}}
-                                                </tr>
-                                            @endforelse
-                                        </tbody>
-                                    </table>
-                                </div>
+        return view('rw.tagihan.index', compact('title', 'iuran', 'kartuKeluargaForFilter'));
+    }
 
-                                <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
-                                    <div class="text-muted mb-2">
-                                        Menampilkan {{ $tagihan->firstItem() ?? '0' }}-{{ $tagihan->lastItem() }}
-                                        dari total
-                                        {{ $tagihan->total() }} data
-                                    </div>
+    /**
+     * Menyimpan data iuran manual baru.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function store(Request $request)
+    {
+        Log::info('Data received for store:', $request->all());
 
-                                    <div>
-                                        {{-- Menggunakan pagination umum --}}
-                                        {{ $tagihan->links('pagination::bootstrap-5') }}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+        // Validasi input dari form
+        $validated = $request->validate([
+            'nama' => 'required|string|max:255',
+            'tgl_tagih' => 'required|date',
+            'tgl_tempo' => 'required|date',
+            'jenis' => 'required|in:otomatis,manual', // Pastikan jenisnya 'manual'
+            'nominal_manual' => 'required_if:jenis,manual|numeric|min:0', // Wajib jika jenis manual
+            // Jika Anda ingin menyimpan no_kk saat menambah iuran manual, tambahkan validasi di sini:
+            // 'no_kk' => 'nullable|string|max:255', // Contoh: Jika iuran manual bisa terkait dengan KK tertentu
+        ], [
+            'nama.required' => 'Nama iuran harus diisi.',
+            'tgl_tagih.required' => 'Tanggal tagih harus diisi.',
+            'tgl_tempo.required' => 'Tanggal tempo harus diisi.',
+            'jenis.required' => 'Jenis iuran harus dipilih.',
+            'jenis.in' => 'Jenis iuran tidak valid.',
+            'nominal_manual.required_if' => 'Nominal manual harus diisi jika jenisnya manual.',
+            'nominal_manual.numeric' => 'Nominal manual harus berupa angka.',
+            'nominal_manual.min' => 'Nominal manual tidak boleh kurang dari 0.',
+        ]);
 
-                    {{-- Hapus bagian "Tabel Iuran Otomatis" jika ada di file ini --}}
-                    {{-- <div class="col-xl-12 col-lg-7">
-                        ... (Konten tabel otomatis yang sudah dihapus) ...
-                    </div> --}}
-                </div>
-            </div>
-        </div>
+        // Pastikan hanya jenis 'manual' yang diproses di sini
+        if ($validated['jenis'] !== 'manual') {
+            return redirect()->back()->with('error', 'Hanya iuran manual yang dapat ditambahkan melalui form ini.');
+        }
 
-        {{-- Modals for Edit Tagihan (sesuaikan dengan kolom Tagihan Anda) --}}
-        @foreach ($tagihan as $item)
-            <div class="modal fade" id="modalEditTagihan{{ $item->id }}" tabindex="-1" {{-- Ubah ID modal --}}
-                aria-labelledby="modalEditTagihanLabel{{ $item->id }}" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content shadow-lg">
-                        <div class="modal-header bg-warning text-white">
-                            <h5 class="modal-title" id="modalEditTagihanLabel{{ $item->id }}">Edit Data Tagihan</h5> {{-- Ubah judul modal --}}
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                                aria-label="Tutup"></button>
-                        </div>
-                        <div class="modal-body">
-                            {{-- Form Edit Tagihan --}}
-                            <form action="{{ route('tagihan.update', $item->
+        try {
+            // Simpan data iuran utama
+            $iuran = Iuran::create([
+                'nama' => $validated['nama'],
+                'tgl_tagih' => $validated['tgl_tagih'],
+                'tgl_tempo' => $validated['tgl_tempo'],
+                'jenis' => 'manual', // Selalu 'manual' karena ini TagihanController manual
+                'nominal' => $validated['nominal_manual'], // Simpan nominal manual ke kolom 'nominal'
+                // Jika Anda menyimpan no_kk saat menambah iuran manual, tambahkan di sini:
+                // 'no_kk' => $request->no_kk, // Contoh
+            ]);
+
+            Log::info('Iuran manual created successfully:', $iuran->toArray());
+
+            return redirect()->route('iuran.index')->with('success', 'Iuran manual berhasil ditambahkan.');
+
+        } catch (\Exception $e) {
+            Log::error('Error creating iuran manual:', ['message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            return redirect()->back()->withInput()->with('error', 'Gagal menambahkan iuran manual. Error: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Memperbarui data iuran manual yang sudah ada.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function update(Request $request, $id)
+    {
+        Log::info("Data received for update ID {$id}:", $request->all());
+
+        $iuran = Iuran::findOrFail($id);
+
+        // Validasi input dari form
+        $validated = $request->validate([
+            'nama' => 'required|string|max:255',
+            'tgl_tagih' => 'required|date',
+            'tgl_tempo' => 'required|date',
+            // Jenis tidak perlu divalidasi karena sudah diasumsikan 'manual' dan tidak diubah via form edit
+            'nominal_manual' => 'required|numeric|min:0',
+            // Jika Anda mengizinkan update no_kk, tambahkan validasi di sini:
+            // 'no_kk' => 'nullable|string|max:255',
+        ], [
+            'nama.required' => 'Nama iuran harus diisi.',
+            'tgl_tagih.required' => 'Tanggal tagih harus diisi.',
+            'tgl_tempo.required' => 'Tanggal tempo harus diisi.',
+            'nominal_manual.required' => 'Nominal harus diisi.',
+            'nominal_manual.numeric' => 'Nominal harus berupa angka.',
+            'nominal_manual.min' => 'Nominal tidak boleh kurang dari 0.',
+        ]);
+
+        try {
+            // Update data iuran utama
+            $iuran->update([
+                'nama' => $validated['nama'],
+                'tgl_tagih' => $validated['tgl_tagih'],
+                'tgl_tempo' => $validated['tgl_tempo'],
+                'nominal' => $validated['nominal_manual'], // Update nominal manual
+                // Jika Anda mengizinkan update no_kk, tambahkan di sini:
+                // 'no_kk' => $request->no_kk,
+                // Jenis tidak perlu diupdate karena diasumsikan tetap 'manual'
+            ]);
+
+            Log::info("Iuran manual ID {$id} updated successfully:", $iuran->toArray());
+
+            return redirect()->route('iuran.index')->with('success', 'Iuran manual berhasil diperbarui.');
+
+        } catch (\Exception $e) {
+            Log::error('Error updating iuran manual:', ['message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            return redirect()->back()->withInput()->with('error', 'Gagal memperbarui iuran manual. Error: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Menghapus data iuran manual.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroy($id)
+    {
+        try {
+            $iuran = Iuran::findOrFail($id);    
+
+            // Pastikan hanya iuran manual yang bisa dihapus dari controller ini
+            if ($iuran->jenis !== 'manual') {
+                return redirect()->back()->with('error', 'Anda tidak dapat menghapus iuran non-manual melalui halaman ini.');
+            }
+
+            $iuran->delete();
+            Log::info("Iuran manual ID {$id} deleted successfully.");
+
+            return redirect()->route('iuran.index')->with('success', 'Iuran manual berhasil dihapus.');
+
+        } catch (\Exception $e) {
+            Log::error('Error deleting iuran manual:', ['message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            return redirect()->back()->with('error', 'Gagal menghapus iuran manual. Error: ' . $e->getMessage());
+        }
+    }
+}
