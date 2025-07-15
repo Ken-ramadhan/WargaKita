@@ -21,6 +21,7 @@ use App\Http\Controllers\Rw\TagihanController;
 use App\Http\Controllers\Rw\WargaController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Warga\DashboardWargaController;
+use App\Http\Controllers\Warga\LihatKKController;
 use App\Http\Controllers\Warga\PengumumanWargaController;
 use Illuminate\Support\Facades\Route;
 
@@ -51,13 +52,13 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::middleware(['auth', 'role:rw,rt,warga,admin'])->post('/update-password', [UserController::class, 'updatePassword'])->name('update.password');
 
 
-Route::middleware(['auth', 'role:rt'])->group(function () {
+ Route::middleware(['auth', 'role:rt'])->group(function () {
     Route::get('/rt', [Rt_dashboardController::class, 'index'])->name('dashboard-rt');
     Route::resource('rt/rt_kartu_keluarga', Rt_kartu_keluargaController::class);
     Route::resource('rt/rt_warga', Rt_wargaController::class);
     Route::resource('rt/rt_pengumuman', Rt_pengumumanController::class);
     Route::resource('rt/rt_iuran', RtiuranController::class);
-});
+ });
 
 
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -71,6 +72,7 @@ Route::post('update', [UserController::class, 'updatePassword'])->name('update.p
 
 Route::middleware(['auth', 'role:warga'])->group(function () {
 
-    Route::get('/', [DashboardWargaController::class, 'index'])->name('dashboard-main');
+    Route::get('/warga/dashboard', [DashboardWargaController::class, 'index'])->name('dashboard-main');
     Route::get('/warga/warga_pengumuman', [PengumumanWargaController::class, 'index'])->name('pengumuman-main');
+    Route::get('/warga/lihat_kk', [LihatKKController::class, 'index'])->name('lihat_kk');
 });

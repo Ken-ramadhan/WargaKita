@@ -145,7 +145,7 @@
 
 @endphp
 
-<body id="page-top" style="overflow: hidden;">
+<body id="page-top">
 
     <div id="wrapper">
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion d-none d-md-block"
@@ -166,8 +166,8 @@
                         <ul class="navbar-nav sidebar sidebar-dark accordion">
                             <hr class="sidebar-divider my-0">
 
-                            <li class="nav-item active">
-                                <a class="nav-link" href="index.html">
+                            <li class="nav-item {{ Request::is('warga/dashboard*') ? 'active' : '' }}">
+                                <a class="nav-link" href="{{ route('dashboard-main') }}">
                                     <i class="fas fa-fw fa-tachometer-alt"></i>
                                     <span>Dashboard</span>
                                 </a>
@@ -179,6 +179,13 @@
                                 <a class="nav-link" href="{{ route('pengumuman-main') }}">
                                     <i class="fas fa-bullhorn"></i>
                                     <span>Pengumuman</span>
+                                </a>
+                            </li>
+
+                            <li class="nav-item {{ Request::is('warga/lihat_kk*') ? 'active' : '' }}">
+                                <a class="nav-link" href="{{ route('lihat_kk') }}">
+                                    <i class="fas fa-id-card"></i>
+                                    <span>Lihat KK</span>
                                 </a>
                             </li>
 

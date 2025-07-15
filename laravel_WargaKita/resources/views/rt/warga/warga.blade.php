@@ -84,8 +84,8 @@
                                                 <td>{{ strtoupper($item->nama) }}</td>
                                                 <td class="text-center">{{ $item->jenis_kelamin }}</td>
                                                 <td>{{ $item->tanggal_lahir }}</td>
-                                                <td>{{ $item->jenis }}</td>
                                                 <td>{{ $item->status_hubungan_dalam_keluarga }}</td>
+                                                <td>{{ $item->jenis }}</td>
                                                 <td>{{ $item->kartuKeluarga->rukunTetangga->nomor_rt }}</td>
                                                 <td class="text-center align-middle">
                                                     <div class="d-flex justify-content-center gap-1 flex-wrap">

@@ -80,16 +80,26 @@
 
     <hr class="sidebar-divider my-0">
 
-    <li class="nav-item {{ Request::is('/') ? 'active' : '' }}"> {{-- Menggunakan Request::is() untuk aktivasi --}}
-        <a class="nav-link" href="{{ url('/') }}">
-            <i class="fas fa-fw fa-tachometer-alt"></i>
+
+    <li class="nav-item {{ Request::is('warga/dashboard*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('dashboard-main') }}">
+            <i class="fas fa-bullhorn"></i>
             <span>Dashboard</span></a>
+        </a>
     </li>
+
 
     <li class="nav-item {{ Request::is('warga/warga_pengumuman*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('pengumuman-main') }}">
             <i class="fas fa-bullhorn"></i>
             <span>Pengumuman</span>
+        </a>
+    </li>
+
+    <li class="nav-item {{ Request::is('warga/lihat_kk*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('lihat_kk') }}">
+            <i class="fas fa-id-card"></i>
+            <span>Lihat KK</span>
         </a>
     </li>
 
