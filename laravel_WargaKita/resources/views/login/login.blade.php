@@ -88,9 +88,9 @@
         }
 
         .logo-img {
-            width: 150px; /* Sesuaikan lebar sesuai kebutuhan */
-            height: auto; /* Pertahankan rasio aspek */
-            filter: brightness(0) invert(1); /* Ini membuat logo hitam menjadi putih */
+            width: 150px;
+            height: auto;
+            filter: brightness(0) invert(1);
         }
 
         .card-header h3 {
@@ -139,13 +139,13 @@
             transform: translateX(-50%);
         }
 
-        /* --- Perbaikan Utama di Sini --- */
+        /* --- Perbaikan Styling Input dan Error di sini --- */
         .form-floating .form-control {
-            height: 58px; /* Sedikit lebih tinggi untuk memberi ruang pada ikon dan label */
+            height: 58px;
             font-size: 1rem;
             border-radius: 10px;
             border: 1px solid var(--border);
-            padding: 1rem 18px 0.5rem 18px; /* Sesuaikan padding untuk floating label */
+            padding: 1rem 18px 0.5rem 18px;
             color: #334155;
             transition: all 0.3s ease;
         }
@@ -156,7 +156,7 @@
         }
 
         .form-floating>label {
-            padding: 1rem 18px; /* Sesuaikan padding label agar pas dengan input */
+            padding: 1rem 18px;
             color: var(--secondary);
             font-weight: 400;
             font-size: 0.95rem;
@@ -164,24 +164,38 @@
 
         /* Styling untuk input dengan ikon di dalam form-floating */
         .form-floating.has-icon .form-control {
-            padding-left: 45px; /* Beri ruang ekstra untuk ikon di kiri */
+            padding-left: 45px;
         }
 
         .form-floating.has-icon>label {
-            padding-left: 45px; /* Sesuaikan padding label juga */
+            padding-left: 45px;
         }
 
         .form-floating .input-icon {
             position: absolute;
             top: 50%;
-            left: 18px; /* Posisi ikon di kiri */
+            left: 18px;
             transform: translateY(-50%);
             color: var(--secondary);
             font-size: 1.1rem;
-            z-index: 2; /* Pastikan ikon di atas input */
+            z-index: 2;
         }
-        /* --- Akhir Perbaikan Utama --- */
 
+        /* Perbaikan utama untuk pesan error */
+        .form-floating .invalid-feedback {
+            position: absolute; /* Posisi absolut agar tidak mengganggu layout */
+            bottom: -20px; /* Atur posisi di bawah input */
+            left: 0;
+            width: 100%;
+            font-size: 0.8rem; /* Sesuaikan ukuran font */
+            color: var(--bs-danger); /* Pastikan warna merah dari Bootstrap */
+            z-index: 4; /* Pastikan di atas elemen lain jika ada tumpang tindih */
+            padding-left: 18px; /* Sesuaikan padding agar sejajar dengan teks input */
+            white-space: nowrap; /* Mencegah teks terlalu panjang memecah baris */
+            overflow: hidden; /* Sembunyikan jika terlalu panjang */
+            text-overflow: ellipsis; /* Tampilkan elipsis jika tersembunyi */
+        }
+        /* Akhir perbaikan styling error */
 
         .btn-primary {
             background: var(--primary);
@@ -223,11 +237,11 @@
             border: none;
             padding: 0;
             color: var(--secondary);
-            z-index: 3; /* Tingkatkan z-index agar selalu di atas label dan input */
-            position: absolute; /* Pastikan ini absolut */
-            top: 50%; /* Tengah vertikal */
-            right: 18px; /* Jarak dari kanan */
-            transform: translateY(-50%); /* Penyesuaian vertikal */
+            z-index: 5; /* Tingkatkan z-index agar selalu di atas label, input, dan pesan error */
+            position: absolute;
+            top: 50%;
+            right: 18px;
+            transform: translateY(-50%);
         }
 
         .toggle-password-btn:hover {
@@ -324,7 +338,7 @@
             }
 
             .logo-img {
-                width: 120px; /* Sesuaikan untuk layar yang lebih kecil */
+                width: 120px;
             }
         }
 
@@ -363,8 +377,7 @@
                             id="loginForm">
                             @csrf
 
-                            <div class="form-floating mb-3 has-icon">
-                                <input type="text" name="nik"
+                            <div class="form-floating mb-4 has-icon"> <input type="text" name="nik"
                                     class="form-control @error('nik') is-invalid @enderror" id="floatingNik"
                                     placeholder="NIK" required value="{{ old('nik') }}">
                                 <label for="floatingNik">NIK</label>
@@ -374,8 +387,7 @@
                                 @enderror
                             </div>
 
-                            <div class="form-floating mb-3 position-relative has-icon">
-                                <input type="password" name="password"
+                            <div class="form-floating mb-4 position-relative has-icon"> <input type="password" name="password"
                                     class="form-control @error('password') is-invalid @enderror" id="floatingPassword"
                                     placeholder="Password" required minlength="6">
                                 <label for="floatingPassword">Kata Sandi</label>
@@ -391,6 +403,7 @@
                                 </button>
                             </div>
                             
+                            {{-- Global error for NIK/Password (if any) --}}
                             @if ($errors->has('nik') || $errors->has('password'))
                                 <div class="alert alert-danger alert-dismissible fade show mt-2" role="alert">
                                     NIK atau kata sandi salah.
@@ -427,8 +440,6 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('loginForm');
-            // Jika Anda memiliki validasi kustom, bisa ditambahkan di sini
-            // Contoh: form.addEventListener('submit', function(event) { ... });
         });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
