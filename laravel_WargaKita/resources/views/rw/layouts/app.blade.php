@@ -12,16 +12,65 @@
     <title>{{ $title ?? 'WargaKita' }}</title>
 
     <!-- Custom fonts for this template-->
-    <link href="{{ asset('vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{asset('vendor/fontawesome-free/css/all.min.css')}}" rel="stylesheet" type="text/css">
     <link
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
 
     <!-- Custom styles for this template-->
-    <link href="{{ asset('css/sb-admin-2.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/sb-admin-2.min.css')}}" rel="stylesheet">
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <!--scroll tambahan dari mika-->    <!-- Di dalam <head> tag di file layout utama Anda -->
+   <!-- <style>
+        /* Pastikan html dan body bisa di-scroll */
+        html, body {
+            height: 100%; /* Memastikan tinggi minimal 100% dari viewport */
+            overflow-x: hidden; /* Mencegah horizontal scrollbar jika tidak diinginkan */
+            overflow-y: auto; /* Memungkinkan vertical scrollbar jika konten melebihi tinggi viewport */
+            scroll-behavior: smooth; /* Opsional: membuat scrolling lebih halus */
+        }
+
+        /* Jika ada elemen utama yang membungkus seluruh konten, pastikan juga bisa di-scroll */
+        /* Contoh: jika Anda punya div dengan id="wrapper" atau id="content-wrapper" */
+        #wrapper, #content-wrapper {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Memastikan wrapper minimal setinggi viewport */
+            overflow: hidden; /* Biasanya wrapper tidak perlu scroll, biarkan body yang handle */
+        }
+
+        /* Pastikan main content area bisa berkembang dan di-scroll */
+        #content {
+            flex-grow: 1; /* Memungkinkan konten untuk mengisi ruang yang tersedia */
+            overflow-y: auto; /* Jika konten di dalam #content melebihi tingginya */
+            -webkit-overflow-scrolling: touch; /* Untuk scrolling yang lebih baik di iOS */
+        }
+
+        /* Jika Anda menggunakan SB Admin 2, periksa juga CSS bawaannya */
+        /* Beberapa class SB Admin 2 mungkin mengatur overflow: hidden */
+        /* Anda mungkin perlu menimpanya jika itu yang menyebabkan masalah */
+        body.sidebar-toggled #content-wrapper {
+            overflow: auto; /* Pastikan konten bisa di-scroll saat sidebar ditoggle */
+        }
+
+        /* Tambahkan CSS yang sudah ada sebelumnya di sini */
+        @media (min-width: 768px) {
+            .sidebar {
+                transition: all 0.3s ease;
+            }
+            .sidebar.toggled {
+                width: 100px !important; /* ukuran kecil saat ditutup */
+            }
+            .sidebar .nav-item .nav-link span {
+                transition: opacity 0.3s ease;
+            }
+        }
+    </style>-->
+    
+
 
     <style>
         @media (min-width: 768px) {
