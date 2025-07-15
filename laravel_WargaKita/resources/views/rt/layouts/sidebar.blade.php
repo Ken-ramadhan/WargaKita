@@ -106,6 +106,11 @@
             <i class="fas fa-bullhorn"></i>
             <span>Pengumuman</span>
         </a>
+    <li class="nav-item {{ Request::is('rt/rt_iuran*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('rt_iuran.index') }}">
+            <i class="fas fa-bullhorn"></i>
+            <span>keuangan</span>
+        </a>
     </li>
 
 
