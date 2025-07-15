@@ -48,11 +48,14 @@
                         <!-- Card Header - Dropdown -->
                         <div class="card-header py-2 d-flex flex-row align-items-center justify-content-between">
                             <h6 class="m-0 font-weight-bold text-primary">Tabel Daftar Warga</h6>
-                            <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                data-bs-target="#modalTambahWarga">
-                                <i class="fas fa-plus"></i>
-                            </button>
+
+                            <div class="d-flex align-items-center gap-2">
+                                <!-- Total Warga RT -->
+                                <i class="fas fa-users me-2 text-primary"></i>
+                                <span class="fw-semibold text-dark">{{ $total_warga }} Warga</span>
+                            </div>
                         </div>
+
                         <!-- Card Body -->
                         <div class="card-body">
                             <div class="table-responsive table-container">

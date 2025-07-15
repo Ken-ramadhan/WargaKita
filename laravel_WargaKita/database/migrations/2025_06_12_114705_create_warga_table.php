@@ -18,7 +18,6 @@ return new class extends Migration
             $table->foreign('no_kk')
                 ->references('no_kk')
                 ->on('kartu_keluarga')
-                ->onDelete('restrict')
                 ->onUpdate('cascade');
             $table->string('nama');
             $table->enum('jenis_kelamin', ['laki-laki', 'perempuan']);

@@ -20,6 +20,7 @@ class PengumumanController extends Controller
     $tahun = $request->input('tahun');
     $bulan = $request->input('bulan');
     $kategori = $request->input('kategori');
+    $total_pengumuman = Pengumuman::count();
 
     $pengumuman = Pengumuman::when($search, function ($query, $search) {
         $query->where('judul', 'like', '%' . $search . '%')
@@ -55,7 +56,8 @@ class PengumumanController extends Controller
         'title',
         'daftar_tahun',
         'daftar_bulan',
-        'daftar_kategori'
+        'daftar_kategori',
+        'total_pengumuman'
     ));
 }
 

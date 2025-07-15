@@ -1,21 +1,70 @@
 <style>
-    /* Slide-in dari kiri */
-    .modal-dialog-slideout-left {
-        position: fixed;
-        left: 0;
-        margin: 0;
-        height: 100%;
-        transform: translateX(-100%);
-        transition: transform 0.3s ease-out;
+    /* CSS untuk logo di sidebar */
+    .sidebar-brand-icon-logo {
+        width: 110px; /* Ukuran normal logo */
+        height: 110px;
+        object-fit: contain;
+        /* margin-right: 200px; Ini terlalu besar dan akan menyebabkan masalah saat dikecilkan. Kita akan menghapusnya atau menguranginya. */
+        filter: brightness(0) invert(1); /* Ini membuat logo hitam menjadi putih */
     }
 
-    .modal.fade .modal-dialog-slideout-left {
-        transform: translateX(-100%);
+    /* Rotasi yang sebelumnya ada pada ikon Font Awesome tidak relevan lagi untuk gambar */
+    .sidebar-brand-icon {
+        transform: none !important;
+        /* Batalkan rotasi jika ada dari kelas lain */
     }
 
-    .modal.fade.show .modal-dialog-slideout-left {
-        transform: translateX(0);
+    /* Aturan untuk Sidebar yang Dikecilkan */
+    /* Targetkan saat #accordionSidebar memiliki kelas .toggled */
+    #accordionSidebar.toggled .sidebar-brand-icon-logo {
+        width: 50px; /* Ukuran logo lebih kecil saat sidebar dikecilkan */
+        height: 50px;
+        margin-left: 26px; /* Hapus margin kanan agar logo menjadi fokus utama */
     }
+
+
+    /* Sesuaikan juga margin pada .sidebar-brand secara keseluruhan jika perlu */
+    /* Saat sidebar dikecilkan, pastikan branding area juga pas */
+    #accordionSidebar.toggled .sidebar-brand {
+        width: 4.375rem !important; /* Lebar sidebar yang dikecilkan biasanya sekitar 4.375rem */
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    /* Jika Anda ingin logo berada di tengah secara horizontal di area icon saja saat dikecilkan */
+    #accordionSidebar.toggled .sidebar-brand .sidebar-brand-icon {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%; /* Pastikan pembungkus icon mengisi lebar */
+    }
+
+    /* Hapus margin-right 200px dari .sidebar-brand-icon-logo */
+    /* Ini akan konflik saat sidebar dikecilkan */
+    .sidebar-brand-icon-logo {
+        margin-right: 0; /* Setel ulang margin-right ke 0 */
+        /* Jika Anda ingin margin kanan pada mode normal, tambahkan di sini */
+        /* contoh: margin-right: 15px; */
+    }
+
+    /* Untuk kasus mobile atau breakpoint tertentu, kita juga bisa menyesuaikan */
+    @media (max-width: 767.98px) {
+        .sidebar-brand-icon-logo {
+            width: 50px; /* Ukuran logo di mobile (jika sidebar mobile juga muncul) */
+            height: 50px;
+            margin-right: 10px; /* Sesuaikan margin untuk mobile */
+        }
+    }
+
+
+    /* Asumsi CSS dasar dari template SB Admin 2 untuk sidebar sudah dimuat */
+    /* .sidebar-dark.accordion { ... } */
+    /* .sidebar-brand { ... } */
+    /* .sidebar-brand-icon { ... } */
+    /* .sidebar-brand-text { ... } */
+    /* .nav-item { ... } */
+    /* .nav-link { ... } */
+    /* dll. */
 </style>
 
 
@@ -23,26 +72,21 @@
 <!-- Sidebar -->
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion d-none d-md-block" id="accordionSidebar">
 
-    <!-- Sidebar - Brand -->
-    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
-        <div class="sidebar-brand-icon rotate-n-15">
-            <i class="fas fa-laugh-wink"></i>
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ url('/') }}"> {{-- Menggunakan helper url() Laravel --}}
+        <div class="sidebar-brand-icon">
+            <img src="{{ asset('img/logo.png') }}" alt="SiWar Logo" class="sidebar-brand-icon-logo">
         </div>
-        <div class="sidebar-brand-text mx-3">Siwar</div>
     </a>
 
-    <!-- Divider -->
     <hr class="sidebar-divider my-0">
 
-    <!-- Nav Item - Dashboard -->
-    <li class="nav-item {{ Request::is('/*') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('dashboard-main') }}">
-            <i class="fas fa-fw fa-home"></i>
-            <span>Dashboard</span>
-        </a>
+    <li class="nav-item {{ Request::is('/') ? 'active' : '' }}"> {{-- Menggunakan Request::is() untuk aktivasi --}}
+        <a class="nav-link" href="{{ url('/') }}">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>Dashboard</span></a>
     </li>
 
-    <li class="nav-item {{ Request::is('pengumuman*') ? 'active' : '' }}">
+    <li class="nav-item {{ Request::is('warga/warga_pengumuman*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('pengumuman-main') }}">
             <i class="fas fa-bullhorn"></i>
             <span>Pengumuman</span>
@@ -50,47 +94,17 @@
     </li>
 
 
-    <!-- Nav lainnya -->
-    {{-- ... semua item lainnya tetap seperti sebelumnya ... --}}
+    {{-- Tagihan --}}
 
-    {{-- <li class="nav-item {{ Request::is('warga*') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('warga.index') }}">
-            <i class="fas fa-users"></i>
-            <span>Manajemen Warga</span>
-        </a>
-    </li>
-
-    <li class="nav-item {{ Request::is('rukun_tetangga*') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('rukun_tetangga.index') }}">
-            <i class="fas fa-house-user"></i>
-            <span>Rukun Tetangga</span>
-        </a>
-    </li>
-
-    <li class="nav-item {{ Request::is('pengumuman*') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('pengumuman.index') }}">
-            <i class="fas fa-bullhorn"></i>
-            <span>Pengumuman</span>
-        </a>
-    </li>
-
-    <li class="nav-item {{ Request::is('tagihan*') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('tagihan.index') }}">
+    {{-- <li class="nav-item {{ Request::is('rt/rt_tagihan*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('rt_tagihan.index') }}">
             <i class="fas fa-file-invoice-dollar"></i>
             <span>Manajemen Keuangan</span>
         </a>
-    </li>
-
-    <li class="nav-item {{ Request::is('kategori_golongan*') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('kategori_golongan.index') }}">
-            <i class="fas fa-layer-group"></i>
-            <span>Kategori Golongan</span>
-        </a>
     </li> --}}
-    <!-- Divider -->
+
     <hr class="sidebar-divider d-none d-md-block">
 
-    <!-- Sidebar Toggler (Sidebar) -->
     <div class="text-center">
         <button class="rounded-circle border-0" id="sidebarToggle"></button>
     </div>

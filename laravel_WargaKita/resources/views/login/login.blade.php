@@ -87,28 +87,10 @@
             z-index: 1;
         }
 
-        .logo-icon {
-            width: 50px;
-            height: 50px;
-            background: white;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 12px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .logo-icon i {
-            color: var(--primary);
-            font-size: 1.8rem;
-        }
-
-        .logo-text {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: white;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        .logo-img {
+            width: 150px; /* Sesuaikan lebar sesuai kebutuhan */
+            height: auto; /* Pertahankan rasio aspek */
+            filter: brightness(0) invert(1); /* Ini membuat logo hitam menjadi putih */
         }
 
         .card-header h3 {
@@ -315,8 +297,8 @@
                 padding: 25px 20px;
             }
 
-            .logo-text {
-                font-size: 1.6rem;
+            .logo-img {
+                width: 120px; /* Sesuaikan untuk layar yang lebih kecil */
             }
         }
 
@@ -342,10 +324,7 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="logo">
-                            <div class="logo-icon">
-                                <i class="bi bi-people-fill"></i>
-                            </div>
-                            <div class="logo-text">SiWar</div>
+                            <img src="{{ asset('img/logo.png') }}" alt="SiWar Logo" class="logo-img">
                         </div>
                         <h3>Sistem Informasi Warga</h3>
                         <p>Selamat datang di aplikasi Sistem Informasi Warga</p>
@@ -359,31 +338,34 @@
                             @csrf
 
                             <div class="form-floating mb-3">
-                                <input type="text" name="nik" class="form-control" id="floatingNik"
-                                    placeholder="NIK" required>
+                                <input type="text" name="nik"
+                                    class="form-control @error('nik') is-invalid @enderror" id="floatingNik"
+                                    placeholder="NIK" required value="{{ old('nik') }}">
                                 <label for="floatingNik">
                                     <i class="bi bi-person-badge me-2"></i>NIK
                                 </label>
-                                <div class="invalid-feedback">
-                                    Harap masukkan NIK.
-                                </div>
                             </div>
 
                             <div class="form-floating mb-3 position-relative">
-                                <input type="password" name="password" class="form-control" id="floatingPassword"
+                                <input type="password" name="password"
+                                    class="form-control @error('password') is-invalid @enderror" id="floatingPassword"
                                     placeholder="Password" required minlength="6">
                                 <label for="floatingPassword">
-                                    <i class="bi bi-lock me-2"></i>Password
+                                    <i class="bi bi-lock me-2"></i>Kata Sandi
                                 </label>
                                 <button type="button"
                                     class="toggle-password-btn position-absolute top-50 end-0 translate-middle-y me-3"
                                     onclick="togglePassword()">
                                     <i class="bi bi-eye" id="toggleIcon"></i>
                                 </button>
-                                <div class="invalid-feedback">
-                                    Password harus minimal 6 karakter.
-                                </div>
                             </div>
+                            @if ($errors->has('nik') || $errors->has('password'))
+                                <div class="alert alert-danger alert-dismissible fade show mt-2" role="alert">
+                                    NIK atau kata sandi salah.
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                        aria-label="Close"></button>
+                                </div>
+                            @endif
 
                             <button type="submit" class="btn btn-primary w-100 mb-3">
                                 <i class="bi bi-box-arrow-in-right me-2"></i> Masuk
@@ -411,18 +393,8 @@
             }
         }
 
-        // Form validation
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('loginForm');
-
-            form.addEventListener('submit', function(event) {
-                if (!form.checkValidity()) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
-
-                form.classList.add('was-validated');
-            }, false);
         });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

@@ -24,6 +24,8 @@ class Rt_pengumumanController extends Controller
 
     // Ambil ID RT yang login
     $rtId = Auth::user()->id_rt;
+    
+    $total_pengumuman = Pengumuman::where('id_rt', $rtId)->count();
 
     // Data list: daftar tahun & kategori unik di RT ini
     $daftar_tahun = Pengumuman::where('id_rt', $rtId)
@@ -71,7 +73,8 @@ $pengumuman = Pengumuman::where(function ($q) use ($rtId, $rwId) {
         'tahun',
         'bulan',
         'kategori',
-        'search'
+        'search',
+        'total_pengumuman'
     ));
 }
 

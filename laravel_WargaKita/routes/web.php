@@ -19,6 +19,7 @@ use App\Http\Controllers\Rw\PengumumanController;
 use App\Http\Controllers\Rw\Rukun_tetanggaController;
 use App\Http\Controllers\Rw\TagihanController;
 use App\Http\Controllers\Rw\WargaController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\Warga\DashboardWargaController;
 use App\Http\Controllers\Warga\PengumumanWargaController;
 use Illuminate\Support\Facades\Route;
@@ -32,19 +33,22 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 });
 
 
-// Route::middleware(['auth', 'role:rw'])->group(function () {
+    Route::middleware(['auth', 'role:rw'])->group(function () {
 
-    Route::get('/rw', [DashboardController::class, 'index'])->name('dashboard-rw');
-    Route::resource('rw/warga', WargaController::class);
-    Route::resource('rw/kartu_keluarga', Kartu_keluargaController::class);
-    Route::resource('rw/rukun_tetangga', Rukun_tetanggaController::class);
-    Route::resource('rw/pengumuman', PengumumanController::class);
-    Route::resource('rw/tagihan', TagihanController::class);
-    Route::resource('rw/iuran', IuranController::class);
-    Route::resource('rw/kategori_golongan', Kategori_golonganController::class);
-    Route::resource('rw/pengeluaran', PengeluaranController::class);
-    Route::get('rw/laporan_pengeluaran_bulanan/{bulan}/{tahun}', [LaporanController::class, 'pengeluaran_bulanan'])->name('pengeluaran_bulanan');
-// });
+        Route::get('/rw', [DashboardController::class, 'index'])->name('dashboard-rw');
+        Route::resource('rw/warga', WargaController::class);
+        Route::resource('rw/kartu_keluarga', Kartu_keluargaController::class);
+        Route::resource('rw/rukun_tetangga', Rukun_tetanggaController::class);
+        Route::resource('rw/pengumuman', PengumumanController::class);
+        Route::resource('rw/tagihan', TagihanController::class);
+        Route::resource('rw/iuran', IuranController::class);
+        Route::resource('rw/kategori_golongan', Kategori_golonganController::class);
+        Route::resource('rw/pengeluaran', PengeluaranController::class);
+        Route::get('rw/laporan_pengeluaran_bulanan/{bulan}/{tahun}', [LaporanController::class, 'pengeluaran_bulanan'])->name('pengeluaran_bulanan');
+        
+     });
+
+    Route::middleware(['auth', 'role:rw,rt,warga,admin'])->post('/update-password', [UserController::class, 'updatePassword'])->name('update.password');
 
 
 // Route::middleware(['auth', 'role:rt'])->group(function () {
@@ -59,7 +63,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->name('login.post');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-// Route::post('/warga/update-password', [WargaController::class, 'updatePassword'])->name('warga.updatePassword');
+Route::post('update', [UserController::class, 'updatePassword'])->name('update.password');
 
 
 

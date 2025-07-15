@@ -86,6 +86,19 @@
                         </div>
                         <!-- Card Body -->
                         <div class="card-body">
+                            <div class="d-flex flex-wrap align-items-center justify-content-between mb-1">
+                                {{-- Total Pengumuman (kiri) --}}
+                                <div class="d-flex align-items-center gap-1 mb-1 mb-sm-0">
+                                    <i class="fas fa-bullhorn me-2 text-primary"></i>
+                                    <span class="fw-semibold text-dark">{{ $total_pengumuman ?? 0 }} Pengumuman</span>
+                                </div>
+
+                                {{-- Tombol tambah (kanan) --}}
+                                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#modalTambahPengumuman">
+                                    <i class="fas fa-plus"></i> Tambah
+                                </button>
+                            </div>
                             <div class="table-responsive table-container">
                                 <table class="table table-sm table-hover text-nowrap">
                                     <thead>

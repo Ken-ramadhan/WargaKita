@@ -49,12 +49,13 @@
                         <div class="card-header py-2 d-flex flex-row align-items-center justify-content-between">
                             <h6 class="m-0 font-weight-bold text-primary">Tabel Daftar Warga</h6>
 
-                            {{-- <!-- Tombol Tambah Warga tanpa dropdown --}}
-                            <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                data-bs-target="#modalTambahWarga">
-                                <i class="fas fa-plus"></i>
-                            </button>
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-users me-2 text-primary"></i>
+                                <span class="fw-semibold text-dark me-4">Total Warga: {{ $total_warga }}</span>
+                            </div>
                         </div>
+
+
                         <!-- Card Body -->
                         <div class="card-body">
                             <div class="table-responsive table-container">
@@ -165,6 +166,9 @@
                                                                         <select name="jenis_kelamin"
                                                                             class="form-select @error('jenis_kelamin') is-invalid @enderror"
                                                                             required>
+                                                                            <option value="jenis_kelamin">
+                                                                                {{ old('jenis_kelamin', $item->jenis_kelamin) }}
+                                                                            </option>
                                                                             <option value="Laki-laki"
                                                                                 {{ old('jenis_kelamin', $item->jenis_kelamin) == 'Laki-laki' ? 'selected' : '' }}>
                                                                                 Laki-laki</option>
@@ -416,213 +420,7 @@
                                 {{ $warga->links('pagination::bootstrap-5') }}
                             </div>
                         </div>
-                        <!-- Modal Tambah Warga -->
-                        <div class="modal fade {{ session('showModal') === 'tambah' ? 'show d-block' : '' }}"
-                            id="modalTambahWarga" tabindex="-1" aria-labelledby="modalTambahWargaLabel"
-                            aria-hidden="{{ session('showModal') === 'tambah' ? 'false' : 'true' }}"
-                            style="{{ session('showModal') === 'tambah' ? 'background-color: rgba(0,0,0,0.5);' : '' }}">
-                            <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                                <div class="modal-content shadow-lg">
-                                    <div class="modal-header bg-primary text-white">
-                                        <h5 class="modal-title" id="modalTambahWargaLabel">Tambah Data Warga</h5>
-                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                                            aria-label="Tutup"></button>
-                                    </div>
 
-                                    <form action="{{ route('warga.store') }}" method="POST">
-                                        @csrf
-                                        <input type="hidden" name="form_type" value="tambah">
-                                        <div class="modal-body px-4" style="max-height: 70vh; overflow-y: auto;">
-
-                                            @php
-                                                $oldIfTambah = fn($field) => old('form_type') === 'tambah'
-                                                    ? old($field)
-                                                    : '';
-                                                $errorIfTambah = fn($field) => $errors->has($field) &&
-                                                old('form_type') === 'tambah'
-                                                    ? 'is-invalid'
-                                                    : '';
-                                            @endphp
-
-                                            @foreach ([
-            'no_kk' => 'Nomor KK',
-            'nik' => 'NIK',
-            'nama' => 'Nama Lengkap',
-            'tempat_lahir' => 'Tempat Lahir',
-            'tanggal_lahir' => 'Tanggal Lahir',
-            'agama' => 'Agama',
-            'pendidikan' => 'Pendidikan',
-            'pekerjaan' => 'Pekerjaan',
-            'nama_ayah' => 'Nama Ayah',
-            'nama_ibu' => 'Nama Ibu',
-        ] as $field => $label)
-                                                <div class="mb-3">
-                                                    <label class="form-label">{{ $label }}</label>
-                                                    <input type="{{ $field === 'tanggal_lahir' ? 'date' : 'text' }}"
-                                                        name="{{ $field }}"
-                                                        class="form-control {{ $errorIfTambah($field) }}"
-                                                        value="{{ $oldIfTambah($field) }}"
-                                                        {{ $field !== 'tanggal_lahir' ? 'maxlength=255' : '' }} required>
-                                                    @error($field)
-                                                        @if (old('form_type') === 'tambah')
-                                                            <div class="invalid-feedback">{{ $message }}</div>
-                                                        @endif
-                                                    @enderror
-                                                </div>
-                                            @endforeach
-
-                                            <!-- Jenis Kelamin -->
-                                            <div class="mb-3">
-                                                <label class="form-label">Jenis Kelamin</label>
-                                                <select name="jenis_kelamin"
-                                                    class="form-select {{ $errorIfTambah('jenis_kelamin') }}" required>
-                                                    <option value="">-- Pilih --</option>
-                                                    <option value="Laki-laki"
-                                                        {{ old('jenis_kelamin') == 'Laki-laki' ? 'selected' : '' }}>
-                                                        Laki-laki</option>
-                                                    <option value="Perempuan"
-                                                        {{ old('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>
-                                                        Perempuan</option>
-                                                </select>
-                                                @error('jenis_kelamin')
-                                                    @if (old('form_type') === 'tambah')
-                                                        <div class="invalid-feedback">{{ $message }}</div>
-                                                    @endif
-                                                @enderror
-                                            </div>
-
-                                            <!-- Hubungan Dalam Keluarga -->
-                                            <div class="mb-3">
-                                                <label class="form-label">Hubungan Dalam Keluarga</label>
-                                                <select name="status_hubungan_dalam_keluarga"
-                                                    class="form-select {{ $errorIfTambah('status_hubungan_dalam_keluarga') }}"
-                                                    required>
-                                                    <option value="">-- Pilih --</option>
-                                                    <option value="kepala keluarga"
-                                                        {{ old('status_hubungan_dalam_keluarga') == 'kepala keluarga' ? 'selected' : '' }}>
-                                                        Kepala Keluarga</option>
-                                                    <option value="istri"
-                                                        {{ old('status_hubungan_dalam_keluarga') == 'istri' ? 'selected' : '' }}>
-                                                        Istri</option>
-                                                    <option value="anak"
-                                                        {{ old('status_hubungan_dalam_keluarga') == 'anak' ? 'selected' : '' }}>
-                                                        Anak</option>
-                                                </select>
-                                                @error('status_hubungan_dalam_keluarga')
-                                                    @if (old('form_type') === 'tambah')
-                                                        <div class="invalid-feedback">{{ $message }}</div>
-                                                    @endif
-                                                @enderror
-                                            </div>
-
-                                            <!-- Status Perkawinan -->
-                                            <div class="mb-3">
-                                                <label class="form-label">Status Perkawinan</label>
-                                                <select name="status_perkawinan"
-                                                    class="form-select {{ $errorIfTambah('status_perkawinan') }}"
-                                                    required>
-                                                    <option value="">-- Pilih --</option>
-                                                    <option value="belum menikah"
-                                                        {{ old('status_perkawinan') == 'belum menikah' ? 'selected' : '' }}>
-                                                        Belum Menikah</option>
-                                                    <option value="menikah"
-                                                        {{ old('status_perkawinan') == 'menikah' ? 'selected' : '' }}>
-                                                        menikah</option>
-                                                    <option value="cerai hidup"
-                                                        {{ old('status_perkawinan') == 'cerai hidup' ? 'selected' : '' }}>
-                                                        cerai hidup</option>
-                                                    <option value="cerai mati"
-                                                        {{ old('status_perkawinan') == 'cerai mati' ? 'selected' : '' }}>
-                                                        cerai mati</option>
-                                                </select>
-                                                @error('status_perkawinan')
-                                                    @if (old('form_type') === 'tambah')
-                                                        <div class="invalid-feedback">{{ $message }}</div>
-                                                    @endif
-                                                @enderror
-                                            </div>
-
-                                            <!-- Golongan Darah -->
-                                            <div class="mb-3">
-                                                <label class="form-label">Golongan Darah</label>
-                                                <select name="golongan_darah"
-                                                    class="form-select {{ $errorIfTambah('golongan_darah') }}" required>
-                                                    <option value="">-- Pilih --</option>
-                                                    @foreach (['A', 'B', 'AB', 'O'] as $gol)
-                                                        <option value="{{ $gol }}"
-                                                            {{ old('golongan_darah') == $gol ? 'selected' : '' }}>
-                                                            {{ $gol }}</option>
-                                                    @endforeach
-                                                </select>
-                                                @error('golongan_darah')
-                                                    @if (old('form_type') === 'tambah')
-                                                        <div class="invalid-feedback">{{ $message }}</div>
-                                                    @endif
-                                                @enderror
-                                            </div>
-
-                                            <!-- Kewarganegaraan -->
-                                            <div class="mb-3">
-                                                <label class="form-label">Kewarganegaraan</label>
-                                                <select name="kewarganegaraan"
-                                                    class="form-select {{ $errorIfTambah('kewarganegaraan') }}" required>
-                                                    <option value="">-- Pilih --</option>
-                                                    <option value="WNI"
-                                                        {{ old('kewarganegaraan') == 'WNI' ? 'selected' : '' }}>
-                                                        WNI</option>
-                                                    <option value="WNA"
-                                                        {{ old('kewarganegaraan') == 'WNA' ? 'selected' : '' }}>
-                                                        WNA</option>
-                                                </select>
-                                                @error('kewarganegaraan')
-                                                    @if (old('form_type') === 'tambah')
-                                                        <div class="invalid-feedback">{{ $message }}</div>
-                                                    @endif
-                                                @enderror
-                                            </div>
-
-                                            <!-- Jenis Warga -->
-                                            <div class="mb-3">
-                                                <label class="form-label">Jenis Warga</label>
-                                                <select name="jenis" class="form-select {{ $errorIfTambah('jenis') }}"
-                                                    required>
-                                                    <option value="">-- Pilih --</option>
-                                                    <option value="penduduk"
-                                                        {{ old('jenis') == 'penduduk' ? 'selected' : '' }}>
-                                                        Penduduk</option>
-                                                    <option value="pendatang"
-                                                        {{ old('jenis') == 'pendatang' ? 'selected' : '' }}>
-                                                        Pendatang</option>
-                                                </select>
-                                                @error('jenis')
-                                                    @if (old('form_type') === 'tambah')
-                                                        <div class="invalid-feedback">{{ $message }}</div>
-                                                    @endif
-                                                @enderror
-                                            </div>
-
-                                            {{-- <div class="mb-3">
-                                                <label class="form-label">Nomor RT</label>
-                                                <select name="id_rt" class="form-select {{ $errorIfTambah('id_rt') }}">
-                                                    <option value="">-- Pilih RT --</option>
-                                                    @foreach ($rukun_tetangga as $rt)
-                                                        <option value="{{ $rt->id }}"
-                                                            {{ old('id_rt') == $rt->id ? 'selected' : '' }}>
-                                                            RT {{ $rt->nomor_rt }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </div> --}}
-
-                                        </div>
-
-                                        <div class="modal-footer bg-light">
-                                            <button type="submit" class="btn btn-primary">Simpan Data</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
 
 
 

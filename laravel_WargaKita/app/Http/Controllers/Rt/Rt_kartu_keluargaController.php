@@ -19,7 +19,8 @@ class Rt_kartu_keluargaController extends Controller
 {
     $search = $request->search;
 
-    $rt_id = Auth::user()->warga?->kartuKeluarga?->rukunTetangga?->id;
+    $rt_id = Auth::user()->rukunTetangga->id;
+    $total_kk = Kartu_keluarga::where('id_rt', $rt_id)->count();
 
     if (!$rt_id) {
         abort(403, 'RT tidak ditemukan. Hubungkan KK dengan RT.');
@@ -28,7 +29,7 @@ class Rt_kartu_keluargaController extends Controller
     $kartuKeluarga = Kartu_keluarga::with(['golongan', 'warga'])
         ->where('id_rt', $rt_id)
         ->when($search, function ($query) use ($search) {
-            $query->where('kepala_kk', 'like', '%' . $search . '%')
+            $query->where('alamat', 'like', '%' . $search . '%')
                   ->orWhere('no_kk', 'like', '%' . $search . '%');
         })
         ->paginate(5)
@@ -47,7 +48,8 @@ class Rt_kartu_keluargaController extends Controller
         'kartuKeluarga',
         'kategori_golongan',
         'warga',
-        'title'
+        'title',
+        'total_kk'
     ));
 }
 
@@ -71,7 +73,6 @@ class Rt_kartu_keluargaController extends Controller
             [
                 'no_kk'      => 'required|unique:kartu_keluarga,no_kk|size:16',
                 'alamat'     => 'required|string',
-                'rw'         => 'required|max:5',
                 'kelurahan'  => 'required|string|max:100',
                 'kecamatan'  => 'required|string|max:100',
                 'kabupaten'  => 'required|string|max:100',
@@ -85,8 +86,6 @@ class Rt_kartu_keluargaController extends Controller
                 'no_kk.unique'        => 'Nomor Kartu Keluarga sudah terdaftar.',
                 'no_kk.size'          => 'Nomor Kartu Keluarga harus terdiri dari 16 karakter.',
                 'alamat.required'     => 'Alamat harus diisi.',
-                'rw.required'         => 'RW harus diisi.',
-                'rw.max'              => 'RW maksimal 5 karakter.',
                 'kelurahan.required'  => 'Kelurahan harus diisi.',
                 'kecamatan.required'  => 'Kecamatan harus diisi.',
                 'kabupaten.required'  => 'Kabupaten harus diisi.',
@@ -98,12 +97,13 @@ class Rt_kartu_keluargaController extends Controller
         );
 
         $id_rt = Auth::user()->id_rt;
+        $id_rw = Auth::user()->rukunTetangga->id_rw;
 
         Kartu_keluarga::create([
             'no_kk'      => $request->no_kk,
             'alamat'     => $request->alamat,
             'id_rt'      => $id_rt,
-            'rw'         => $request->rw,
+            'id_rw'      => $id_rw,
             'kelurahan'  => $request->kelurahan,
             'kecamatan'  => $request->kecamatan,
             'kabupaten'  => $request->kabupaten,
@@ -155,7 +155,6 @@ class Rt_kartu_keluargaController extends Controller
                     Rule::unique('kartu_keluarga', 'no_kk')->ignore($no_kk, 'no_kk'),
                 ],
                 'alamat'     => 'required|string',
-                'rw'         => 'required|max:5',
                 'kelurahan'  => 'required|string|max:100',
                 'kecamatan'  => 'required|string|max:100',
                 'kabupaten'  => 'required|string|max:100',
@@ -169,8 +168,6 @@ class Rt_kartu_keluargaController extends Controller
                 'no_kk.size'   => 'Nomor Kartu Keluarga harus terdiri dari 16 karakter.',
                 'no_kk.required' => 'Nomor Kartu Keluarga harus diisi.',
                 'alamat.required' => 'Alamat harus diisi.',
-                'rw.required' => 'RW harus diisi.',
-                'rw.max' => 'RW maksimal 5 karakter.',
                 'kelurahan.required' => 'Kelurahan harus diisi.',
                 'kecamatan.required' => 'Kecamatan harus diisi.',
                 'kabupaten.required' => 'Kabupaten harus diisi.',
@@ -187,12 +184,13 @@ class Rt_kartu_keluargaController extends Controller
         $this->authorizeRt($kartu_keluarga);
 
         $id_rt = Auth::user()->id_rt;
+        $id_rw = Auth::user()->rukunTetangga->id_rw;
 
         $kartu_keluarga->update([
             'no_kk'      => $request->no_kk,
             'alamat'     => $request->alamat,
             'id_rt'      => $id_rt, // tetap fix
-            'rw'         => $request->rw,
+            'rw'         => $id_rw,
             'kelurahan'  => $request->kelurahan,
             'kecamatan'  => $request->kecamatan,
             'kabupaten'  => $request->kabupaten,

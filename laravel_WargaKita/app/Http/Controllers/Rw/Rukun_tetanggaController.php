@@ -18,7 +18,8 @@ class Rukun_tetanggaController extends Controller
         //
         $rukun_tetangga = Rukun_tetangga::paginate(5);
         $title = 'Rukun Tetangga';
-        return view('rw.data-rt.rukun_tetangga', compact('rukun_tetangga', 'title'));
+        $total_rt = Rukun_tetangga::count();
+        return view('rw.data-rt.rukun_tetangga', compact('rukun_tetangga', 'title','total_rt'));
     }
 
     /**
@@ -63,6 +64,7 @@ class Rukun_tetanggaController extends Controller
         'nama' => $request->nama_ketua_rt,
         'password' => bcrypt('password'),
         'id_rt' => $id_rt,
+        'id_rw' => $id_rw,
         'role' => 'rt',
     ]);
 
