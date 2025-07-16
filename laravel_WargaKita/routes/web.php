@@ -72,7 +72,7 @@ Route::post('update', [UserController::class, 'updatePassword'])->name('update.p
 
 Route::middleware(['auth', 'role:warga'])->group(function () {
 
-    Route::get('/warga/dashboard', [DashboardWargaController::class, 'index'])->name('dashboard-main');
+    Route::get('/', [DashboardWargaController::class, 'index'])->name('dashboard-main');
     Route::get('/warga/warga_pengumuman', [PengumumanWargaController::class, 'index'])->name('pengumuman-main');
     Route::get('/warga/lihat_kk', [LihatKKController::class, 'index'])->name('lihat_kk');
 });
