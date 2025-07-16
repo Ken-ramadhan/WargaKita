@@ -4,33 +4,25 @@ namespace App\Http\Controllers\Rw;
 
 use App\Http\Controllers\Controller;
 use App\Models\Kartu_keluarga;
-use App\Models\Tagihan; // MENGGUNAKAN MODEL TAGIHAN SEKARANG
+use App\Models\Tagihan;
+use App\Models\Iuran;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log; // Untuk debugging dengan Log
+use Illuminate\Support\Facades\Log;
 
 class TagihanController extends Controller
 {
     /**
-     * Menampilkan daftar tagihan manual.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\View\View
+     * Menampilkan daftar tagihan manual dengan filter dan total nominal.
      */
     public function index(Request $request)
     {
-        $title = 'Data Tagihan Manual'; // Judul diubah
+        $title = 'Data Tagihan Manual';
 
-        // Mengambil semua nomor Kartu Keluarga (no_kk) unik dari tabel kartu_keluarga
-        // untuk mengisi dropdown filter.
-        $kartuKeluargaForFilter = Kartu_keluarga::select('no_kk')
-                                            ->distinct()
-                                            ->orderBy('no_kk')
-                                            ->get();
+        $kartuKeluargaForFilter = Kartu_keluarga::select('no_kk')->distinct()->orderBy('no_kk')->get();
+        $iurans = Iuran::select('id', 'nama', 'nominal')->get(); // Opsional
 
-        // Query dasar untuk tagihan manual
-        $query = Tagihan::where('jenis','manual'); // MENGGUNAKAN MODEL TAGIHAN
+        $query = Tagihan::where('jenis', 'manual');
 
-        // Filter berdasarkan pencarian nama tagihan atau nominal
         if ($request->filled('search')) {
             $search = $request->input('search');
             $query->where(function ($q) use ($search) {
@@ -39,161 +31,132 @@ class TagihanController extends Controller
             });
         }
 
-        // Filter berdasarkan Nomor Kartu Keluarga (no_kk)
-        // PENTING: Agar filter ini berfungsi pada data Tagihan,
-        // model Tagihan (atau tabel 'tagihan') harus memiliki kolom 'no_kk'.
         if ($request->filled('no_kk_filter')) {
-            $kkFilter = $request->input('no_kk_filter');
-            $query->where('no_kk', $kkFilter); // Asumsi: Tagihan memiliki kolom 'no_kk'
+            $query->where('no_kk', $request->input('no_kk_filter'));
         }
 
-        // Paginate hasil
-        $tagihan = $query->orderBy('tgl_tagih', 'desc')->paginate(10); // Variabel diubah menjadi $tagihan
+        // Hitung total tagihan berdasarkan filter
+        $totalNominal = $query->sum('nominal');
 
-        // Mengirimkan variabel $tagihan ke view
-        return view('rw.iuran.tagihan', compact('title', 'tagihan', 'kartuKeluargaForFilter')); // Variabel diubah menjadi $tagihan
+        // Paginate hasil
+        $tagihan = $query->orderBy('tgl_tagih', 'desc')->paginate(10);
+
+        return view('rw.iuran.tagihan', compact('title', 'tagihan', 'kartuKeluargaForFilter', 'iurans', 'totalNominal'));
     }
 
     /**
      * Menyimpan data tagihan manual baru.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
-        Log::info('Data received for store tagihan:', $request->all()); // Pesan log diubah
+        Log::info('Data received for store tagihan:', $request->all());
 
-        // Validasi input dari form
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
             'tgl_tagih' => 'required|date',
             'tgl_tempo' => 'required|date',
-            'jenis' => 'required|in:otomatis,manual', // Pastikan jenisnya 'manual'
-            'nominal_manual' => 'required_if:jenis,manual|numeric|min:0', // Wajib jika jenis manual
-            'no_kk' => 'required|string|max:255|exists:kartu_keluarga,no_kk', // Validasi no_kk
-            'status_bayar' => 'required|in:sudah_bayar,belum_bayar', // Validasi status_bayar
-        ], [
-            'nama.required' => 'Nama tagihan harus diisi.', // Pesan validasi diubah
-            'tgl_tagih.required' => 'Tanggal tagih harus diisi.',
-            'tgl_tempo.required' => 'Tanggal tempo harus diisi.',
-            'jenis.required' => 'Jenis tagihan harus dipilih.', // Pesan validasi diubah
-            'jenis.in' => 'Jenis tagihan tidak valid.', // Pesan validasi diubah
-            'nominal_manual.required_if' => 'Nominal manual harus diisi jika jenisnya manual.',
-            'nominal_manual.numeric' => 'Nominal manual harus berupa angka.',
-            'nominal_manual.min' => 'Nominal manual tidak boleh kurang dari 0.',
-            'no_kk.required' => 'Nomor Kartu Keluarga harus diisi.',
-            'no_kk.exists' => 'Nomor Kartu Keluarga tidak ditemukan di database.',
-            'status_bayar.required' => 'Status pembayaran harus dipilih.',
-            'status_bayar.in' => 'Status pembayaran tidak valid.',
+            'jenis' => 'required|in:otomatis,manual',
+            'nominal_manual' => 'required_if:jenis,manual|numeric|min:0',
+            'no_kk' => 'required|string|max:255|exists:kartu_keluarga,no_kk',
+            'status_bayar' => 'required|in:sudah_bayar,belum_bayar',
+            'tgl_bayar' => 'nullable|date',
+            'id_iuran' => 'nullable|exists:iuran,id',
+            'kategori_pembayaran' => 'nullable|in:transfer,tunai',
+            'bukti_transfer' => 'nullable|string|max:255',
         ]);
 
-        // Pastikan hanya jenis 'manual' yang diproses di sini
         if ($validated['jenis'] !== 'manual') {
-            return redirect()->back()->with('error', 'Hanya tagihan manual yang dapat ditambahkan melalui form ini.'); // Pesan error diubah
+            return redirect()->back()->with('error', 'Hanya tagihan manual yang dapat ditambahkan melalui form ini.');
         }
 
         try {
-            // Simpan data tagihan
-            $tagihan = Tagihan::create([ // MENGGUNAKAN MODEL TAGIHAN
+            $dataToStore = [
                 'nama' => $validated['nama'],
                 'tgl_tagih' => $validated['tgl_tagih'],
                 'tgl_tempo' => $validated['tgl_tempo'],
-                'jenis' => 'manual', // Selalu 'manual' karena ini TagihanController manual
-                'nominal' => $validated['nominal_manual'], // Simpan nominal manual ke kolom 'nominal'
-                'no_kk' => $validated['no_kk'], // Simpan no_kk
-                'status_bayar' => $validated['status_bayar'], // Simpan status_bayar
-            ]);
+                'jenis' => 'manual',
+                'nominal' => $validated['nominal_manual'],
+                'no_kk' => $validated['no_kk'],
+                'status_bayar' => $validated['status_bayar'],
+                'tgl_bayar' => $validated['tgl_bayar'] ?? null,
+                'id_iuran' => $validated['id_iuran'] ?? null,
+                'kategori_pembayaran' => $validated['kategori_pembayaran'] ?? null,
+                'bukti_transfer' => $validated['bukti_transfer'] ?? null,
+            ];
 
-            Log::info('Tagihan manual created successfully:', $tagihan->toArray()); // Pesan log diubah
+            Tagihan::create($dataToStore);
 
-            return redirect()->route('iuran.index')->with('success', 'Tagihan manual berhasil ditambahkan.'); // Pesan sukses diubah
+            return redirect()->route('iuran.index')->with('success', 'Tagihan manual berhasil ditambahkan.');
 
         } catch (\Exception $e) {
-            Log::error('Error creating tagihan manual:', ['message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]); // Pesan log diubah
-            return redirect()->back()->withInput()->with('error', 'Gagal menambahkan tagihan manual. Error: ' . $e->getMessage()); // Pesan error diubah
+            Log::error('Error creating tagihan manual:', ['message' => $e->getMessage()]);
+            return redirect()->back()->withInput()->with('error', 'Gagal menambahkan tagihan manual. Error: ' . $e->getMessage());
         }
     }
 
     /**
-     * Memperbarui data tagihan manual yang sudah ada.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\RedirectResponse
+     * Memperbarui tagihan manual.
      */
     public function update(Request $request, $id)
     {
-        Log::info("Data received for update tagihan ID {$id}:", $request->all()); // Pesan log diubah
+        Log::info("Data received for update tagihan ID {$id}:", $request->all());
 
-        $tagihan = Tagihan::findOrFail($id); // MENGGUNAKAN MODEL TAGIHAN
+        $tagihan = Tagihan::findOrFail($id);
 
-        // Validasi input dari form
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
             'tgl_tagih' => 'required|date',
             'tgl_tempo' => 'required|date',
             'nominal_manual' => 'required|numeric|min:0',
-            'no_kk' => 'required|string|max:255|exists:kartu_keluarga,no_kk', // Validasi no_kk
-            'status_bayar' => 'required|in:sudah_bayar,belum_bayar', // Validasi status_bayar
-        ], [
-            'nama.required' => 'Nama tagihan harus diisi.', // Pesan validasi diubah
-            'tgl_tagih.required' => 'Tanggal tagih harus diisi.',
-            'tgl_tempo.required' => 'Tanggal tempo harus diisi.',
-            'nominal_manual.required' => 'Nominal harus diisi.',
-            'nominal_manual.numeric' => 'Nominal harus berupa angka.',
-            'nominal_manual.min' => 'Nominal tidak boleh kurang dari 0.',
-            'no_kk.required' => 'Nomor Kartu Keluarga harus diisi.',
-            'no_kk.exists' => 'Nomor Kartu Keluarga tidak ditemukan di database.',
-            'status_bayar.required' => 'Status pembayaran harus dipilih.',
-            'status_bayar.in' => 'Status pembayaran tidak valid.',
+            'no_kk' => 'required|string|max:255|exists:kartu_keluarga,no_kk',
+            'status_bayar' => 'required|in:sudah_bayar,belum_bayar',
+            'tgl_bayar' => 'nullable|date',
+            'id_iuran' => 'nullable|exists:iuran,id',
+            'kategori_pembayaran' => 'nullable|in:transfer,tunai',
+            'bukti_transfer' => 'nullable|string|max:255',
         ]);
 
         try {
-            // Update data tagihan
-            $tagihan->update([ // MENGGUNAKAN MODEL TAGIHAN
+            $tagihan->update([
                 'nama' => $validated['nama'],
                 'tgl_tagih' => $validated['tgl_tagih'],
                 'tgl_tempo' => $validated['tgl_tempo'],
                 'nominal' => $validated['nominal_manual'],
-                'no_kk' => $validated['no_kk'], // Update no_kk
-                'status_bayar' => $validated['status_bayar'], // Update status_bayar
+                'no_kk' => $validated['no_kk'],
+                'status_bayar' => $validated['status_bayar'],
+                'tgl_bayar' => $validated['tgl_bayar'] ?? null,
+                'id_iuran' => $validated['id_iuran'] ?? null,
+                'kategori_pembayaran' => $validated['kategori_pembayaran'] ?? null,
+                'bukti_transfer' => $validated['bukti_transfer'] ?? null,
             ]);
 
-            Log::info("Tagihan manual ID {$id} updated successfully:", $tagihan->toArray()); // Pesan log diubah
-
-            return redirect()->route('iuran.index')->with('success', 'Tagihan manual berhasil diperbarui.'); // Pesan sukses diubah
+            return redirect()->route('iuran.index')->with('success', 'Tagihan manual berhasil diperbarui.');
 
         } catch (\Exception $e) {
-            Log::error('Error updating tagihan manual:', ['message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]); // Pesan log diubah
-            return redirect()->back()->withInput()->with('error', 'Gagal memperbarui tagihan manual. Error: ' . $e->getMessage()); // Pesan error diubah
+            Log::error('Error updating tagihan manual:', ['message' => $e->getMessage()]);
+            return redirect()->back()->withInput()->with('error', 'Gagal memperbarui tagihan manual. Error: ' . $e->getMessage());
         }
     }
 
     /**
-     * Menghapus data tagihan manual.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\RedirectResponse
+     * Menghapus tagihan manual.
      */
     public function destroy($id)
     {
         try {
-            $tagihan = Tagihan::findOrFail($id); // MENGGUNAKAN MODEL TAGIHAN
+            $tagihan = Tagihan::findOrFail($id);
 
-            // Pastikan hanya tagihan manual yang bisa dihapus dari controller ini
             if ($tagihan->jenis !== 'manual') {
-                return redirect()->back()->with('error', 'Anda tidak dapat menghapus tagihan non-manual melalui halaman ini.'); // Pesan error diubah
+                return redirect()->back()->with('error', 'Anda tidak dapat menghapus tagihan non-manual.');
             }
 
             $tagihan->delete();
-            Log::info("Tagihan manual ID {$id} deleted successfully."); // Pesan log diubah
 
-            return redirect()->route('iuran.index')->with('success', 'Tagihan manual berhasil dihapus.'); // Pesan sukses diubah
+            return redirect()->route('iuran.index')->with('success', 'Tagihan manual berhasil dihapus.');
 
         } catch (\Exception $e) {
-            Log::error('Error deleting tagihan manual:', ['message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]); // Pesan log diubah
-            return redirect()->back()->with('error', 'Gagal menghapus tagihan manual. Error: ' . $e->getMessage()); // Pesan error diubah
+            Log::error('Error deleting tagihan manual:', ['message' => $e->getMessage()]);
+            return redirect()->back()->with('error', 'Gagal menghapus tagihan manual. Error: ' . $e->getMessage());
         }
     }
 }

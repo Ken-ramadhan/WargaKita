@@ -67,13 +67,7 @@
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
                                     aria-labelledby="dropdownMenuLink">
-                                    <div class="dropdown-header">Data Tagihan</div>
-                                    <a class="dropdown-item" href="#" data-bs-toggle="modal"
-                                        data-bs-target="#modalTambahTagihan">Tambah Tagihan Manual</a>
-                                    <a class="dropdown-item" href="{{ route('rw.iuran.iuran') }}">
-                                        <i class="fas fa-file-invoice-dollar fa-fw mr-2 text-gray-400"></i>
-                                        Daftar Iuran Utama
-                                    </a>
+                                    <div class="dropdown-header">Data Tagihan</div> 
                                 </div>
                             </div>
                         </div>
@@ -90,11 +84,13 @@
                                             <th scope="col">TGL TEMPO</th>
                                             <th scope="col">JENIS</th>
                                             <th scope="col">STATUS</th>
+                                            <th scope="col">TGL BAYAR</th>
+                                            <th scope="col">KATEGORI PEMBAYARAN</th>
+                                            <th scope="col">BUKTI TRANSFER</th>
                                             <th scope="col">AKSI</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {{-- Menggunakan $tagihan (yang sudah difilter manual dari controller) --}}
                                         @forelse ($tagihan as $item)
                                             <tr>
                                                 <th scope="row">{{ $loop->iteration }}</th>
@@ -111,9 +107,21 @@
                                                         <span class="badge bg-warning">Belum Bayar</span>
                                                     @endif
                                                 </td>
+                                                <td>{{ $item->tgl_bayar ? \Carbon\Carbon::parse($item->tgl_bayar)->translatedFormat('d F Y H:i') : '-' }}</td>
+                                                <td>{{ $item->kategori_pembayaran ?? '-' }}</td>
                                                 <td>
+                                                    @if ($item->bukti_transfer)
+                                                        <a href="{{ asset('storage/' . $item->bukti_transfer) }}" target="_blank" class="btn btn-info btn-sm">Lihat Bukti</a>
+                                                    @else
+                                                        -
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    <a href="{% url 'detail_tagihan' tagihan.id %}" class="btn btn-success btn-sm">
+                                                        <i class="fas fa-eye"></i>detail
+                                                    </a>
                                                     {{-- Tombol Edit --}}
-                                                    <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal"
+                                                   <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal"
                                                         data-bs-target="#modalEditTagihan{{ $item->id }}">
                                                         Edit
                                                     </button>
@@ -121,7 +129,7 @@
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="9" class="text-center">Tidak ada data tagihan.</td>
+                                                <td colspan="12" class="text-center">Tidak ada data tagihan.</td>
                                             </tr>
                                         @endforelse
                                     </tbody>
@@ -220,6 +228,51 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
+
+                            {{-- Tambahkan field tgl_bayar di modal edit --}}
+                            <div class="mb-3">
+                                <label for="tgl_bayar" class="form-label">Tanggal Bayar</label>
+                                <input type="datetime-local" name="tgl_bayar" class="form-control @error('tgl_bayar') is-invalid @enderror"
+                                    value="{{ old('tgl_bayar', $item->tgl_bayar ? \Carbon\Carbon::parse($item->tgl_bayar)->format('Y-m-d\TH:i') : '') }}">
+                                @error('tgl_bayar')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            {{-- Tambahkan field id_iuran di modal edit (jika relevan untuk diubah manual) --}}
+                            {{-- Jika id_iuran hanya untuk relasi otomatis, bisa dihilangkan dari form --}}
+                            {{-- <div class="mb-3">
+                                <label for="id_iuran" class="form-label">ID Iuran Terkait</label>
+                                <input type="number" name="id_iuran" class="form-control @error('id_iuran') is-invalid @enderror"
+                                    value="{{ old('id_iuran', $item->id_iuran) }}" placeholder="ID Iuran Terkait">
+                                @error('id_iuran')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div> --}}
+
+                            {{-- Tambahkan field kategori_pembayaran di modal edit --}}
+                            <div class="mb-3">
+                                <label for="kategori_pembayaran" class="form-label">Kategori Pembayaran</label>
+                                <select name="kategori_pembayaran" class="form-select @error('kategori_pembayaran') is-invalid @enderror">
+                                    <option value="">Pilih Kategori</option>
+                                    <option value="transfer" {{ old('kategori_pembayaran', $item->kategori_pembayaran) == 'transfer' ? 'selected' : '' }}>Transfer</option>
+                                    <option value="tunai" {{ old('kategori_pembayaran', $item->kategori_pembayaran) == 'tunai' ? 'selected' : '' }}>Tunai</option>
+                                </select>
+                                @error('kategori_pembayaran')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            {{-- Tambahkan field bukti_transfer di modal edit --}}
+                            <div class="mb-3">
+                                <label for="bukti_transfer" class="form-label">Bukti Transfer (URL/Path)</label>
+                                <input type="text" name="bukti_transfer" class="form-control @error('bukti_transfer') is-invalid @enderror"
+                                    value="{{ old('bukti_transfer', $item->bukti_transfer) }}" placeholder="URL atau Path Bukti Transfer">
+                                @error('bukti_transfer')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
 
                             {{-- Hanya tampilkan field nominal manual --}}
                             <div id="manualFieldEdit{{ $item->id }}">
@@ -324,6 +377,49 @@
                                 @enderror
                             </div>
 
+                            {{-- Tambahkan field tgl_bayar di modal tambah --}}
+                            <div class="mb-3">
+                                <label for="tgl_bayar" class="form-label">Tanggal Bayar (Opsional)</label>
+                                <input type="datetime-local" name="tgl_bayar" class="form-control @error('tgl_bayar') is-invalid @enderror"
+                                    value="{{ old('tgl_bayar') }}">
+                                @error('tgl_bayar')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            {{-- Tambahkan field id_iuran di modal tambah (jika relevan) --}}
+                            {{-- <div class="mb-3">
+                                <label for="id_iuran" class="form-label">ID Iuran Terkait (Opsional)</label>
+                                <input type="number" name="id_iuran" class="form-control @error('id_iuran') is-invalid @enderror"
+                                    value="{{ old('id_iuran') }}" placeholder="ID Iuran Terkait">
+                                @error('id_iuran')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div> --}}
+
+                            {{-- Tambahkan field kategori_pembayaran di modal tambah --}}
+                            <div class="mb-3">
+                                <label for="kategori_pembayaran" class="form-label">Kategori Pembayaran (Opsional)</label>
+                                <select name="kategori_pembayaran" class="form-select @error('kategori_pembayaran') is-invalid @enderror">
+                                    <option value="">Pilih Kategori</option>
+                                    <option value="transfer" {{ old('kategori_pembayaran') == 'transfer' ? 'selected' : '' }}>Transfer</option>
+                                    <option value="tunai" {{ old('kategori_pembayaran') == 'tunai' ? 'selected' : '' }}>Tunai</option>
+                                </select>
+                                @error('kategori_pembayaran')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            {{-- Tambahkan field bukti_transfer di modal tambah --}}
+                            <div class="mb-3">
+                                <label for="bukti_transfer" class="form-label">Bukti Transfer (URL/Path, Opsional)</label>
+                                <input type="text" name="bukti_transfer" class="form-control @error('bukti_transfer') is-invalid @enderror"
+                                    value="{{ old('bukti_transfer') }}" placeholder="URL atau Path Bukti Transfer">
+                                @error('bukti_transfer')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
                             {{-- Hanya tampilkan field nominal manual --}}
                             <div class="mb-3" id="manual-field">
                                 <label class="form-label">Nominal</label>
@@ -365,4 +461,4 @@
         // Misalnya, inisialisasi Bootstrap modals secara manual jika diperlukan.
     });
 </script>
-@endp
+@endpush

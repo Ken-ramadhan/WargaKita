@@ -26,9 +26,9 @@ class Iuran extends Model
      * Definisikan relasi ke model Tagihan.
      * Satu Iuran memiliki satu Tagihan.
      */
-    public function tagihan(): HasOne
+    public function tagihan()
     {
-        return $this->hasOne(Tagihan::class);
+        return $this->hasMany(Tagihan::class, 'id_iuran'); 
     }
 
     /**
