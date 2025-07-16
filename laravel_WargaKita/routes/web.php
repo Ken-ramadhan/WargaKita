@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/admin', [Admin_dashboardController::class, 'index'])->name('dashboard-admin');
+    Route::get('/admin/dashboard', [Admin_dashboardController::class, 'index'])->name('dashboard-admin');
     Route::resource('admin/data_rt', Admin_rtController::class);
     Route::resource('admin/data_rw', Admin_rwController::class);
     
@@ -72,7 +72,7 @@ Route::post('update', [UserController::class, 'updatePassword'])->name('update.p
 
 Route::middleware(['auth', 'role:warga'])->group(function () {
 
-    Route::get('/warga/dashboard', [DashboardWargaController::class, 'index'])->name('dashboard-main');
+    Route::get('/', [DashboardWargaController::class, 'index'])->name('dashboard-main');
     Route::get('/warga/warga_pengumuman', [PengumumanWargaController::class, 'index'])->name('pengumuman-main');
     Route::get('/warga/lihat_kk', [LihatKKController::class, 'index'])->name('lihat_kk');
 });

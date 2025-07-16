@@ -94,6 +94,8 @@
                                                             onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
                                                             @csrf
                                                             @method('DELETE')
+                                                            <input type="hidden" name="redirect_to"
+                                                                value="{{ route('warga.index') }}">
                                                             <button type="submit" class="btn btn-danger btn-sm">
                                                                 <i class="fas fa-trash-alt"></i> <!-- Ikon hapus -->
                                                             </button>
@@ -118,8 +120,8 @@
                                                     <div class="modal-content shadow-lg">
                                                         <div class="modal-header bg-warning text-white">
                                                             <h5 class="modal-title"
-                                                                id="modalEditwargaLabel{{ $item->nik }}">Edit Data Warga
-                                                            </h5>
+                                                                id="modalEditwargaLabel{{ $item->nik }}">Edit
+                                                                Data Warga</h5>
                                                             <button type="button" class="btn-close btn-close-white"
                                                                 data-bs-dismiss="modal" aria-label="Tutup"></button>
                                                         </div>
@@ -128,10 +130,17 @@
                                                             method="POST">
                                                             @csrf
                                                             @method('PUT')
-                                                            <div class="modal-body px-4 py-4">
+                                                            <input type="hidden" name="redirect_to"
+                                                                value="{{ route('warga.index') }}">
+
+
+
+                                                            <!-- MODAL BODY YANG BISA SCROLL -->
+                                                            <div class="modal-body"
+                                                                style="max-height: 70vh; overflow-y: auto;">
                                                                 <div class="row g-3">
 
-                                                                    <!-- NIK -->
+                                                                    <!-- Nik -->
                                                                     <div class="col-md-6">
                                                                         <label class="form-label">NIK</label>
                                                                         <input type="text" name="nik"
@@ -147,7 +156,7 @@
                                                                             value="{{ $item->no_kk }}" readonly>
                                                                     </div>
 
-                                                                    <!-- Nama -->
+                                                                    <!-- Nama Lengkap -->
                                                                     <div class="col-md-6">
                                                                         <label class="form-label">Nama Lengkap</label>
                                                                         <input type="text" name="nama"
@@ -165,22 +174,25 @@
                                                                         <label class="form-label">Jenis Kelamin</label>
                                                                         <select name="jenis_kelamin"
                                                                             class="form-select @error('jenis_kelamin') is-invalid @enderror"
-                                                                            required>
-                                                                            <option value="jenis_kelamin">
-                                                                                {{ old('jenis_kelamin', $item->jenis_kelamin) }}
+                                                                            required
+                                                                            value="{{ old('jenis_kelamin') ?? $item->jenis_kelamin }}">
+                                                                            <option value="laki-laki"
+                                                                                {{ (old('jenis_kelamin') ?? $item->jenis_kelamin) == 'laki-laki' ? 'selected' : '' }}>
+                                                                                Laki-laki
+
                                                                             </option>
-                                                                            <option value="Laki-laki"
-                                                                                {{ old('jenis_kelamin', $item->jenis_kelamin) == 'laki-laki' ? 'selected' : '' }}>
-                                                                                Laki-laki</option>
-                                                                            <option value="Perempuan"
-                                                                                {{ old('jenis_kelamin', $item->jenis_kelamin) == 'perempuan' ? 'selected' : '' }}>
-                                                                                Perempuan</option>
+                                                                            <option value="perempuan"
+                                                                                {{ (old('jenis_kelamin') ?? $item->jenis_kelamin) == 'perempuan' ? 'selected' : '' }}>
+                                                                                Perempuan
+                                                                            </option>
                                                                         </select>
                                                                         @error('jenis_kelamin')
                                                                             <div class="invalid-feedback">{{ $message }}
                                                                             </div>
                                                                         @enderror
                                                                     </div>
+
+
 
                                                                     <!-- Tempat Lahir -->
                                                                     <div class="col-md-6">
@@ -253,20 +265,17 @@
                                                                         <select name="status_perkawinan"
                                                                             class="form-select @error('status_perkawinan') is-invalid @enderror"
                                                                             required>
-                                                                            <option value="status_perkawinan">
-                                                                                {{ old('status_perkawinan', $item->status_perkawinan) }}
-                                                                            </option>
                                                                             <option value="menikah"
                                                                                 {{ old('status_perkawinan', $item->status_perkawinan) == 'menikah' ? 'selected' : '' }}>
                                                                                 Menikah</option>
                                                                             <option value="belum menikah"
-                                                                                {{ old('status_perkawinan', $item->status_perkawinan) == 'belum_menikah' ? 'selected' : '' }}>
+                                                                                {{ old('status_perkawinan', $item->status_perkawinan) == 'belum menikah' ? 'selected' : '' }}>
                                                                                 Belum Menikah</option>
-                                                                            <option value="cerai_hidup"
-                                                                                {{ old('status_perkawinan', $item->status_perkawinan) == 'cerai_hidup' ? 'selected' : '' }}>
+                                                                            <option value="cerai hidup"
+                                                                                {{ old('status_perkawinan', $item->status_perkawinan) == 'cerai hidup' ? 'selected' : '' }}>
                                                                                 Cerai Hidup</option>
-                                                                            <option value="cerai_mati"
-                                                                                {{ old('status_perkawinan', $item->status_perkawinan) == 'cerai_mati' ? 'selected' : '' }}>
+                                                                            <option value="cerai mati"
+                                                                                {{ old('status_perkawinan', $item->status_perkawinan) == 'cerai mati' ? 'selected' : '' }}>
                                                                                 Cerai Mati</option>
                                                                         </select>
                                                                         @error('status_perkawinan')
@@ -282,7 +291,6 @@
                                                                         <select name="status_hubungan_dalam_keluarga"
                                                                             class="form-select @error('status_hubungan_dalam_keluarga') is-invalid @enderror"
                                                                             required>
-                                                                            <option value="">-- Pilih --</option>
                                                                             <option value="kepala keluarga"
                                                                                 {{ old('status_hubungan_dalam_keluarga', $item->status_hubungan_dalam_keluarga) == 'kepala keluarga' ? 'selected' : '' }}>
                                                                                 Kepala Keluarga</option>
@@ -293,7 +301,7 @@
                                                                                 {{ old('status_hubungan_dalam_keluarga', $item->status_hubungan_dalam_keluarga) == 'anak' ? 'selected' : '' }}>
                                                                                 Anak</option>
                                                                         </select>
-                                                                        @error('status_perkawinan')
+                                                                        @error('status_hubungan_dalam_keluarga')
                                                                             <div class="invalid-feedback">{{ $message }}
                                                                             </div>
                                                                         @enderror
@@ -305,7 +313,6 @@
                                                                         <select name="golongan_darah"
                                                                             class="form-select @error('golongan_darah') is-invalid @enderror"
                                                                             required>
-                                                                            <option value="">-- Pilih --</option>
                                                                             @foreach (['A', 'B', 'AB', 'O'] as $gd)
                                                                                 <option value="{{ $gd }}"
                                                                                     {{ old('golongan_darah', $item->golongan_darah) == $gd ? 'selected' : '' }}>
@@ -381,8 +388,6 @@
                                                                             </div>
                                                                         @enderror
                                                                     </div>
-
-
 
                                                                 </div>
                                                             </div>

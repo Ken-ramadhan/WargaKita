@@ -5,13 +5,17 @@
         <i class="fa fa-bars"></i>
     </button>
 
-    {{-- Logika PHP Blade untuk Judul Halaman --}}
     @php
-        $segment = request()->segment(2) ?? request()->segment(1);
+    $segment = request()->segment(2) ?? request()->segment(1);
 
+    // Ini penting: Jika URL adalah root (misalnya, hanya domain.com/),
+    // maka segmen akan kosong. Kita bisa langsung tangani ini di sini.
+    if (empty($segment) && (Request::is('/') || Route::is('dashboard-main'))) {
+        $judulHalaman = 'Dashboard';
+    } else {
         $judulHalaman = match ($segment) {
             'lihat_kk' => 'Data Kartu Keluarga',
-            'warga' => 'Dashboard',
+            'warga' => 'Dashboard', // Ini untuk URL seperti /warga
             'warga_pengumuman' => 'Pengumuman',
             'tagihan' => 'Tagihan',
             'iuran' => 'Iuran',
@@ -19,7 +23,8 @@
             'laporan_pengeluaran_bulanan' => 'Laporan Pengeluaran Bulanan',
             default => ucwords(str_replace('-', ' ', $segment)),
         };
-    @endphp
+    }
+@endphp
 
     <h1 class="h3 mb-0 text-gray-800 mx-2 text-truncate">{{ $judulHalaman }}</h1>
 

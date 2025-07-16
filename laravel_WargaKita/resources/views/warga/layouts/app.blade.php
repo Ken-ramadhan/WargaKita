@@ -166,7 +166,7 @@
                         <ul class="navbar-nav sidebar sidebar-dark accordion">
                             <hr class="sidebar-divider my-0">
 
-                            <li class="nav-item {{ Request::is('warga/dashboard*') ? 'active' : '' }}">
+                            <li class="nav-item {{ Route::is('dashboard-main') ? 'active' : '' }}">
                                 <a class="nav-link" href="{{ route('dashboard-main') }}">
                                     <i class="fas fa-fw fa-tachometer-alt"></i>
                                     <span>Dashboard</span>

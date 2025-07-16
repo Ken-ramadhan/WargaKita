@@ -14,6 +14,7 @@ class Rt_dashboardController extends Controller
     //
     public function index()
 {
+    $title = 'Dashboard';
     // 1. Dapatkan ID RT dari user yang sedang login
     // Asumsi: Auth::user() memiliki relasi 'rukunTetangga' yang mengembalikan objek RT,
     // dan objek RT tersebut memiliki properti 'id'.
@@ -55,6 +56,7 @@ class Rt_dashboardController extends Controller
 
     // --- Mengirim Data ke View ---
     return view('rt.dashboard.dashboard', compact(
+        'title',
         'jumlah_warga',
         'jumlah_kk',
         'jumlah_pengumuman',

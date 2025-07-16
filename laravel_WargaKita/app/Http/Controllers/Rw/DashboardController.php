@@ -20,6 +20,7 @@ class DashboardController extends Controller
         $jumlah_rt = Rukun_tetangga::count();
         $jumlah_warga_penduduk = Warga::where('jenis', 'penduduk')->count();
         $jumlah_warga_pendatang = Warga::where('jenis', 'pendatang')->count();
-        return view('rw.dashboard.dashboard', compact('jumlah_warga','jumlah_kk','jumlah_pengumuman','jumlah_warga_penduduk','jumlah_warga_pendatang','jumlah_rt'));
+        $title = 'Dashboard';
+        return view('rw.dashboard.dashboard', compact('title','jumlah_warga','jumlah_kk','jumlah_pengumuman','jumlah_warga_penduduk','jumlah_warga_pendatang','jumlah_rt'));
     }
 }

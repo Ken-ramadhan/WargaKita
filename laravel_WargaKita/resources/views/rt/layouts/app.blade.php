@@ -212,7 +212,7 @@
 
                             {{-- ... semua item lainnya tetap seperti sebelumnya ... --}}
 
-                            <li class="nav-item {{ Request::is('rt/warga*') ? 'active' : '' }}">
+                            <li class="nav-item {{ Request::is('rt/rt_warga*') ? 'active' : '' }}">
                                 <a class="nav-link" href="{{ route('rt_warga.index') }}">
                                     <i class="fas fa-users"></i>
                                     <span>Manajemen Warga</span>

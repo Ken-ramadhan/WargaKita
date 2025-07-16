@@ -88,9 +88,9 @@
         }
 
         .logo-img {
-            width: 150px; /* Sesuaikan lebar sesuai kebutuhan */
-            height: auto; /* Pertahankan rasio aspek */
-            filter: brightness(0) invert(1); /* Ini membuat logo hitam menjadi putih */
+            width: 150px;
+            height: auto;
+            filter: brightness(0) invert(1);
         }
 
         .card-header h3 {
@@ -139,27 +139,63 @@
             transform: translateX(-50%);
         }
 
-        .form-control {
-            height: 50px;
+        /* --- Perbaikan Styling Input dan Error di sini --- */
+        .form-floating .form-control {
+            height: 58px;
             font-size: 1rem;
             border-radius: 10px;
             border: 1px solid var(--border);
-            padding: 0 18px;
+            padding: 1rem 18px 0.5rem 18px;
             color: #334155;
             transition: all 0.3s ease;
         }
 
-        .form-control:focus {
+        .form-floating .form-control:focus {
             box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
             border-color: var(--primary);
         }
 
         .form-floating>label {
-            padding: 0 18px;
+            padding: 1rem 18px;
             color: var(--secondary);
             font-weight: 400;
             font-size: 0.95rem;
         }
+
+        /* Styling untuk input dengan ikon di dalam form-floating */
+        .form-floating.has-icon .form-control {
+            padding-left: 45px;
+        }
+
+        .form-floating.has-icon>label {
+            padding-left: 45px;
+        }
+
+        .form-floating .input-icon {
+            position: absolute;
+            top: 50%;
+            left: 18px;
+            transform: translateY(-50%);
+            color: var(--secondary);
+            font-size: 1.1rem;
+            z-index: 2;
+        }
+
+        /* Perbaikan utama untuk pesan error */
+        .form-floating .invalid-feedback {
+            position: absolute; /* Posisi absolut agar tidak mengganggu layout */
+            bottom: -20px; /* Atur posisi di bawah input */
+            left: 0;
+            width: 100%;
+            font-size: 0.8rem; /* Sesuaikan ukuran font */
+            color: var(--bs-danger); /* Pastikan warna merah dari Bootstrap */
+            z-index: 4; /* Pastikan di atas elemen lain jika ada tumpang tindih */
+            padding-left: 18px; /* Sesuaikan padding agar sejajar dengan teks input */
+            white-space: nowrap; /* Mencegah teks terlalu panjang memecah baris */
+            overflow: hidden; /* Sembunyikan jika terlalu panjang */
+            text-overflow: ellipsis; /* Tampilkan elipsis jika tersembunyi */
+        }
+        /* Akhir perbaikan styling error */
 
         .btn-primary {
             background: var(--primary);
@@ -201,7 +237,11 @@
             border: none;
             padding: 0;
             color: var(--secondary);
-            z-index: 10;
+            z-index: 5; /* Tingkatkan z-index agar selalu di atas label, input, dan pesan error */
+            position: absolute;
+            top: 50%;
+            right: 18px;
+            transform: translateY(-50%);
         }
 
         .toggle-password-btn:hover {
@@ -298,7 +338,7 @@
             }
 
             .logo-img {
-                width: 120px; /* Sesuaikan untuk layar yang lebih kecil */
+                width: 120px;
             }
         }
 
@@ -337,28 +377,33 @@
                             id="loginForm">
                             @csrf
 
-                            <div class="form-floating mb-3">
-                                <input type="text" name="nik"
+                            <div class="form-floating mb-4 has-icon"> <input type="text" name="nik"
                                     class="form-control @error('nik') is-invalid @enderror" id="floatingNik"
                                     placeholder="NIK" required value="{{ old('nik') }}">
-                                <label for="floatingNik">
-                                    <i class="bi bi-person-badge me-2"></i>NIK
-                                </label>
+                                <label for="floatingNik">NIK</label>
+                                <i class="bi bi-person-badge input-icon"></i>
+                                @error('nik')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
 
-                            <div class="form-floating mb-3 position-relative">
-                                <input type="password" name="password"
+                            <div class="form-floating mb-4 position-relative has-icon"> <input type="password" name="password"
                                     class="form-control @error('password') is-invalid @enderror" id="floatingPassword"
                                     placeholder="Password" required minlength="6">
-                                <label for="floatingPassword">
-                                    <i class="bi bi-lock me-2"></i>Kata Sandi
-                                </label>
+                                <label for="floatingPassword">Kata Sandi</label>
+                                <i class="bi bi-lock input-icon"></i>
+                                @error('password')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+
                                 <button type="button"
-                                    class="toggle-password-btn position-absolute top-50 end-0 translate-middle-y me-3"
+                                    class="toggle-password-btn"
                                     onclick="togglePassword()">
                                     <i class="bi bi-eye" id="toggleIcon"></i>
                                 </button>
                             </div>
+                            
+                            {{-- Global error for NIK/Password (if any) --}}
                             @if ($errors->has('nik') || $errors->has('password'))
                                 <div class="alert alert-danger alert-dismissible fade show mt-2" role="alert">
                                     NIK atau kata sandi salah.
