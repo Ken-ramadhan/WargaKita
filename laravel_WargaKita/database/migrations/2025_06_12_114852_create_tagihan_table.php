@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             // Kolom-kolom yang ada di fungsionalitas "tagihan manual"
             $table->string('nama'); // Ditambahkan
-            $table->decimal('nominal', 10, 2); // Ditambahkan
+            $table->decimal('nominal', 10, 2); // Ditambahkan   
             $table->date('tgl_tagih'); // Ditambahkan
             $table->date('tgl_tempo'); // Ditambahkan
             $table->enum('jenis', ['otomatis', 'manual'])->default('manual'); // Ditambahkan
