@@ -227,12 +227,12 @@
             <!-- End of Main Content -->
 
 
+            
+            
+            <!-- End of Content Wrapper -->
             {{-- footer --}}
             @include('rw.layouts.footer')
             <!-- End of Footer -->
-
-
-            <!-- End of Content Wrapper -->
         </div>
 
     </div>
@@ -292,7 +292,7 @@
             }
         }
 
-        // Kode JavaScript untuk menampilkan modal jika ada error atau success
+        // // Kode JavaScript untuk menampilkan modal jika ada error atau success
         document.addEventListener('DOMContentLoaded', function() {
             // Pastikan elemen modal sudah ada di DOM sebelum mencoba menginisialisasinya
             const modalElement = document.getElementById('modalUbahPassword');
@@ -312,6 +312,7 @@
                     }, 3000); // Tutup setelah 3 detik
                 @endif
             }
+            
         });
     </script>
 

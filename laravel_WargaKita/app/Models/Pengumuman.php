@@ -16,6 +16,8 @@ class Pengumuman extends Model
         'tanggal',
         'id_rt',
         'id_rw',
+        'dokumen_path', // Tambahkan ini
+        'dokumen_name', // Tambahkan ini
     ];
 
     public function rukunTetangga()

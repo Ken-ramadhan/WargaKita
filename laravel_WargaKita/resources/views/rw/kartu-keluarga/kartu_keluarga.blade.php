@@ -21,7 +21,7 @@
                     <div class="col-md-5 col-sm-12">
                         <div class="input-group input-group-sm">
                             <input type="text" name="search" value="{{ request('search') }}" class="form-control"
-                                placeholder="Cari Data Warga...">
+                                placeholder="Cari nama kepala keluarga/no kk/alamat...">
                             <button class="btn btn-primary" type="submit">
                                 <i class="fas fa-search"></i>
                             </button>
@@ -32,28 +32,28 @@
                         <div class="col-md-3 col-sm-6">
                             <select name="rt" class="form-select form-select-sm">
                                 <option value="">Semua RT</option>
-                                @foreach ($rukun_tetangga as $rt)
-                                    <option value="{{ $rt->nomor_rt }}"
-                                        {{ request('rt') == $rt->nomor_rt ? 'selected' : '' }}>
-                                        RT {{ $rt->nomor_rt }}
+                                @foreach ($rukun_tetangga as $rt_option)
+                                    {{-- Ubah $rt menjadi $rt_option untuk kejelasan --}}
+                                    <option value="{{ $rt_option->rt }}"
+                                        {{ request('rt') == $rt_option->rt ? 'selected' : '' }}>
+                                        RT {{ $rt_option->rt }}
                                     </option>
                                 @endforeach
                             </select>
                         </div>
                         <button class="btn btn-sm btn-primary">Filter</button>
-                        <a href="{{ route('warga.index') }}" class="btn btn-sm btn-secondary">Reset</a>
+                        <a href="{{ route('kartu_keluarga.index') }}" class="btn btn-sm btn-secondary">Reset</a>
                     </div>
                 </form>
 
 
-
-                <!-- Area Chart -->
+                <!-- Card Kartu Keluarga -->
                 <div class="col-xl-12 col-lg-7">
                     <div class="card shadow mb-4">
 
                         <div class="card-header d-flex align-items-center justify-content-between p-3">
                             {{-- Judul: Hanya judul di header --}}
-                            <h6 class="m-0 font-weight-bold text-primary">Tabel Daftar Kartu Keluarga</h6>
+                            <h6 class="m-0 font-weight-bold text-primary">Daftar Kartu Keluarga</h6>
                         </div>
 
 
@@ -83,7 +83,7 @@
                                             <th scope="col">ALAMAT</th>
                                             <th scope="col">RT</th>
                                             <th scope="col">RW</th>
-                                            <th scope="col">KATEGORI GOLONGAN</th>
+                                            <th scope="col">KATEGORI IURAN</th>
                                             <th scope="col" class="text-center">AKSI</th>
                                         </tr>
                                     </thead>
@@ -102,9 +102,9 @@
                                                     {{ $kepala->nama ?? '-' }}
                                                 </td>
                                                 <td>{{ $kk->alamat }}</td>
-                                                <td>{{ $kk->rukunTetangga->nomor_rt ?? '-' }}</td>
+                                                <td>{{ $kk->rukunTetangga->rt ?? '-' }}</td>
                                                 <td>{{ $kk->rw->nomor_rw }}</td>
-                                                <td>{{ $kk->golongan }}</td>
+                                                <td>{{ $kk->kategori_iuran }}</td>
                                                 <td class="text-center align-middle">
                                                     <div class="d-flex justify-content-center gap-1 flex-wrap">
                                                         <form action="{{ route('kartu_keluarga.destroy', $kk->no_kk) }}"
@@ -128,7 +128,7 @@
                                                         <button type="button" class="btn btn-success btn-sm"
                                                             data-bs-toggle="modal"
                                                             data-bs-target="#modalDetailkk{{ $kk->no_kk }}">
-                                                            <i class="fas fa-eye"></i>
+                                                            <i class="fas fa-info"></i>
 
                                                         </button>
                                                     </div>
@@ -147,1088 +147,249 @@
                                 @endif
 
 
-                                @foreach ($kartu_keluarga as $kk)
-                                    <!-- Modal Edit kartu keluarga -->
-                                    <div class="modal fade" id="modalEditkk{{ $kk->no_kk }}" tabindex="-1"
-                                        aria-labelledby="modalEditkkLabel{{ $kk->no_kk }}" aria-hidden="true">
-                                        <div class="modal-dialog modal-xl modal-dialog-scrollable">
-                                            <div class="modal-content shadow border-0">
-                                                <form action="{{ route('kartu_keluarga.update', $kk->no_kk) }}"
-                                                    method="POST">
-                                                    @csrf
-                                                    @method('PUT')
-                                                    <div class="modal-header bg-warning text-white">
-                                                        <h5 class="modal-title" id="modalEditkkLabel{{ $kk->no_kk }}">
-                                                            Edit
-                                                            Data Kartu Keluarga</h5>
-                                                        <button type="button" class="btn-close btn-close-white"
-                                                            data-bs-dismiss="modal" aria-label="Tutup"></button>
-                                                    </div>
 
-                                                    <input type="hidden" name="redirect_to"
-                                                        value="{{ url()->previous() }}">
 
-                                                    <div class="modal-body px-4 py-3"
-                                                        style="max-height: 85vh; overflow-y: auto;">
-                                                        <div class="row g-3">
-                                                            <div class="col-md-6">
-                                                                <label class="form-label">Nomor KK</label>
-                                                                <input type="text" name="no_kk" maxlength="16"
-                                                                    pattern="\d{16}" required
-                                                                    value="{{ old('no_kk', $kk->no_kk) }}"
-                                                                    class="form-control @error('no_kk') is-invalid @enderror">
-                                                                @error('no_kk')
-                                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                                @enderror
-                                                            </div>
 
-                                                            <div class="col-md-6">
-                                                                <label class="form-label">No RT</label>
-                                                                <select name="id_rt"
-                                                                    class="form-select @error('id_rt') is-invalid @enderror"
-                                                                    required>
-                                                                    <option value="">-- Pilih RT --</option>
-                                                                    @foreach ($rukun_tetangga as $rt)
-                                                                        <option value="{{ $rt->id }}"
-                                                                            {{ $kk->id_rt == $rt->id ? 'selected' : '' }}>
-                                                                            RT {{ $rt->nomor_rt }}
-                                                                        </option>
-                                                                    @endforeach
-                                                                </select>
-                                                                @error('id_rt')
-                                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                                @enderror
-                                                            </div>
 
-                                                            <div class="col-md-6">
-                                                                <label class="form-label">Kategori Golongan</label>
-                                                                <select name="golongan"
-                                                                    class="form-select @error('id_golongan') is-invalid @enderror"
-                                                                    required>
-                                                                    <option value="">-- Pilih Kategori --</option>
-                                                                    @foreach ($kategori_golongan as $golongan)
-                                                                        <option value="{{ $golongan }}"
-                                                                            {{ old('golongan', $kk->golongan) == $golongan ? 'selected' : '' }}>
-                                                                            {{ ucfirst($golongan) }}
-                                                                        </option>
-                                                                    @endforeach
-                                                                </select>
-                                                                @error('id_golongan')
-                                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                                @enderror
-                                                            </div>
-
-                                                            <div class="col-md-12">
-                                                                <label class="form-label">Alamat</label>
-                                                                <textarea name="alamat" rows="2" required class="form-control @error('alamat') is-invalid @enderror">{{ old('alamat', $kk->alamat) }}</textarea>
-                                                                @error('alamat')
-                                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                                @enderror
-                                                            </div>
-
-                                                            <div class="col-md-6">
-                                                                <label class="form-label">Kelurahan</label>
-                                                                <input type="text" name="kelurahan" maxlength="100"
-                                                                    required
-                                                                    value="{{ old('kelurahan', $kk->kelurahan) }}"
-                                                                    class="form-control @error('kelurahan') is-invalid @enderror">
-                                                                @error('kelurahan')
-                                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                                @enderror
-                                                            </div>
-
-                                                            <div class="col-md-6">
-                                                                <label class="form-label">Kecamatan</label>
-                                                                <input type="text" name="kecamatan" maxlength="100"
-                                                                    required
-                                                                    value="{{ old('kecamatan', $kk->kecamatan) }}"
-                                                                    class="form-control @error('kecamatan') is-invalid @enderror">
-                                                                @error('kecamatan')
-                                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                                @enderror
-                                                            </div>
-
-                                                            <div class="col-md-6">
-                                                                <label class="form-label">Kabupaten/Kota</label>
-                                                                <input type="text" name="kabupaten" maxlength="100"
-                                                                    required
-                                                                    value="{{ old('kabupaten', $kk->kabupaten) }}"
-                                                                    class="form-control @error('kabupaten') is-invalid @enderror">
-                                                                @error('kabupaten')
-                                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                                @enderror
-                                                            </div>
-
-                                                            <div class="col-md-6">
-                                                                <label class="form-label">Provinsi</label>
-                                                                <input type="text" name="provinsi" maxlength="100"
-                                                                    required value="{{ old('provinsi', $kk->provinsi) }}"
-                                                                    class="form-control @error('provinsi') is-invalid @enderror">
-                                                                @error('provinsi')
-                                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                                @enderror
-                                                            </div>
-
-                                                            <div class="col-md-6">
-                                                                <label class="form-label">Kode Pos</label>
-                                                                <input type="text" name="kode_pos" maxlength="10"
-                                                                    required value="{{ old('kode_pos', $kk->kode_pos) }}"
-                                                                    class="form-control @error('kode_pos') is-invalid @enderror">
-                                                                @error('kode_pos')
-                                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                                @enderror
-                                                            </div>
-
-                                                            <div class="col-md-6">
-                                                                <label class="form-label">Tanggal Terbit</label>
-                                                                <input type="date" name="tgl_terbit" required
-                                                                    value="{{ old('tgl_terbit', $kk->tgl_terbit) }}"
-                                                                    class="form-control @error('tgl_terbit') is-invalid @enderror">
-                                                                @error('tgl_terbit')
-                                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                                @enderror
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="modal-footer bg-light border-0">
-                                                            <button type="submit" class="btn btn-warning text-white">
-                                                                <i class="bi bi-save me-1"></i> Simpan Perubahan
-                                                            </button>
-                                                        </div>
-                                                </form>
-                                            </div>
-                                        </div>
+                                <!-- Info dan Tombol Pagination Sejajar -->
+                                <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 ml-2">
+                                    <!-- Info Kustom -->
+                                    <div class="text-muted mb-2">
+                                        Menampilkan
+                                        {{ $kartu_keluarga->firstItem() ?? '0' }}-{{ $kartu_keluarga->lastItem() }}
+                                        dari total
+                                        {{ $kartu_keluarga->total() }} data
                                     </div>
-                            </div>
 
-
-
-                            <!-- Modal Detail KK -->
-                            <div class="modal fade" id="modalDetailkk{{ $kk->no_kk }}" tabindex="-1"
-                                aria-labelledby="modalDetailkkLabel{{ $kk->no_kk }}" aria-hidden="true">
-                                <div class="modal-dialog modal-xl modal-dialog-scrollable">
-                                    <div class="modal-content shadow border-0">
-                                        <!-- Header -->
-                                        <div class="modal-header bg-success text-white">
-                                            <h5 class="modal-title" id="modalDetailkkLabel{{ $kk->no_kk }}">
-                                                Detail Kartu Keluarga
-                                            </h5>
-                                            <button type="button" class="btn-close btn-close-white"
-                                                data-bs-dismiss="modal" aria-label="Tutup"></button>
-                                        </div>
-
-                                        <!-- Body -->
-                                        <div class="modal-body p-4">
-                                            <!-- Informasi KK -->
-                                            <div class="mb-4">
-                                                <h6 class="text-success mb-3 fw-bold">Informasi Kartu Keluarga</h6>
-                                                <div class="row g-4">
-                                                    <div class="col-md-6">
-                                                        <p class="mb-1"><strong>No. KK:</strong> {{ $kk->no_kk }}</p>
-                                                        <p class="mb-1">
-                                                            <strong>Kepala Keluarga:</strong>
-                                                            @php
-                                                                $kepala = $kk->warga->firstWhere(
-                                                                    'status_hubungan_dalam_keluarga',
-                                                                    'kepala keluarga',
-                                                                );
-                                                            @endphp
-                                                            {{ $kepala->nama ?? '-' }}
-                                                        </p>
-                                                        <p class="mb-1"><strong>Alamat:</strong> {{ $kk->alamat }}</p>
-                                                        <p class="mb-1"><strong>RT/RW:</strong>
-                                                            {{ $kk->rukunTetangga->nomor_rt }}/{{ $kk->rw->nomor_rw }}</p>
-                                                        <p class="mb-1"><strong>Golongan:</strong> {{ $kk->golongan }}
-                                                        </p>
-                                                        <p class="mb-1"><strong>Kode Pos:</strong> {{ $kk->kode_pos }}
-                                                        </p>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <p class="mb-1"><strong>Kelurahan:</strong> {{ $kk->kelurahan }}
-                                                        </p>
-                                                        <p class="mb-1"><strong>Kecamatan:</strong> {{ $kk->kecamatan }}
-                                                        </p>
-                                                        <p class="mb-1"><strong>Kabupaten:</strong> {{ $kk->kabupaten }}
-                                                        </p>
-                                                        <p class="mb-1"><strong>Provinsi:</strong> {{ $kk->provinsi }}
-                                                        </p>
-                                                        <p class="mb-1"><strong>Tanggal Terbit:</strong>
-                                                            {{ \Carbon\Carbon::parse($kk->tgl_terbit)->isoFormat('D MMM Y') }}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- Anggota Keluarga -->
-                                            <div class="mb-3">
-                                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                                    <h6 class="text-success fw-bold mb-0">Anggota Keluarga</h6>
-                                                    <button type="button" class="btn btn-sm btn-primary"
-                                                        data-bs-toggle="modal" data-bs-target="#modalTambahWarga"
-                                                        data-no_kk="{{ $kk->no_kk }}"
-                                                        data-nama_ayah="{{ $kk->warga->firstWhere('status_hubungan_dalam_keluarga', 'kepala keluarga')->nama ?? '' }}"
-                                                        data-nama_ibu="{{ $kk->warga->firstWhere('status_hubungan_dalam_keluarga', 'istri')->nama ?? '' }}">
-                                                        <i class="fas fa-plus"></i> Tambah Warga
-                                                    </button>
-
-                                                </div>
-                                                <div class="table-responsive">
-                                                    <table class="table table-bordered table-sm align-middle text-nowrap">
-                                                        <thead class="table-success text-center small">
-                                                            <tr>
-                                                                <th>No</th>
-                                                                <th>NIK</th>
-                                                                <th>Nama</th>
-                                                                <th>Jenis Kelamin</th>
-                                                                <th>TTL</th>
-                                                                <th>Agama</th>
-                                                                <th>Pendidikan</th>
-                                                                <th>Pekerjaan</th>
-                                                                <th>Status Kawin</th>
-                                                                <th>Hubungan</th>
-                                                                <th>Gol Darah</th>
-                                                                <th>Jenis Warga</th>
-                                                                <th>Nama Ayah</th>
-                                                                <th>Nama Ibu</th>
-                                                                <th>Aksi</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody class="small">
-                                                            @forelse ($kk->warga->sortByDesc(function($item) {
-                                                                                return $item->status_hubungan_dalam_keluarga === 'kepala keluarga';
-                                                                                    }) as $data)
-                                                                <tr>
-                                                                    <td class="text-center">{{ $loop->iteration }}</td>
-                                                                    <td>{{ $data->nik }}</td>
-                                                                    <td>{{ $data->nama }}</td>
-                                                                    <td>{{ $data->jenis_kelamin }}</td>
-                                                                    <td>{{ $data->tempat_lahir }},
-                                                                        {{ \Carbon\Carbon::parse($data->tanggal_lahir)->format('d-m-Y') }}
-                                                                    </td>
-                                                                    <td>{{ $data->agama }}</td>
-                                                                    <td>{{ $data->pendidikan }}</td>
-                                                                    <td>{{ $data->pekerjaan }}</td>
-                                                                    <td>{{ $data->status_perkawinan }}</td>
-                                                                    <td>{{ $data->status_hubungan_dalam_keluarga }}</td>
-                                                                    <td>{{ $data->golongan_darah }}</td>
-                                                                    <td>{{ $data->jenis }}</td>
-                                                                    <td>{{ $data->nama_ayah }}</td>
-                                                                    <td>{{ $data->nama_ibu }}</td>
-                                                                    <td>
-                                                                        <div
-                                                                            class="d-flex justify-content-center align-items-center gap-1 flex-nowrap">
-                                                                            <form
-                                                                                action="{{ route('warga.destroy', $data->nik) }}"
-                                                                                method="POST"
-                                                                                onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
-                                                                                @csrf
-                                                                                <input type="hidden" name="redirect_to"
-                                                                                    value="{{ route('kartu_keluarga.index') }}">
-
-                                                                                @method('DELETE')
-                                                                                <button type="submit"
-                                                                                    class="btn btn-sm btn-danger d-flex align-items-center">
-                                                                                    <i class="fas fa-trash-alt me-1"></i>
-                                                                                </button>
-                                                                            </form>
-
-                                                                            <button type="button"
-                                                                                class="btn btn-sm btn-warning d-flex align-items-center"
-                                                                                data-bs-toggle="modal"
-                                                                                data-bs-target="#modalEditwarga{{ $data->nik }}">
-                                                                                <i class="fas fa-edit me-1"></i>
-                                                                            </button>
-                                                                        </div>
-                                                                    </td>
-
-                                                                </tr>
-                                                            @empty
-                                                                <tr>
-                                                                    <td colspan="14" class="text-center text-muted">
-                                                                        Belum ada anggota keluarga.
-                                                                    </td>
-                                                                </tr>
-                                                            @endforelse
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Footer -->
-                                        <div class="modal-footer bg-light">
-                                            <button type="button" class="btn btn-outline-success"
-                                                data-bs-dismiss="modal">
-                                                <i class="bi bi-check2-circle"></i> Tutup
-                                            </button>
-                                        </div>
+                                    <!-- Tombol Pagination -->
+                                    <div>
+                                        {{ $kartu_keluarga->links('pagination::bootstrap-5') }}
                                     </div>
                                 </div>
                             </div>
-                            @endforeach
-                            @foreach ($warga as $item)
-                                <!-- Modal Edit Warga -->
-                                <div class="modal fade" id="modalEditwarga{{ $item->nik }}" tabindex="-1"
-                                    aria-labelledby="modalEditwargaLabel{{ $item->nik }}" aria-hidden="true">
-                                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                                        <div class="modal-content shadow-lg">
-                                            <div class="modal-header bg-warning text-white">
-                                                <h5 class="modal-title" id="modalEditwargaLabel{{ $item->nik }}">Edit
-                                                    Data Warga</h5>
-                                                <button type="button" class="btn-close btn-close-white"
-                                                    data-bs-dismiss="modal" aria-label="Tutup"></button>
-                                            </div>
 
-                                            <form action="{{ route('warga.update', $item->nik) }}" method="POST">
-                                                @csrf
-                                                @method('PUT')
-                                                <input type="hidden" name="redirect_to"
-                                                    value="{{ route('kartu_keluarga.index') }}">
-
-
-
-                                                <!-- MODAL BODY YANG BISA SCROLL -->
-                                                <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
-                                                    <div class="row g-3">
-
-                                                        <!-- Nik -->
-                                                        <div class="col-md-6">
-                                                            <label class="form-label">NIK</label>
-                                                            <input type="text" name="nik" class="form-control"
-                                                                value="{{ $item->nik }}" readonly>
-                                                        </div>
-
-                                                        <!-- No KK -->
-                                                        <div class="col-md-6">
-                                                            <label class="form-label">Nomor KK</label>
-                                                            <input type="text" name="no_kk" class="form-control"
-                                                                value="{{ $item->no_kk }}" readonly>
-                                                        </div>
-
-                                                        <!-- Nama Lengkap -->
-                                                        <div class="col-md-6">
-                                                            <label class="form-label">Nama Lengkap</label>
-                                                            <input type="text" name="nama"
-                                                                class="form-control @error('nama') is-invalid @enderror"
-                                                                value="{{ old('nama', $item->nama) }}" required>
-                                                            @error('nama')
-                                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
-
-                                                        <!-- Jenis Kelamin -->
-                                                        <div class="col-md-6">
-                                                            <label class="form-label">Jenis Kelamin</label>
-                                                            <select name="jenis_kelamin"
-                                                                class="form-select @error('jenis_kelamin') is-invalid @enderror"
-                                                                required
-                                                                value="{{ old('jenis_kelamin') ?? $item->jenis_kelamin }}">
-                                                                <option value="laki-laki"
-                                                                    {{ (old('jenis_kelamin') ?? $item->jenis_kelamin) == 'laki-laki' ? 'selected' : '' }}>
-                                                                    Laki-laki
-                                        
-                                                                </option>
-                                                                <option value="perempuan"
-                                                                    {{ (old('jenis_kelamin') ?? $item->jenis_kelamin) == 'perempuan' ? 'selected' : '' }}>
-                                                                    Perempuan
-                                                                </option>
-                                                            </select>
-                                                            @error('jenis_kelamin')
-                                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
-
-
-
-                                                        <!-- Tempat Lahir -->
-                                                        <div class="col-md-6">
-                                                            <label class="form-label">Tempat Lahir</label>
-                                                            <input type="text" name="tempat_lahir"
-                                                                class="form-control @error('tempat_lahir') is-invalid @enderror"
-                                                                value="{{ old('tempat_lahir', $item->tempat_lahir) }}"
-                                                                required>
-                                                            @error('tempat_lahir')
-                                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
-
-                                                        <!-- Tanggal Lahir -->
-                                                        <div class="col-md-6">
-                                                            <label class="form-label">Tanggal Lahir</label>
-                                                            <input type="date" name="tanggal_lahir"
-                                                                class="form-control @error('tanggal_lahir') is-invalid @enderror"
-                                                                value="{{ old('tanggal_lahir', $item->tanggal_lahir) }}"
-                                                                required>
-                                                            @error('tanggal_lahir')
-                                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
-
-                                                        <!-- Agama -->
-                                                        <div class="col-md-6">
-                                                            <label class="form-label">Agama</label>
-                                                            <input type="text" name="agama"
-                                                                class="form-control @error('agama') is-invalid @enderror"
-                                                                value="{{ old('agama', $item->agama) }}" required>
-                                                            @error('agama')
-                                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
-
-                                                        <!-- Pendidikan -->
-                                                        <div class="col-md-6">
-                                                            <label class="form-label">Pendidikan</label>
-                                                            <input type="text" name="pendidikan"
-                                                                class="form-control @error('pendidikan') is-invalid @enderror"
-                                                                value="{{ old('pendidikan', $item->pendidikan) }}"
-                                                                required>
-                                                            @error('pendidikan')
-                                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
-
-                                                        <!-- Pekerjaan -->
-                                                        <div class="col-md-6">
-                                                            <label class="form-label">Pekerjaan</label>
-                                                            <input type="text" name="pekerjaan"
-                                                                class="form-control @error('pekerjaan') is-invalid @enderror"
-                                                                value="{{ old('pekerjaan', $item->pekerjaan) }}"
-                                                                required>
-                                                            @error('pekerjaan')
-                                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
-
-                                                        <!-- Status Perkawinan -->
-                                                        <div class="col-md-6">
-                                                            <label class="form-label">Status Perkawinan</label>
-                                                            <select name="status_perkawinan"
-                                                                class="form-select @error('status_perkawinan') is-invalid @enderror"
-                                                                required>
-                                                                <option value="menikah"
-                                                                    {{ old('status_perkawinan', $item->status_perkawinan) == 'menikah' ? 'selected' : '' }}>
-                                                                    Menikah</option>
-                                                                <option value="belum menikah"
-                                                                    {{ old('status_perkawinan', $item->status_perkawinan) == 'belum menikah' ? 'selected' : '' }}>
-                                                                    Belum Menikah</option>
-                                                                <option value="cerai hidup"
-                                                                    {{ old('status_perkawinan', $item->status_perkawinan) == 'cerai hidup' ? 'selected' : '' }}>
-                                                                    Cerai Hidup</option>
-                                                                <option value="cerai mati"
-                                                                    {{ old('status_perkawinan', $item->status_perkawinan) == 'cerai mati' ? 'selected' : '' }}>
-                                                                    Cerai Mati</option>
-                                                            </select>
-                                                            @error('status_perkawinan')
-                                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
-
-                                                        <!-- Hubungan dengan KK -->
-                                                        <div class="col-md-6">
-                                                            <label class="form-label">Hubungan dengan KK</label>
-                                                            <select name="status_hubungan_dalam_keluarga"
-                                                                class="form-select @error('status_hubungan_dalam_keluarga') is-invalid @enderror"
-                                                                required>
-                                                                <option value="kepala keluarga"
-                                                                    {{ old('status_hubungan_dalam_keluarga', $item->status_hubungan_dalam_keluarga) == 'kepala keluarga' ? 'selected' : '' }}>
-                                                                    Kepala Keluarga</option>
-                                                                <option value="istri"
-                                                                    {{ old('status_hubungan_dalam_keluarga', $item->status_hubungan_dalam_keluarga) == 'istri' ? 'selected' : '' }}>
-                                                                    Istri</option>
-                                                                <option value="anak"
-                                                                    {{ old('status_hubungan_dalam_keluarga', $item->status_hubungan_dalam_keluarga) == 'anak' ? 'selected' : '' }}>
-                                                                    Anak</option>
-                                                            </select>
-                                                            @error('status_hubungan_dalam_keluarga')
-                                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
-
-                                                        <!-- Golongan Darah -->
-                                                        <div class="col-md-6">
-                                                            <label class="form-label">Golongan Darah</label>
-                                                            <select name="golongan_darah"
-                                                                class="form-select @error('golongan_darah') is-invalid @enderror"
-                                                                required>
-                                                                @foreach (['A', 'B', 'AB', 'O'] as $gd)
-                                                                    <option value="{{ $gd }}"
-                                                                        {{ old('golongan_darah', $item->golongan_darah) == $gd ? 'selected' : '' }}>
-                                                                        {{ $gd }}</option>
-                                                                @endforeach
-                                                            </select>
-                                                            @error('golongan_darah')
-                                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
-
-                                                        <!-- Kewarganegaraan -->
-                                                        <div class="col-md-6">
-                                                            <label class="form-label">Kewarganegaraan</label>
-                                                            <select name="kewarganegaraan"
-                                                                class="form-select @error('kewarganegaraan') is-invalid @enderror"
-                                                                required>
-                                                                <option value="WNI"
-                                                                    {{ old('kewarganegaraan', $item->kewarganegaraan) == 'WNI' ? 'selected' : '' }}>
-                                                                    WNI</option>
-                                                                <option value="WNA"
-                                                                    {{ old('kewarganegaraan', $item->kewarganegaraan) == 'WNA' ? 'selected' : '' }}>
-                                                                    WNA</option>
-                                                            </select>
-                                                            @error('kewarganegaraan')
-                                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
-
-                                                        <!-- Nama Ayah -->
-                                                        <div class="col-md-6">
-                                                            <label class="form-label">Nama Ayah</label>
-                                                            <input type="text" name="nama_ayah"
-                                                                class="form-control @error('nama_ayah') is-invalid @enderror"
-                                                                value="{{ old('nama_ayah', $item->nama_ayah) }}"
-                                                                required>
-                                                            @error('nama_ayah')
-                                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
-
-                                                        <!-- Nama Ibu -->
-                                                        <div class="col-md-6">
-                                                            <label class="form-label">Nama Ibu</label>
-                                                            <input type="text" name="nama_ibu"
-                                                                class="form-control @error('nama_ibu') is-invalid @enderror"
-                                                                value="{{ old('nama_ibu', $item->nama_ibu) }}" required>
-                                                            @error('nama_ibu')
-                                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
-
-                                                        <!-- Jenis Warga -->
-                                                        <div class="col-md-6">
-                                                            <label class="form-label">Jenis Warga</label>
-                                                            <select name="jenis"
-                                                                class="form-select @error('jenis') is-invalid @enderror"
-                                                                required>
-                                                                <option value="penduduk"
-                                                                    {{ old('jenis', $item->jenis) == 'penduduk' ? 'selected' : '' }}>
-                                                                    Penduduk</option>
-                                                                <option value="pendatang"
-                                                                    {{ old('jenis', $item->jenis) == 'pendatang' ? 'selected' : '' }}>
-                                                                    Pendatang</option>
-                                                            </select>
-                                                            @error('jenis')
-                                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
-
-                                                    </div>
-                                                </div>
-
-                                                <div class="modal-footer bg-light border-top-0">
-                                                    <button type="submit" class="btn btn-warning">Simpan
-                                                        Perubahan</button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
-
-
-
-                            <!-- Info dan Tombol Pagination Sejajar -->
-                            <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
-                                <!-- Info Kustom -->
-                                <div class="text-muted mb-2">
-                                    Menampilkan
-                                    {{ $kartu_keluarga->firstItem() ?? '0' }}-{{ $kartu_keluarga->lastItem() }}
-                                    dari total
-                                    {{ $kartu_keluarga->total() }} data
-                                </div>
-
-                                <!-- Tombol Pagination -->
-                                <div>
-                                    {{ $kartu_keluarga->links('pagination::bootstrap-5') }}
-                                </div>
-                            </div>
                         </div>
 
-                        <!-- Modal Tambah Kartu Keluarga -->
-                        <div class="modal fade {{ session('showModal') === 'kk_tambah' ? 'show d-block' : '' }}"
-                            id="modalTambahKK" tabindex="-1" aria-labelledby="modalTambahKKLabel"
-                            aria-hidden="{{ session('showModal') === 'kk_tambah' ? 'false' : 'true' }}"
-                            style="{{ session('showModal') === 'kk_tambah' ? 'background-color: rgba(0,0,0,0.5);' : '' }}">
-
-                            <div class="modal-dialog modal-xl modal-dialog-scrollable">
-                                <div class="modal-content shadow border-0">
-                                    <form action="{{ route('kartu_keluarga.store') }}" method="POST">
-                                        @csrf
-                                        <input type="hidden" name="form_type" value="kk_tambah">
-                                        <div class="modal-header bg-primary text-white">
-                                            <h5 class="modal-title" id="modalTambahKKLabel">Tambah Data Kartu Keluarga
-                                            </h5>
-                                            <button type="button" class="btn-close btn-close-white"
-                                                data-bs-dismiss="modal" aria-label="Tutup"></button>
-                                        </div>
-
-                                        <div class="modal-body px-4 py-3" style="max-height: 85vh; overflow-y: auto;">
-                                            <div class="row g-3">
-                                                <div class="col-md-6">
-                                                    <label class="form-label">Nomor KK</label>
-                                                    <input type="text" name="no_kk" maxlength="16" pattern="\d{16}"
-                                                        required
-                                                        value="{{ old('form_type') === 'kk_tambah' ? old('no_kk') : '' }}"
-                                                        class="form-control {{ $errors->has('no_kk') && old('form_type') === 'kk_tambah' ? 'is-invalid' : '' }}">
-                                                    @if ($errors->has('no_kk') && old('form_type') === 'kk_tambah')
-                                                        <div class="invalid-feedback">{{ $errors->first('no_kk') }}</div>
-                                                    @endif
-                                                </div>
-
-
-                                                <div class="col-md-6">
-                                                    <label class="form-label">No RT</label>
-                                                    <select name="id_rt"
-                                                        class="form-select @error('id_rt') is-invalid @enderror" required>
-                                                        <option value="">-- Pilih RT --</option>
-                                                        @foreach ($rukun_tetangga as $rt)
-                                                            <option value="{{ $rt->id }}"
-                                                                {{ old('id_rt') == $rt->id ? 'selected' : '' }}>
-                                                                RT {{ $rt->nomor_rt }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-
-                                                <div class="col-md-6">
-                                                    <label class="form-label">Kategori Golongan</label>
-                                                    <select name="golongan"
-                                                        class="form-select {{ $errors->has('kategori_golongan') && old('form_type') === 'kk_tambah' ? 'is-invalid' : '' }} {{ old('kategori_golongan') }}"
-                                                        required>
-                                                        <option value="">-- Pilih Golongan --</option>
-                                                        @foreach ($kategori_golongan as $golongan)
-                                                            <option value="{{ $golongan }}"
-                                                                {{ old('golongan') == $golongan ? 'selected' : '' }}>
-                                                                {{ ucfirst($golongan) }}
-                                                            </option>
-                                                        @endforeach
-
-
-
-                                                    </select>
-                                                    @if ($errors->has('kategori_golongan') && old('form_type') === 'kk_tambah')
-                                                        <div class="invalid-feedback">
-                                                            {{ $errors->first('kategori_golongan') }}
-                                                        </div>
-                                                    @endif
-                                                </div>
-
-                                                <div class="col-md-12">
-                                                    <label class="form-label">Alamat</label>
-                                                    <textarea name="alamat" rows="2" required
-                                                        class="form-control {{ $errors->has('alamat') && old('form_type') === 'kk_tambah' ? 'is-invalid' : '' }}">{{ old('form_type') === 'kk_tambah' ? old('alamat') : '' }}</textarea>
-                                                    @if ($errors->has('alamat') && old('form_type') === 'kk_tambah')
-                                                        <div class="invalid-feedback">{{ $errors->first('alamat') }}
-                                                        </div>
-                                                    @endif
-                                                </div>
-
-                                                <div class="col-md-6">
-                                                    <label class="form-label">Kelurahan</label>
-                                                    <input type="text" name="kelurahan" maxlength="100" required
-                                                        value="{{ old('form_type') === 'kk_tambah' ? old('kelurahan') : '' }}"
-                                                        class="form-control {{ $errors->has('kelurahan') && old('form_type') === 'kk_tambah' ? 'is-invalid' : '' }}">
-                                                    @if ($errors->has('kelurahan') && old('form_type') === 'kk_tambah')
-                                                        <div class="invalid-feedback">{{ $errors->first('kelurahan') }}
-                                                        </div>
-                                                    @endif
-                                                </div>
-
-                                                <div class="col-md-6">
-                                                    <label class="form-label">Kecamatan</label>
-                                                    <input type="text" name="kecamatan" maxlength="100" required
-                                                        value="{{ old('form_type') === 'kk_tambah' ? old('kecamatan') : '' }}"
-                                                        class="form-control {{ $errors->has('kecamatan') && old('form_type') === 'kk_tambah' ? 'is-invalid' : '' }}">
-                                                    @if ($errors->has('kecamatan') && old('form_type') === 'kk_tambah')
-                                                        <div class="invalid-feedback">{{ $errors->first('kecamatan') }}
-                                                        </div>
-                                                    @endif
-                                                </div>
-
-                                                <div class="col-md-6">
-                                                    <label class="form-label">Kabupaten/Kota</label>
-                                                    <input type="text" name="kabupaten" maxlength="100" required
-                                                        value="{{ old('form_type') === 'kk_tambah' ? old('kabupaten') : '' }}"
-                                                        class="form-control {{ $errors->has('kabupaten') && old('form_type') === 'kk_tambah' ? 'is-invalid' : '' }}">
-                                                    @if ($errors->has('kabupaten') && old('form_type') === 'kk_tambah')
-                                                        <div class="invalid-feedback">{{ $errors->first('kabupaten') }}
-                                                        </div>
-                                                    @endif
-                                                </div>
-
-                                                <div class="col-md-6">
-                                                    <label class="form-label">Provinsi</label>
-                                                    <input type="text" name="provinsi" maxlength="100" required
-                                                        value="{{ old('form_type') === 'kk_tambah' ? old('provinsi') : '' }}"
-                                                        class="form-control {{ $errors->has('provinsi') && old('form_type') === 'kk_tambah' ? 'is-invalid' : '' }}">
-                                                    @if ($errors->has('provinsi') && old('form_type') === 'kk_tambah')
-                                                        <div class="invalid-feedback">{{ $errors->first('provinsi') }}
-                                                        </div>
-                                                    @endif
-                                                </div>
-
-                                                <div class="col-md-6">
-                                                    <label class="form-label">Kode Pos</label>
-                                                    <input type="text" name="kode_pos" maxlength="10" required
-                                                        value="{{ old('form_type') === 'kk_tambah' ? old('kode_pos') : '' }}"
-                                                        class="form-control {{ $errors->has('kode_pos') && old('form_type') === 'kk_tambah' ? 'is-invalid' : '' }}">
-                                                    @if ($errors->has('kode_pos') && old('form_type') === 'kk_tambah')
-                                                        <div class="invalid-feedback">{{ $errors->first('kode_pos') }}
-                                                        </div>
-                                                    @endif
-                                                </div>
-
-                                                <div class="col-md-6">
-                                                    <label class="form-label">Tanggal Terbit</label>
-                                                    <input type="date" name="tgl_terbit" required
-                                                        value="{{ old('form_type') === 'kk_tambah' ? old('tgl_terbit') : '' }}"
-                                                        class="form-control {{ $errors->has('tgl_terbit') && old('form_type') === 'kk_tambah' ? 'is-invalid' : '' }}">
-                                                    @if ($errors->has('tgl_terbit') && old('form_type') === 'kk_tambah')
-                                                        <div class="invalid-feedback">{{ $errors->first('tgl_terbit') }}
-                                                        </div>
-                                                    @endif
-
-                                                </div>
-                                            </div>
-
-                                            <div class="modal-footer bg-light border-0 ">
-                                                <button type="submit" class="btn btn-primary">
-                                                    <i class="bi bi-save me-1"></i> Simpan Kartu Keluarga
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Modal Tambah Warga -->
-                        @php
-                            $oldIfTambah = fn($field) => old('form_type') === 'tambah' ? old($field) : '';
-                            $errorIfTambah = fn($field) => $errors->has($field) && old('form_type') === 'tambah'
-                                ? 'is-invalid'
-                                : '';
-                        @endphp
-
-                        <div class="modal fade {{ session('showModal') === 'tambah' ? 'show d-block' : '' }}"
-                            id="modalTambahWarga" tabindex="-1" aria-labelledby="modalTambahWargaLabel"
-                            aria-hidden="{{ session('showModal') === 'tambah' ? 'false' : 'true' }}"
-                            style="{{ session('showModal') === 'tambah' ? 'background-color: rgba(0,0,0,0.5);' : '' }}">
-
-                            <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                                <div class="modal-content shadow-lg">
-                                    <div class="modal-header bg-primary text-white">
-                                        <h5 class="modal-title" id="modalTambahWargaLabel">Tambah Data Warga</h5>
-                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                                            aria-label="Tutup"></button>
-                                    </div>
-
-                                    <form action="{{ route('warga.store') }}" method="POST">
-                                        @csrf
-                                        <input type="hidden" name="redirect_to"
-                                            value="{{ route('kartu_keluarga.index') }}">
-                                        <input type="hidden" name="form_type" value="tambah">
-
-                                        <!-- Nomor KK -->
-                                        <input type="hidden" name="no_kk" id="modal_no_kk">
-
-                                        <div class="modal-body px-4" style="max-height: 70vh; overflow-y: auto;">
-                                            <!-- No KK -->
-                                            <div class="mb-3">
-                                                <label class="form-label">Nomor KK</label>
-                                                <input type="text" class="form-control" id="modal_no_kk_show"
-                                                    value="{{ old('no_kk') }}" readonly>
-                                            </div>
-
-                                            <!-- NIK -->
-                                            <div class="mb-3">
-                                                <label class="form-label">NIK</label>
-                                                <input type="text" name="nik" maxlength="16"
-                                                    class="form-control {{ $errorIfTambah('nik') }}"
-                                                    value="{{ $oldIfTambah('nik') }}" required>
-                                                @error('nik')
-                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-
-                                            <!-- Nama Lengkap -->
-                                            <div class="mb-3">
-                                                <label class="form-label">Nama Lengkap</label>
-                                                <input type="text" name="nama"
-                                                    class="form-control {{ $errorIfTambah('nama') }}"
-                                                    value="{{ $oldIfTambah('nama') }}" required>
-                                                @error('nama')
-                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-
-                                            <!-- Hubungan Dalam Keluarga -->
-                                            <div class="mb-3">
-                                                <label class="form-label">Hubungan Dalam Keluarga</label>
-                                                <select name="status_hubungan_dalam_keluarga" id="hubungan_keluarga"
-                                                    class="form-select {{ $errorIfTambah('status_hubungan_dalam_keluarga') }}"
-                                                    required>
-                                                    <option value="">-- Pilih --</option>
-                                                    <option value="kepala keluarga"
-                                                        {{ $oldIfTambah('status_hubungan_dalam_keluarga') == 'kepala keluarga' ? 'selected' : '' }}>
-                                                        Kepala Keluarga</option>
-                                                    <option value="istri"
-                                                        {{ $oldIfTambah('status_hubungan_dalam_keluarga') == 'istri' ? 'selected' : '' }}>
-                                                        Istri</option>
-                                                    <option value="anak"
-                                                        {{ $oldIfTambah('status_hubungan_dalam_keluarga') == 'anak' ? 'selected' : '' }}>
-                                                        Anak</option>
-                                                </select>
-                                                @error('status_hubungan_dalam_keluarga')
-                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-
-                                            <!-- Nama Ayah -->
-                                            <div class="mb-3">
-                                                <label class="form-label">Nama Ayah</label>
-                                                <input type="text" name="nama_ayah" id="input_nama_ayah"
-                                                    class="form-control {{ $errorIfTambah('nama_ayah') }}"
-                                                    value="{{ $oldIfTambah('nama_ayah') }}" required>
-                                                @error('nama_ayah')
-                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-
-                                            <!-- Nama Ibu -->
-                                            <div class="mb-3">
-                                                <label class="form-label">Nama Ibu</label>
-                                                <input type="text" name="nama_ibu" id="input_nama_ibu"
-                                                    class="form-control {{ $errorIfTambah('nama_ibu') }}"
-                                                    value="{{ $oldIfTambah('nama_ibu') }}" required>
-                                                @error('nama_ibu')
-                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-
-                                            <!-- Jenis Kelamin -->
-                                            <div class="mb-3">
-                                                <label class="form-label">Jenis Kelamin</label>
-                                                <select name="jenis_kelamin"
-                                                    class="form-select {{ $errorIfTambah('jenis_kelamin') }}" required>
-                                                    <option value="">-- Pilih --</option>
-                                                    <option value="laki-laki"
-                                                        {{ $oldIfTambah('jenis_kelamin') == 'laki-laki' ? 'selected' : '' }}>
-                                                        Laki-laki</option>
-                                                    <option value="perempuan"
-                                                        {{ $oldIfTambah('jenis_kelamin') == 'perempuan' ? 'selected' : '' }}>
-                                                        Perempuan</option>
-                                                </select>
-                                                @error('jenis_kelamin')
-                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-
-                                            <!-- TTL -->
-                                            <div class="mb-3">
-                                                <label class="form-label">Tempat Lahir</label>
-                                                <input type="text" name="tempat_lahir"
-                                                    class="form-control {{ $errorIfTambah('tempat_lahir') }}"
-                                                    value="{{ $oldIfTambah('tempat_lahir') }}" required>
-                                                @error('tempat_lahir')
-                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-
-                                            <div class="mb-3">
-                                                <label class="form-label">Tanggal Lahir</label>
-                                                <input type="date" name="tanggal_lahir"
-                                                    class="form-control {{ $errorIfTambah('tanggal_lahir') }}"
-                                                    value="{{ $oldIfTambah('tanggal_lahir') }}" required>
-                                                @error('tanggal_lahir')
-                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-
-                                            <!-- Agama -->
-                                            <div class="mb-3">
-                                                <label class="form-label">Agama</label>
-                                                <input type="text" name="agama"
-                                                    class="form-control {{ $errorIfTambah('agama') }}"
-                                                    value="{{ $oldIfTambah('agama') }}" required>
-                                                @error('agama')
-                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-
-                                            <!-- Pendidikan -->
-                                            <div class="mb-3">
-                                                <label class="form-label">Pendidikan</label>
-                                                <input type="text" name="pendidikan"
-                                                    class="form-control {{ $errorIfTambah('pendidikan') }}"
-                                                    value="{{ $oldIfTambah('pendidikan') }}" required>
-                                                @error('pendidikan')
-                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-
-                                            <!-- Pekerjaan -->
-                                            <div class="mb-3">
-                                                <label class="form-label">Pekerjaan</label>
-                                                <input type="text" name="pekerjaan"
-                                                    class="form-control {{ $errorIfTambah('pekerjaan') }}"
-                                                    value="{{ $oldIfTambah('pekerjaan') }}" required>
-                                                @error('pekerjaan')
-                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-
-                                            <!-- Status Perkawinan -->
-                                            <div class="mb-3">
-                                                <label class="form-label">Status Perkawinan</label>
-                                                <select name="status_perkawinan"
-                                                    class="form-select {{ $errorIfTambah('status_perkawinan') }}"
-                                                    required>
-                                                    <option value="">-- Pilih --</option>
-                                                    <option value="belum menikah"
-                                                        {{ $oldIfTambah('status_perkawinan') == 'belum menikah' ? 'selected' : '' }}>
-                                                        Belum Menikah</option>
-                                                    <option value="menikah"
-                                                        {{ $oldIfTambah('status_perkawinan') == 'menikah' ? 'selected' : '' }}>
-                                                        Menikah</option>
-                                                    <option value="cerai hidup"
-                                                        {{ $oldIfTambah('status_perkawinan') == 'cerai hidup' ? 'selected' : '' }}>
-                                                        Cerai Hidup</option>
-                                                    <option value="cerai mati"
-                                                        {{ $oldIfTambah('status_perkawinan') == 'cerai mati' ? 'selected' : '' }}>
-                                                        Cerai Mati</option>
-                                                </select>
-                                                @error('status_perkawinan')
-                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-
-                                            <!-- Golongan Darah -->
-                                            <div class="mb-3">
-                                                <label class="form-label">Golongan Darah</label>
-                                                <select name="golongan_darah"
-                                                    class="form-select {{ $errorIfTambah('golongan_darah') }}" required>
-                                                    <option value="">-- Pilih --</option>
-                                                    @foreach (['A', 'B', 'AB', 'O'] as $gol)
-                                                        <option value="{{ $gol }}"
-                                                            {{ $oldIfTambah('golongan_darah') == $gol ? 'selected' : '' }}>
-                                                            {{ $gol }}</option>
-                                                    @endforeach
-                                                </select>
-                                                @error('golongan_darah')
-                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-
-                                            <!-- Jenis Warga -->
-                                            <div class="mb-3">
-                                                <label class="form-label">Jenis Warga</label>
-                                                <select name="jenis" class="form-select {{ $errorIfTambah('jenis') }}"
-                                                    required>
-                                                    <option value="">-- Pilih --</option>
-                                                    <option value="penduduk"
-                                                        {{ $oldIfTambah('jenis') == 'penduduk' ? 'selected' : '' }}>
-                                                        Penduduk</option>
-                                                    <option value="pendatang"
-                                                        {{ $oldIfTambah('jenis') == 'pendatang' ? 'selected' : '' }}>
-                                                        Pendatang</option>
-                                                </select>
-                                                @error('jenis')
-                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-
-                                            <!-- Kewarganegaraan -->
-                                            <div class="mb-3">
-                                                <label class="form-label">Kewarganegaraan</label>
-                                                <select name="kewarganegaraan"
-                                                    class="form-select {{ $errorIfTambah('kewarganegaraan') }}" required>
-                                                    <option value="">-- Pilih --</option>
-                                                    <option value="WNI"
-                                                        {{ $oldIfTambah('kewarganegaraan') == 'WNI' ? 'selected' : '' }}>
-                                                        WNI</option>
-                                                    <option value="WNA"
-                                                        {{ $oldIfTambah('kewarganegaraan') == 'WNA' ? 'selected' : '' }}>
-                                                        WNA</option>
-                                                </select>
-                                                @error('kewarganegaraan')
-                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-
-                                            <!-- Hidden Auto Ayah/Ibu -->
-                                            <input type="hidden" id="kk_nama_ayah_auto" value="">
-                                            <input type="hidden" id="kk_nama_ibu_auto" value="">
-                                        </div>
-
-                                        <div class="modal-footer bg-light">
-                                            <button type="submit" class="btn btn-primary">Simpan Data</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
+                {{-- End card --}}
             </div>
 
-
-
+            {{-- Modal Document --}}
+            @include('rw.kartu-keluarga.komponen.modal-dokumen')
+            {{-- End Modal Dokumen --}}
         </div>
         <!-- /.container-fluid -->
+        <!-- Modal Tambah Kartu Keluarga -->
+        @include('rw.kartu-keluarga.komponen.modal-tambah-kk')
+        {{-- End Modal Tambah KK --}}
+
+        <!-- Modal Tambah Warga -->
+        @include('rw.kartu-keluarga.komponen.modal-tambah-warga')
+        {{-- End Modal Tambah Warga --}}
+
+        @foreach ($kartu_keluarga as $kk)
+            <!-- Modal Edit kartu keluarga -->
+            @include('rw.kartu-keluarga.komponen.modal-edit-kk')
+            {{-- End Modal Edit KK  --}}
+            <!-- Modal Detail kartu keluarga -->
+            @include('rw.kartu-keluarga.komponen.modal-detail-kk')
+            {{-- End Modal Detail KK --}}
+        @endforeach
+        @foreach ($warga as $item)
+            <!-- Modal Edit Warga -->
+            @include('rw.kartu-keluarga.komponen.modal-edit-warga')
+            {{-- End Modal Edit Warga --}}
+        @endforeach
 
     </div>
     <!-- End of Main Content -->
+
+
+
     <script>
-        const modalTambah = document.getElementById('modalTambahWarga');
+        document.addEventListener('DOMContentLoaded', function() {
+            // Logika untuk modal Edit KK (jika ada error validasi)
+            @if ($errors->any() && old('old_no_kk_for_modal'))
+                var kkNoWithErrors = "{{ old('old_no_kk_for_modal') }}";
+                var myEditModalWithError = new bootstrap.Modal(document.getElementById('modalEditkk' +
+                    kkNoWithErrors));
+                myEditModalWithError.show();
+            @endif
 
-        modalTambah.addEventListener('show.bs.modal', function(event) {
-            const button = event.relatedTarget;
+            // Tampilkan pesan sukses/error
+            @if (session('success'))
+                alert('Berhasil! {{ session('success') }}');
+            @endif
 
-            const noKK = button.getAttribute('data-no_kk');
-            const namaAyah = button.getAttribute('data-nama_ayah');
-            const namaIbu = button.getAttribute('data-nama_ibu');
+            @if (session('error'))
+                alert('Oops... {{ session('error') }}');
+            @elseif ($errors->any() && !old('old_no_kk_for_modal'))
+                var errorMessages = 'Terdapat kesalahan input:\n';
+                @foreach ($errors->all() as $error)
+                    errorMessages += '- {{ $error }}\n';
+                @endforeach
+                alert('Validasi Gagal!\n' + errorMessages);
+            @endif
 
-            modalTambah.querySelector('#modal_no_kk').value = noKK;
-            modalTambah.querySelector('#modal_no_kk_show').value = noKK;
-            modalTambah.querySelector('#kk_nama_ayah_auto').value = namaAyah;
-            modalTambah.querySelector('#kk_nama_ibu_auto').value = namaIbu;
+            // --- Logika untuk Modal Dokumen (Gambar & PDF) ---
+            var documentModalElement = document.getElementById('documentModal');
+            var modalImage = document.getElementById('modalImage');
+            var modalPdfViewer = document.getElementById('modalPdfViewer');
+            // var captionText = document.getElementById('caption');
+            var printButton = documentModalElement.querySelector('.btn-outline-light'); // Referensi ke tombol cetak
+            var modalFooter = documentModalElement.querySelector(
+                '.modal-footer'); // <-- Dapatkan referensi ke modal-footer
 
-            const hubungan = modalTambah.querySelector('#hubungan_keluarga');
-            const inputAyah = modalTambah.querySelector('#input_nama_ayah');
-            const inputIbu = modalTambah.querySelector('#input_nama_ibu');
+            var documentModal = new bootstrap.Modal(documentModalElement);
+            let previousDetailModalId = null;
 
-            hubungan.addEventListener('change', function() {
-                if (this.value === 'anak') {
-                    inputAyah.value = namaAyah;
-                    inputIbu.value = namaIbu;
+
+            // Tambahkan event listener untuk event show.bs.modal
+            documentModalElement.addEventListener('show.bs.modal', function(event) {
+                // Sembunyikan semua konten modal terlebih dahulu
+                modalImage.style.display = 'none';
+                modalPdfViewer.style.display = 'none';
+                // captionText.innerHTML = '';
+                printButton.style.display = 'none'; // Tombol cetak disembunyikan secara default
+                modalFooter.style.display = 'flex'; // <-- Pastikan footer terlihat (default Bootstrap)
+
+                var invokerElement = event.relatedTarget;
+                var documentUrl = invokerElement.getAttribute('data-document-url');
+                var isPdf = invokerElement.getAttribute('data-is-pdf') === 'true';
+
+                console.log("[DEBUG] Document URL from invoker:", documentUrl);
+                console.log("[DEBUG] Is PDF from invoker:", isPdf);
+
+                // Validasi URL
+                if (documentUrl && (documentUrl.startsWith('/') || documentUrl.startsWith('http'))) {
+                    // Pastikan URL storage di depannya jika belum ada
+                    if (documentUrl.startsWith('foto_kk/')) {
+                        documentUrl = '/storage/' + documentUrl;
+                    }
+
+                    console.log("[DEBUG] Final Document URL to load:", documentUrl);
+
+                    // Set URL cetak pada tombol cetak modal
+                    printButton.setAttribute('data-document-url', documentUrl);
+                    printButton.setAttribute('data-is-pdf', isPdf);
+
+                    if (isPdf) {
+                        modalPdfViewer.src = documentUrl;
+                        modalPdfViewer.style.display = 'block';
+                        // captionText.innerHTML = "Dokumen Kartu Keluarga (PDF)";
+                        modalFooter.style.display = 'none'; // <-- Sembunyikan modal-footer untuk PDF
+                        modalPdfViewer.onerror = function() {
+                            console.error("[ERROR] Gagal memuat PDF dari URL:", documentUrl);
+                            captionText.innerHTML =
+                                "Gagal memuat PDF. File mungkin rusak atau tidak ditemukan.";
+                            modalPdfViewer.style.display = 'none';
+                            modalFooter.style.display = 'flex'; // Tampilkan kembali jika ada error PDF
+                        };
+                    } else {
+                        modalImage.src = documentUrl;
+                        modalImage.style.display = 'block';
+                        // captionText.innerHTML = "Dokumen Kartu Keluarga (Gambar)";
+                        printButton.style.display = 'inline-block'; // Tampilkan tombol cetak untuk gambar
+                        modalFooter.style.display =
+                            'flex'; // <-- Pastikan modal-footer terlihat untuk gambar
+                        modalImage.onerror = function() {
+                            console.error("[ERROR] Gagal memuat gambar dari URL:", documentUrl);
+                            captionText.innerHTML =
+                                "Gagal memuat gambar. File mungkin rusak atau tidak ditemukan.";
+                            modalImage.style.display = 'none';
+                        };
+                    }
                 } else {
-                    inputAyah.value = '';
-                    inputIbu.value = '';
+                    console.warn("[WARNING] Document URL tidak valid atau kosong:", documentUrl);
+                    captionText.innerHTML = "Dokumen tidak ditemukan atau URL tidak valid.";
+                    modalFooter.style.display = 'flex'; // Tampilkan kembali jika URL tidak valid
                 }
+
+                // Opsional: Sembunyikan modal detail KK saat modal dokumen terbuka
+                const openBootstrapModal = document.querySelector('.modal.show');
+                if (openBootstrapModal && openBootstrapModal.id.startsWith('modalDetailkk') &&
+                    openBootstrapModal.id !== documentModalElement.id) {
+                    previousDetailModalId = openBootstrapModal.id;
+                    var detailModalInstance = bootstrap.Modal.getInstance(openBootstrapModal);
+                    if (detailModalInstance) {
+                        detailModalInstance.hide();
+                    }
+                }
+
             });
-        });
-        var modalTambahWarga = document.getElementById('modalTambahWarga');
-        modalTambahWarga.addEventListener('show.bs.modal', function(event) {
-            var button = event.relatedTarget; // Tombol yang memicu modal
-            var noKK = button.getAttribute('data-no_kk');
 
-            // Input hidden & input readonly
-            var inputHidden = modalTambahWarga.querySelector('#modal_no_kk');
-            var inputShow = modalTambahWarga.querySelector('#modal_no_kk_show');
+            // Event listener saat modal dokumen ditutup
+            documentModalElement.addEventListener('hidden.bs.modal', function() {
+                modalPdfViewer.src = '';
+                modalImage.src = '';
+                if (previousDetailModalId) {
+                    const previousModalElement = document.getElementById(previousDetailModalId);
+                    if (previousModalElement) {
+                        const previousModalInstance = bootstrap.Modal.getOrCreateInstance(
+                            previousModalElement);
+                        previousModalInstance.show();
+                    }
+                    previousDetailModalId = null;
+                }
 
-            inputHidden.value = noKK;
-            inputShow.value = noKK;
+                modalFooter.style.display = 'flex';
+                console.log("[DEBUG] Modal dokumen ditutup, src di-reset.");
+            });
+
+
         });
+
+        // Fungsi untuk membuka modal dokumen (dipanggil dari HTML)
+        function openDocumentModal(documentUrl, isPdf) {
+            var documentModalElement = document.getElementById('documentModal');
+            var documentModal = bootstrap.Modal.getInstance(documentModalElement) || new bootstrap.Modal(
+                documentModalElement);
+
+            var tempDiv = document.createElement('div');
+            tempDiv.setAttribute('data-document-url', documentUrl);
+            tempDiv.setAttribute('data-is-pdf', isPdf);
+
+            documentModal.show(tempDiv);
+            // Di fungsi openDocumentModal atau show.bs.modal listener
+            if (isPdf) {
+                // Tambahkan kelas untuk tampilan fullscreen
+                documentModalElement.classList.add('modal-fullscreen');
+                modalPdfViewer.src = filePath;
+                modalPdfViewer.style.display = 'block';
+                modalImage.style.display = 'none'; // Sembunyikan gambar
+                captionText.innerHTML = "Dokumen Kartu Keluarga (PDF)";
+            } else {
+                documentModalElement.classList.remove('modal-fullscreen'); // Hapus kelas jika gambar
+                modalImage.src = filePath;
+                modalImage.style.display = 'block';
+                modalPdfViewer.style.display = 'none'; // Sembunyikan PDF viewer
+                captionText.innerHTML = "Dokumen Kartu Keluarga (Gambar)";
+            }
+
+        }
+
+        // Fungsi untuk Mencetak Dokumen
+        function printDocument() {
+            var documentModalElement = document.getElementById('documentModal');
+            var printButton = documentModalElement.querySelector('.btn-outline-light');
+            var documentUrl = printButton.getAttribute('data-document-url');
+            var isPdf = printButton.getAttribute('data-is-pdf') === 'true';
+
+            if (!documentUrl) {
+                alert("Dokumen tidak tersedia untuk dicetak.");
+                return;
+            }
+
+            var printWindow = window.open(documentUrl, '_blank');
+            if (!isPdf) { // Hanya untuk gambar
+                printWindow.onload = function() {
+                    printWindow.print();
+                    printWindow.close();
+                };
+            }
+            // Untuk PDF, browser biasanya memiliki kontrol cetak bawaan setelah membuka PDF.
+        }
     </script>
-
 
 @endsection

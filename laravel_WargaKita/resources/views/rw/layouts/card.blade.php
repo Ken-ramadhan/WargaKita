@@ -102,6 +102,47 @@
 </style>
 
 <div class="row">
+    
+    <div class="col-6 col-md-4 col-xl-3 mb-4">
+        <div class="card border-left-info shadow h-100 py-2 card-clickable">
+            <a href="{{ route('rukun_tetangga.index') }}" class="text-decoration-none">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Jumlah RT</div>
+                            <div class="d-flex align-items-center">
+                                <div class="h4 mb-0 font-weight-bolder text-gray-800 me-2">{{ $jumlah_rt }}</div>
+                            </div>
+                        </div>
+                        <div class="col-auto mr-2">
+                            <i class="fas fa-house-user fa-3x text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+    
+    <div class="col-6 col-md-4 col-xl-3 mb-4">
+        <div class="card border-left-info shadow h-100 py-2 card-clickable">
+            <a href="{{ route('kartu_keluarga.index') }}" class="text-decoration-none">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Jumlah KK</div>
+                            <div class="d-flex align-items-center">
+                                <div class="h4 mb-0 font-weight-bolder text-gray-800 me-2">{{ $jumlah_kk }}</div>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clipboard-list fa-3x text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
 
     <div class="col-6 col-md-4 col-xl-3 mb-4">
         <div class="card border-left-primary shadow h-100 py-2 card-clickable">
@@ -128,18 +169,18 @@
     </div>
 
     <div class="col-6 col-md-4 col-xl-3 mb-4">
-        <div class="card border-left-success shadow h-100 py-2 card-clickable">
-            <a href="/iuran" class="text-decoration-none">
+        <div class="card border-left-warning shadow h-100 py-2 card-clickable">
+            <a href="{{ route('pengumuman.index') }}" class="text-decoration-none">
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                Total Iuran Masuk Bulan Ini
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Pengumuman RW
                             </div>
-                            <div class="h4 mb-0 font-weight-bolder text-gray-800">$215,000</div>
+                            <div class="h4 mb-0 font-weight-bolder text-gray-800">{{ $pengumuman_rw }}</div>
                         </div>
                         <div class="col-auto">
-                            <i class="fas fa-dollar-sign fa-3x text-gray-400"></i>
+                            <i class="fas fa-comments fa-3x text-gray-400"></i>
                         </div>
                     </div>
                 </div>
@@ -148,38 +189,18 @@
     </div>
 
     <div class="col-6 col-md-4 col-xl-3 mb-4">
-        <div class="card border-left-info shadow h-100 py-2 card-clickable">
-            <a href="{{ route('kartu_keluarga.index') }}" class="text-decoration-none">
+        <div class="card border-left-warning shadow h-100 py-2 card-clickable">
+            <a href="{{ route('pengumuman-rt.index') }}" class="text-decoration-none">
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Jumlah KK</div>
-                            <div class="d-flex align-items-center">
-                                <div class="h4 mb-0 font-weight-bolder text-gray-800 me-2">{{ $jumlah_kk }}</div>
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Pengumuman RT
                             </div>
+                            <div class="h4 mb-0 font-weight-bolder text-gray-800">{{ $pengumuman_rt }}</div>
                         </div>
                         <div class="col-auto">
-                            <i class="fas fa-clipboard-list fa-3x text-gray-400"></i>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-    </div>
-
-    <div class="col-6 col-md-4 col-xl-3 mb-4">
-        <div class="card border-left-info shadow h-100 py-2 card-clickable">
-            <a href="{{ route('rukun_tetangga.index') }}" class="text-decoration-none">
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Jumlah RT</div>
-                            <div class="d-flex align-items-center">
-                                <div class="h4 mb-0 font-weight-bolder text-gray-800 me-2">{{ $jumlah_rt }}</div>
-                            </div>
-                        </div>
-                        <div class="col-auto mr-2">
-                            <i class="fas fa-house-user fa-3x text-gray-400"></i>
+                            <i class="fas fa-comments fa-3x text-gray-400"></i>
                         </div>
                     </div>
                 </div>
@@ -229,22 +250,23 @@
 
     
     <div class="col-6 col-md-4 col-xl-3 mb-4">
-        <div class="card border-left-warning shadow h-100 py-2 card-clickable">
-            <a href="{{ route('pengumuman.index') }}" class="text-decoration-none">
+        <div class="card border-left-success shadow h-100 py-2 card-clickable">
+            <a href="/iuran" class="text-decoration-none">
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                Jumlah Pengumuman
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Total Iuran Masuk Bulan Ini
                             </div>
-                            <div class="h4 mb-0 font-weight-bolder text-gray-800">{{ $jumlah_pengumuman }}</div>
+                            <div class="h4 mb-0 font-weight-bolder text-gray-800">$215,000</div>
                         </div>
                         <div class="col-auto">
-                            <i class="fas fa-comments fa-3x text-gray-400"></i>
+                            <i class="fas fa-dollar-sign fa-3x text-gray-400"></i>
                         </div>
                     </div>
                 </div>
             </a>
         </div>
     </div>
+
 </div>

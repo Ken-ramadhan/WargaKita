@@ -12,10 +12,12 @@ class Rukun_tetangga extends Model
     protected $table = 'rukun_tetangga';
     protected $fillable = [
         'nik',
-        'nomor_rt',
-        'nama_ketua_rt',
+        'no_kk',
+        'rt',
+        'nama',
         'mulai_menjabat',
         'akhir_jabatan',
+        'jabatan',
         'id_rw',
     ];
 
@@ -46,6 +48,11 @@ class Rukun_tetangga extends Model
     public function user()
     {
         return $this->hasOne(User::class, 'id_rt', 'id_rt');
+    }
+
+    public function kartuKeluarga()
+    {
+        return $this->belongsTo(Kartu_keluarga::class, 'no_kk', 'no_kk');
     }
 
 }
