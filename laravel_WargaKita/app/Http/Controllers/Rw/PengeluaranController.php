@@ -1,203 +1,220 @@
 <?php
 
-namespace App\Http\Controllers\Rw;
-use App\Http\Controllers\Controller;
+namespace App\Http\Controllers;
 
-use App\Models\Pengeluaran;
-use App\Models\Rukun_tetangga;
+use App\Models\Pengeluaran; // Import model Pengeluaran
 use Illuminate\Http\Request;
+use Carbon\Carbon; // Digunakan untuk manipulasi tanggal
 
 class PengeluaranController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Menampilkan daftar semua transaksi (pemasukan dan pengeluaran).
      */
     public function index(Request $request)
     {
-        $search = $request->input('search');
-        $tahun = $request->input('tahun');
-        $bulan = $request->input('bulan');
-        $filterRt = $request->rt;
+        $title = 'Laporan Keuangan';
 
-        $pengeluaran = Pengeluaran::with('rukunTetangga')
-            ->when($search, function ($query, $search) {
-                $searchLower = strtolower($search);
+        // Mengambil semua tahun unik dari kolom 'tanggal'
+        $daftar_tahun = Pengeluaran::selectRaw('YEAR(tanggal) as tahun')
+                                 ->distinct()
+                                 ->orderBy('tahun', 'desc')
+                                 ->pluck('tahun');
+        $daftar_bulan = range(1, 12); // Daftar bulan 1 sampai 12
 
-                $query->where(function ($q) use ($search, $searchLower) {
-                    $q->where('keterangan', 'like', '%' . $search . '%')
-                        ->orWhere('nama_pengeluaran', 'like', '%' . $search . '%');
+        // Memulai query untuk mengambil data transaksi
+        $queryTransaksi = Pengeluaran::query();
 
-                    // Pencarian berdasarkan hari Indonesia
-                    $hariList = ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu', 'minggu'];
-                    if (in_array($searchLower, $hariList)) {
-                        $q->orWhereRaw("DAYNAME(tanggal) = ?", [$this->indoToEnglishDay($searchLower)]);
-                    }
+        // Filter berdasarkan pencarian (nama_transaksi atau keterangan)
+        if ($request->filled('search')) {
+            $searchTerm = '%' . $request->search . '%';
+            $queryTransaksi->where(function ($q) use ($searchTerm) {
+                $q->where('nama_transaksi', 'like', $searchTerm)
+                  ->orWhere('keterangan', 'like', $searchTerm)
+                  ->orWhere('rt', 'like', $searchTerm); // Tambahkan pencarian RT
+            });
+        }
 
-                    // Pencarian berdasarkan nama bulan Indonesia
-                    $bulanList = ['januari', 'februari', 'maret', 'april', 'mei', 'juni', 'juli', 'agustus', 'september', 'oktober', 'november', 'desember'];
-                    if (in_array($searchLower, $bulanList)) {
-                        $bulanAngka = array_search($searchLower, $bulanList) + 1;
-                        $q->orWhereMonth('tanggal', $bulanAngka);
-                    }
-                });
-            })
-            ->when($filterRt, function ($query) use ($filterRt) {
-                $query->whereHas('rukunTetangga', function ($q) use ($filterRt) {
-                    $q->where('nomor_rt', $filterRt);
-                });
-            })
-            ->when($tahun, fn($q) => $q->whereYear('tanggal', $tahun))
-            ->when($bulan, fn($q) => $q->whereMonth('tanggal', $bulan))
-            ->orderBy('created_at', 'desc')
-            ->paginate(5)
-            ->withQueryString();
+        // Filter berdasarkan tahun
+        if ($request->filled('tahun')) {
+            $queryTransaksi->whereYear('tanggal', $request->tahun);
+        }
 
-        $rukun_tetangga = Rukun_tetangga::all();
-        $title = 'Pengeluaran';
+        // Filter berdasarkan bulan
+        if ($request->filled('bulan')) {
+            $queryTransaksi->whereMonth('tanggal', $request->bulan);
+        }
 
-        $daftar_tahun = Pengeluaran::selectRaw('YEAR(tanggal) as tahun')->distinct()->orderByDesc('tahun')->pluck('tahun');
-        $daftar_bulan = range(1, 12);
+        // Filter berdasarkan RT
+        if ($request->filled('rt')) {
+            $queryTransaksi->where('rt', $request->rt);
+        }
 
-        return view('rw.iuran.pengeluaran', compact(
-            'pengeluaran',
-            'rukun_tetangga',
+        // Ambil semua data transaksi yang sudah diurutkan berdasarkan tanggal
+        $transaksi = $queryTransaksi->orderBy('tanggal', 'asc')->get();
+
+        // Tambahkan perhitungan sisa uang secara kumulatif
+        $sisa_uang_akumulatif = 0;
+        $transaksi = $transaksi->map(function ($item) use (&$sisa_uang_akumulatif) {
+            // Mengambil nilai pemasukan dan pengeluaran, mengonversinya ke float.
+            // Jika kolom string kosong atau tidak valid, anggap 0.
+            $pemasukan_value = (float) filter_var($item->pemasukan, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+            $pengeluaran_value = (float) filter_var($item->pengeluaran, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+
+            // Jika kedua kolom pemasukan dan pengeluaran terisi, ini adalah ambiguitas data.
+            // Untuk tujuan perhitungan sisa uang, kita akan mengutamakan pengeluaran jika ada,
+            // atau Anda bisa menyesuaikan logika ini sesuai kebutuhan bisnis Anda.
+            // Contoh: Jika ada pemasukan dan pengeluaran di baris yang sama,
+            // kita bisa menganggapnya sebagai transaksi net.
+            if ($pemasukan_value > 0 && $pengeluaran_value > 0) {
+                // Ini adalah skenario data yang ambigu berdasarkan desain migrasi.
+                // Anda mungkin perlu menentukan apakah ini berarti:
+                // 1. Ini adalah net: $pemasukan_value - $pengeluaran_value
+                // 2. Prioritas: Misalnya, jika ada pengeluaran, itu yang dihitung.
+                // Untuk contoh ini, kita akan menganggapnya sebagai net effect pada sisa uang.
+                $sisa_uang_akumulatif += ($pemasukan_value - $pengeluaran_value);
+            } elseif ($pemasukan_value > 0) {
+                $sisa_uang_akumulatif += $pemasukan_value;
+            } elseif ($pengeluaran_value > 0) {
+                $sisa_uang_akumulatif -= $pengeluaran_value;
+            }
+
+            $item->pemasukan_display = $pemasukan_value;
+            $item->pengeluaran_display = $pengeluaran_value;
+            $item->sisa_uang = $sisa_uang_akumulatif;
+            return $item;
+        });
+
+        // Pagination manual karena kita memanipulasi koleksi setelah query
+        $perPage = 10; // Jumlah item per halaman
+        $page = $request->get('page', 1); // Halaman saat ini, default 1
+        $offset = ($page - 1) * $perPage;
+
+        $paginatedTransaksi = new \Illuminate\Pagination\LengthAwarePaginator(
+            $transaksi->slice($offset, $perPage)->values(),
+            $transaksi->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+        return view('rw.pengeluaran.index', compact(
             'title',
+            'paginatedTransaksi',
             'daftar_tahun',
-            'daftar_bulan',
+            'daftar_bulan'
+            // 'rukun_tetangga' // Jika Anda memiliki daftar RT dari tabel lain, sertakan di sini
         ));
     }
 
-
-    // Tambahkan di dalam class controller
-    private function indoToEnglishDay($day)
-    {
-        return match (strtolower($day)) {
-            'senin' => 'Monday',
-            'selasa' => 'Tuesday',
-            'rabu' => 'Wednesday',
-            'kamis' => 'Thursday',
-            'jumat' => 'Friday',
-            'sabtu' => 'Saturday',
-            'minggu' => 'Sunday',
-            default => $day,
-        };
-    }
-
-
     /**
-     * Show the form for creating a new resource.
+     * Menampilkan form untuk membuat transaksi baru.
+     * Karena tidak ada 'jenis_transaksi' sebagai pilihan di migrasi,
+     * form ini akan memiliki input untuk 'pemasukan' dan 'pengeluaran' secara langsung.
      */
     public function create()
     {
-        //
+        $title = 'Tambah Transaksi Baru';
+        // Di sini Anda bisa menyiapkan data yang mungkin dibutuhkan form, misal daftar RT jika ada
+        return view('rw.pengeluaran.create', compact('title'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Menyimpan transaksi baru ke database.
      */
     public function store(Request $request)
     {
-        $validated = $request->validate(
-            [
-                'id_rt' => 'required|exists:rukun_tetangga,id',
-                'nama_pengeluaran' => 'required|string|max:255',
-                'jumlah' => 'required|string', // sementara string karena masih mengandung titik
-                'tanggal' => 'required|date',
-                'keterangan' => 'nullable|string',
-            ],
-            [
-                'id_rt.required' => 'RT Wajib Diisi',
-                'nama_pengeluaran.required' => 'Nama Pengeluaran Wajib Diisi',
-                'jumlah.required' => 'Jumlah Pengeluaran Wajib Diisi',
-                'jumlah.numeric' => 'Jumlah Pengeluaran Harus Berupa Angka',
-                'jumlah.digits_between' => 'Jumlah melebihi batas.',
-                'tanggal.required' => 'Tanggal Wajib Diisi',
-                'tanggal.date' => 'Harus Menggunakan Format Tanggal',
-            ]
-        );
-
-        // Bersihkan format angka dari titik
-        $jumlahBersih = str_replace(['.', ','], '', $validated['jumlah']);
-
-        Pengeluaran::create([
-            'id_rt' => $validated['id_rt'],
-            'nama_pengeluaran' => $validated['nama_pengeluaran'],
-            'jumlah' => $jumlahBersih, // sudah dibersihkan
-            'tanggal' => $validated['tanggal'],
-            'keterangan' => $validated['keterangan'],
+        $request->validate([
+            'rt'             => 'required|string|max:255',
+            'tanggal'        => 'required|date',
+            // Validasi: salah satu dari pemasukan atau pengeluaran harus diisi dan berupa numerik
+            'pemasukan'      => 'nullable|numeric|min:0',
+            'pengeluaran'    => 'nullable|numeric|min:0',
+            'nama_transaksi' => 'required|string|max:255',
+            'jumlah'         => 'required|numeric|min:0',
+            'keterangan'     => 'nullable|string|max:255',
         ]);
 
-        return redirect()->route('pengeluaran.index')->with('success', 'Data pengeluaran berhasil ditambahkan.');
+        // Pastikan hanya satu dari pemasukan atau pengeluaran yang diisi, atau tangani keduanya
+        // Jika keduanya diisi, tentukan prioritas atau gabungkan (misal: net effect)
+        // Contoh: Jika pengguna mengisi keduanya, kita bisa menganggap salah satunya sebagai 0
+        // Atau Anda bisa menambahkan validasi kustom di form request agar hanya satu yang boleh diisi
+        if ($request->filled('pemasukan') && $request->filled('pengeluaran')) {
+            // Ini adalah skenario ambigu: Pemasukan dan Pengeluaran diisi bersamaan.
+            // Anda perlu memutuskan bagaimana menanganinya.
+            // Opsi 1: Prioritaskan salah satu (misal: pengeluaran)
+            // Opsi 2: Hitung net effect dan simpan ke kolom 'jumlah' (jika jumlah digunakan untuk net)
+            // Opsi 3: Tampilkan error validasi kustom
+            // Untuk saat ini, kita akan menyimpan keduanya seperti yang diinput,
+            // dan logika perhitungan sisa uang di index akan menanganinya.
+        }
+
+        Pengeluaran::create([
+            'rt'             => $request->rt,
+            'tanggal'        => $request->tanggal,
+            'pemasukan'      => $request->pemasukan, // Simpan sebagai string (atau null)
+            'pengeluaran'    => $request->pengeluaran, // Simpan sebagai string (atau null)
+            'nama_transaksi' => $request->nama_transaksi,
+            'jumlah'         => $request->jumlah,
+            'keterangan'     => $request->keterangan,
+        ]);
+
+        return redirect()->route('pengeluaran.index')->with('success', 'Data transaksi berhasil ditambahkan!');
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-        $pengeluaran = Pengeluaran::findOrFail($id);
-        return view('pengeluaran.show', compact('pengeluaran'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
+     * Menampilkan form untuk mengedit transaksi tertentu.
      */
     public function edit(string $id)
     {
-        //
-        $pengeluaran = Pengeluaran::findOrFail($id);
-        return view('pengeluaran.edit', compact('pengeluaran'));
+        $transaksi = Pengeluaran::findOrFail($id);
+        $title = 'Edit Transaksi';
+        return view('rw.pengeluaran.edit', compact('title', 'transaksi'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Memperbarui transaksi tertentu di database.
      */
     public function update(Request $request, string $id)
     {
-        $validated = $request->validate(
-            [
-                'id_rt' => 'required|exists:rukun_tetangga,id',
-                'nama_pengeluaran' => 'required|string|max:255',
-                'jumlah' => 'required|string', // sementara string karena masih mengandung titik
-                'tanggal' => 'required|date',
-                'keterangan' => 'nullable|string',
-            ],
-            [
-                'id_rt.required' => 'RT Wajib Diisi',
-                'nama_pengeluaran.required' => 'Nama Pengeluaran Wajib Diisi',
-                'jumlah.required' => 'Jumlah Pengeluaran Wajib Diisi',
-                'jumlah.numeric' => 'Jumlah Pengeluaran Harus Berupa Angka',
-                'jumlah.digits_between' => 'Jumlah melebihi batas.',
-                'tanggal.required' => 'Tanggal Wajib Diisi',
-                'tanggal.date' => 'Harus Menggunakan Format Tanggal',
-            ]
-        );
-
-        $pengeluaran = Pengeluaran::findOrFail($id);
-        // Bersihkan format angka dari titik
-        $jumlahBersih = str_replace(['.', ','], '', $validated['jumlah']);
-
-        $pengeluaran->update([
-            'id_rt' => $validated['id_rt'],
-            'nama_pengeluaran' => $validated['nama_pengeluaran'],
-            'jumlah' => $jumlahBersih, // sudah dibersihkan
-            'tanggal' => $validated['tanggal'],
-            'keterangan' => $validated['keterangan'],
+        $request->validate([
+            'rt'             => 'required|string|max:255',
+            'tanggal'        => 'required|date',
+            'pemasukan'      => 'nullable|numeric|min:0',
+            'pengeluaran'    => 'nullable|numeric|min:0',
+            'nama_transaksi' => 'required|string|max:255',
+            'jumlah'         => 'required|numeric|min:0',
+            'keterangan'     => 'nullable|string|max:255',
         ]);
 
-        return redirect()->route('pengeluaran.index')->with('success', 'Data pengeluaran berhasil ditambahkan.');
+        $transaksi = Pengeluaran::findOrFail($id);
+        $transaksi->update([
+            'rt'             => $request->rt,
+            'tanggal'        => $request->tanggal,
+            'pemasukan'      => $request->pemasukan,
+            'pengeluaran'    => $request->pengeluaran,
+            'nama_transaksi' => $request->nama_transaksi,
+            'jumlah'         => $request->jumlah,
+            'keterangan'     => $request->keterangan,
+        ]);
+
+        return redirect()->route('pengeluaran.index')->with('success', 'Data transaksi berhasil diperbarui!');
     }
 
-
     /**
-     * Remove the specified resource from storage.
+     * Menghapus transaksi tertentu dari database.
      */
     public function destroy(string $id)
     {
-        //
-        $pengeluaran = Pengeluaran::findOrfail($id);
-        $pengeluaran->delete();
-        return redirect()->route('pengeluaran.index')->with('success', 'Pengeluaran berhasil dihapus.');
+        $transaksi = Pengeluaran::findOrFail($id);
+        $transaksi->delete();
+
+        return redirect()->route('pengeluaran.index')->with('success', 'Data transaksi berhasil dihapus!');
+    }
+
+    // Metode ini mungkin tidak lagi diperlukan secara terpisah jika filter di index sudah cukup
+    public function pengeluaranBulanan($bulan, $tahun)
+    {
+        return redirect()->route('pengeluaran.index', ['bulan' => $bulan, 'tahun' => $tahun]);
     }
 }
