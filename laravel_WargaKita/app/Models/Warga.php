@@ -29,7 +29,16 @@ class Warga extends Model
         'kewarganegaraan',
         'nama_ayah',
         'nama_ibu',
-        'jenis',
+        'status_warga',
+        'no_paspor',
+        'tgl_terbit_paspor',
+        'tgl_berakhir_paspor',
+        'no_kitas',
+        'tgl_terbit_kitas',
+        'tgl_berakhir_kitas',
+        'no_kitap',
+        'tgl_terbit_kitap',
+        'tgl_berakhir_kitap',
     ];
 
     public function kartuKeluarga(): BelongsTo

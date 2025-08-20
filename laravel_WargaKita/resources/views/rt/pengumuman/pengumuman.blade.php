@@ -36,7 +36,7 @@
                     <div class="col-md-5 col-sm-12">
                         <div class="input-group input-group-sm">
                             <input type="text" name="search" value="{{ request('search') }}" class="form-control"
-                                placeholder="Cari Data Warga...">
+                                placeholder="Cari Judul/isi...">
                             <button class="btn btn-primary" type="submit">
                                 <i class="fas fa-search"></i>
                             </button>
@@ -77,7 +77,7 @@
                     <div class="card shadow mb-4">
                         <!-- Card Header - Dropdown -->
                         <div class="card-header py-2 d-flex flex-row align-items-center justify-content-between">
-                            <h6 class="m-0 font-weight-bold text-primary">Tabel Pengumuman</h6>
+                            <h6 class="m-0 font-weight-bold text-primary">Daftar Pengumuman</h6>
                         </div>
                         <!-- Card Body -->
                         <div class="card-body">
@@ -148,7 +148,7 @@
                                                     <button type="button" class="btn btn-success btn-sm"
                                                         data-bs-toggle="modal"
                                                         data-bs-target="#modalDetailPengumuman{{ $data->id }}">
-                                                        <i class="fas fa-eye"></i>
+                                                        <i class="fas fa-info"></i>
                                                     </button>
                                                 </td>
 
@@ -168,144 +168,11 @@
 
 
                                             <!-- Modal Edit Pengumuman -->
-                                            <div class="modal fade" id="modalEditPengumuman{{ $data->id }}"
-                                                tabindex="-1"
-                                                aria-labelledby="modalEditPengumumanLabel{{ $data->id }}"
-                                                aria-hidden="true">
-                                                <div class="modal-dialog modal-lg"> <!-- Ukuran modal disamakan -->
-                                                    <div class="modal-content shadow-lg">
-                                                        <div class="modal-header bg-warning text-white">
-                                                            <h5 class="modal-title"
-                                                                id="modalEditPengumumanLabel{{ $data->id }}">Edit
-                                                                Pengumuman
-                                                            </h5>
-                                                            <button type="button" class="btn-close btn-close-white"
-                                                                data-bs-dismiss="modal" aria-label="Tutup"></button>
-                                                        </div>
-                                                        <form action="{{ route('rt_pengumuman.update', $data->id) }}"
-                                                            method="POST">
-                                                            @csrf
-                                                            @method('PUT')
-                                                            <div class="modal-body modal-body-scroll px-4">
-                                                                <div class="mb-3">
-                                                                    <label for="judul{{ $data->id }}"
-                                                                        class="form-label">Judul</label>
-                                                                    <input type="text" name="judul"
-                                                                        id="judul{{ $data->id }}" required
-                                                                        value="{{ $data->judul }}"
-                                                                        class="form-control @error('judul') is-invalid @enderror"
-                                                                        placeholder="Masukkan Judul Pengumuman">
-                                                                    @error('judul')
-                                                                        <div class="invalid-feedback">{{ $message }}
-                                                                        </div>
-                                                                    @enderror
-                                                                </div>
-
-                                                                <div class="mb-3">
-                                                                    <label for="kategori{{ $data->id }}"
-                                                                        class="form-label">kategori</label>
-                                                                    <input type="text" name="kategori"
-                                                                        id="kategori{{ $data->id }}" required
-                                                                        value="{{ $data->kategori }}"
-                                                                        class="form-control @error('kategori') is-invalid @enderror"
-                                                                        placeholder="Masukkan kategori">
-                                                                    @error('kategori')
-                                                                        <div class="invalid-feedback">{{ $message }}
-                                                                        </div>
-                                                                    @enderror
-                                                                </div>
-
-                                                                <div class="mb-3">
-                                                                    <label for="isi{{ $data->id }}"
-                                                                        class="form-label">Isi</label>
-                                                                    <textarea name="isi" id="isi{{ $data->id }}" rows="5" required
-                                                                        class="form-control @error('isi') is-invalid @enderror" placeholder="Masukkan Isi Pengumuman">{{ $data->isi }}</textarea>
-                                                                    @error('isi')
-                                                                        <div class="invalid-feedback">{{ $message }}
-                                                                        </div>
-                                                                    @enderror
-                                                                </div>
-
-                                                                <div class="mb-3">
-                                                                    <label for="tanggal{{ $data->id }}"
-                                                                        class="form-label">Tanggal</label>
-                                                                    <input type="date" name="tanggal"
-                                                                        id="tanggal{{ $data->id }}" required
-                                                                        value="{{ \Carbon\Carbon::parse($data->tanggal)->format('Y-m-d') }}"
-                                                                        class="form-control @error('tanggal') is-invalid @enderror">
-
-                                                                    @error('tanggal')
-                                                                        <div class="invalid-feedback">{{ $message }}
-                                                                        </div>
-                                                                    @enderror
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="modal-footer">
-                                                                <button type="submit" class="btn btn-warning">Simpan
-                                                                    Perubahan</button>
-                                                            </div>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            @include('rt.pengumuman.komponen.rt_modal_edit_pengumuman')
+                                            <!-- End Modal Edit Pengumuman -->
 
                                             <!-- Modal Detail Pengumuman -->
-                                            <div class="modal fade" id="modalDetailPengumuman{{ $data->id }}"
-                                                tabindex="-1" aria-labelledby="modalDetailLabel{{ $data->id }}"
-                                                aria-hidden="true">
-                                                <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                                                    <div class="modal-content shadow-lg border-0">
-                                                        <div class="modal-header bg-success text-white">
-                                                            <h5 class="modal-title mb-0"
-                                                                id="modalDetailLabel{{ $data->id }}">
-                                                                Detail Pengumuman
-                                                            </h5>
-                                                            <button type="button" class="btn-close btn-close-white"
-                                                                data-bs-dismiss="modal" aria-label="Tutup"></button>
-                                                        </div>
-                                                        <div class="modal-body px-4 pt-4 pb-3">
-                                                            <h4 class="fw-bold text-success mb-3">{{ $data->judul }}</h4>
-
-                                                            <ul class="list-unstyled mb-3 small">
-                                                                <li><strong>kategori:</strong> <span
-                                                                        class="ms-1">{{ $data->kategori ?? '-' }}</span>
-                                                                </li>
-
-                                                                <li><strong>Tanggal:</strong> <span
-                                                                        class="ms-1">{{ \Carbon\Carbon::parse($data->tanggal)->isoFormat('dddd, D MMMM Y') }}</span>
-                                                                </li>
-                                                                @if ($data->id_rt)
-                                                                    <li>
-                                                                        <strong>RT:</strong>
-                                                                        {{ $data->rukunTetangga->nomor_rt ?? '-' }}
-                                                                    </li>
-                                                                @else
-                                                                    <li>
-                                                                        <strong>RW:</strong>
-                                                                        {{ $data->rw->nomor_rw ?? '-' }}
-                                                                    </li>
-                                                                @endif
-                                                            </ul>
-
-                                                            <hr class="my-2">
-
-                                                            <div class="mb-2">
-                                                                <strong class="d-block mb-1">Isi Pengumuman:</strong>
-                                                                <div class="border rounded bg-light p-3"
-                                                                    style=" line-height: 1.6;">
-                                                                    {{ $data->isi }}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div
-                                                            class="modal-footer bg-light border-0 justify-content-end py-2">
-                                                            <button type="button" class="btn btn-outline-success"
-                                                                data-bs-dismiss="modal">Tutup</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            @include('rt.pengumuman.komponen.rt_modal_detail_pengumuman')
                                         @endforeach
 
                                     </tbody>
@@ -327,69 +194,9 @@
                             </div>
                         </div>
 
-                        <!-- Modal Tambah Pengumuman -->
-                        <div class="modal fade" id="modalTambahPengumuman" tabindex="-1"
-                            aria-labelledby="modalTambahPengumumanLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                                <div class="modal-content shadow-lg">
-                                    <div class="modal-header bg-primary text-white">
-                                        <h5 class="modal-title" id="modalTambahPengumumanLabel">Tambah Pengumuman</h5>
-                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                                            aria-label="Tutup"></button>
-                                    </div>
-
-                                    <form action="{{ route('rt_pengumuman.store') }}" method="POST">
-                                        @csrf
-                                        <div class="modal-body px-4" style="max-height: 70vh; overflow-y: auto;">
-                                            <div class="mb-3">
-                                                <label for="judul" class="form-label">Judul</label>
-                                                <input type="text" name="judul" id="judul" required
-                                                    value="{{ old('judul') }}"
-                                                    class="form-control @error('judul') is-invalid @enderror"
-                                                    placeholder="Masukkan Judul Pengumuman">
-                                                @error('judul')
-                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-
-                                            <div class="mb-3">
-                                                <label for="kategori" class="form-label">kategori</label>
-                                                <input type="text" name="kategori" id="kategori"
-                                                    value="{{ old('kategori') }}"
-                                                    class="form-control @error('kategori') is-invalid @enderror"
-                                                    placeholder="Masukkan kategori">
-                                                @error('kategori')
-                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-
-                                            <div class="mb-3">
-                                                <label for="isi" class="form-label">Isi</label>
-                                                <textarea name="isi" id="isi" rows="5" required
-                                                    class="form-control @error('isi') is-invalid @enderror" placeholder="Masukkan Isi Pengumuman">{{ old('isi') }}</textarea>
-                                                @error('isi')
-                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-
-                                            <div class="mb-3">
-                                                <label for="tanggal" class="form-label">Tanggal</label>
-                                                <input type="date" name="tanggal" id="tanggal" required
-                                                    value="{{ old('tanggal') }}"
-                                                    class="form-control @error('tanggal') is-invalid @enderror">
-                                                @error('tanggal')
-                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-                                        </div>
-
-                                        <div class="modal-footer">
-                                            <button type="submit" class="btn btn-primary">Simpan Data</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
+                        {{-- Modal Tambah Pengumuman --}}
+                        @include('rt.pengumuman.komponen.rt_modal_tambah_pengumuman')
+                        {{-- End Modal Tambah Pengumuman --}}
 
 
 

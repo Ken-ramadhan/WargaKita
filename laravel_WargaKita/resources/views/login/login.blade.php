@@ -367,7 +367,6 @@
                             <img src="{{ asset('img/logo.png') }}" alt="SiWar Logo" class="logo-img">
                         </div>
                         <h3>Sistem Informasi Warga</h3>
-                        <p>Selamat datang di aplikasi Sistem Informasi Warga</p>
                     </div>
 
                     <div class="card-body">

@@ -82,7 +82,7 @@
                     <div class="card shadow mb-4">
                         <!-- Card Header -->
                         <div class="card-header py-2 d-flex flex-row align-items-center justify-content-between">
-                            <h6 class="m-0 font-weight-bold text-primary">Tabel Pengumuman</h6>
+                            <h6 class="m-0 font-weight-bold text-primary">Daftar Pengumuman</h6>
                         </div>
                         <!-- Card Body -->
                         <div class="card-body">
@@ -92,12 +92,6 @@
                                     <i class="fas fa-bullhorn me-2 text-primary"></i>
                                     <span class="fw-semibold text-dark">{{ $total_pengumuman ?? 0 }} Pengumuman</span>
                                 </div>
-
-                                {{-- Tombol tambah (kanan) --}}
-                                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                    data-bs-target="#modalTambahPengumuman">
-                                    <i class="fas fa-plus"></i> Tambah
-                                </button>
                             </div>
                             <div class="table-responsive table-container">
                                 <table class="table table-sm table-hover text-nowrap">
@@ -133,62 +127,7 @@
                                             </tr>
 
                                             <!-- Modal Detail Pengumuman -->
-                                            <div class="modal fade" id="modalDetailPengumuman{{ $data->id }}"
-                                                tabindex="-1" aria-labelledby="modalDetailLabel{{ $data->id }}"
-                                                aria-hidden="true">
-                                                <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                                                    <div class="modal-content shadow-lg border-0">
-                                                        <div class="modal-header bg-success text-white">
-                                                            <h5 class="modal-title mb-0"
-                                                                id="modalDetailLabel{{ $data->id }}">
-                                                                Detail Pengumuman
-                                                            </h5>
-                                                            <button type="button" class="btn-close btn-close-white"
-                                                                data-bs-dismiss="modal" aria-label="Tutup"></button>
-                                                        </div>
-                                                        <div class="modal-body px-4 pt-4 pb-3">
-                                                            <h4 class="fw-bold text-success mb-3">{{ $data->judul }}</h4>
-
-                                                            <ul class="list-unstyled mb-3 small">
-                                                                <li><strong>Kategori:</strong> <span
-                                                                        class="ms-1">{{ $data->kategori ?? '-' }}</span>
-                                                                </li>
-                                                                @if ($data->id_rt)
-                                                                    <li>
-                                                                        <strong>RT:</strong>
-                                                                        {{ $data->rukunTetangga->nomor_rt ?? '-' }}
-                                                                    </li>
-                                                                @else
-                                                                    <li>
-                                                                        <strong>RW:</strong>
-                                                                        {{ $data->rw->nomor_rw ?? '-' }}
-                                                                    </li>
-                                                                @endif
-
-
-                                                                <li><strong>Tanggal:</strong> <span
-                                                                        class="ms-1">{{ \Carbon\Carbon::parse($data->tanggal)->isoFormat('dddd, D MMMM Y') }}</span>
-                                                                </li>
-                                                            </ul>
-
-                                                            <hr class="my-2">
-
-                                                            <div class="mb-2">
-                                                                <strong class="d-block mb-1">Isi Pengumuman:</strong>
-                                                                <div class="border rounded bg-light p-3"
-                                                                    style="line-height: 1.6;">
-                                                                    {{ $data->isi }}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div
-                                                            class="modal-footer bg-light border-0 justify-content-end py-2">
-                                                            <button type="button" class="btn btn-outline-success"
-                                                                data-bs-dismiss="modal">Tutup</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            @include('warga.pengumuman.komponen.warga_detail_pengumuman')
                                         @endforeach
                                     </tbody>
                                 </table>

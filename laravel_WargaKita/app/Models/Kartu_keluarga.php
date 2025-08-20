@@ -15,19 +15,24 @@ class Kartu_keluarga extends Model
     public $incrementing = false;
     protected $keyType = 'string';
     protected $fillable = [
-        'no_kk',
-        'alamat',
-        'id_rt',
-        'id_rw',
-        'kelurahan',
-        'kecamatan',
-        'kabupaten',
-        'provinsi',
-        'kode_pos',
-        'tgl_terbit',
-        'golongan',
-    ];
-
+    'no_kk',
+    'no_registrasi', // Jika ada nomor registrasi internal selain No. KK 16 digit
+    'alamat',
+    'id_rt',
+    'id_rw',
+    'kelurahan',
+    'kecamatan',
+    'kabupaten',
+    'provinsi',
+    'kode_pos',
+    'tgl_terbit',
+    'kategori_iuran',
+    'instansi_penerbit',         // Contoh: 'Dinas Kependudukan dan Pencatatan Sipil'
+    'kabupaten_kota_penerbit',   // Contoh: 'Kota Bandung'
+    'nama_kepala_dukcapil',      // Nama lengkap Kepala Dinas Dukcapil
+    'nip_kepala_dukcapil',       // NIP Kepala Dinas Dukcapil
+    'foto_kk',                   // Path atau URL ke foto Kartu Keluarga
+];
     
 
     public function rukunTetangga(): BelongsTo

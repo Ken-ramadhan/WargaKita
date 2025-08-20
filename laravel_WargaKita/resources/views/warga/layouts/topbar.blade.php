@@ -22,6 +22,7 @@
             'pengeluaran' => 'Pengeluaran',
             'laporan_pengeluaran_bulanan' => 'Laporan Pengeluaran Bulanan',
             default => ucwords(str_replace('-', ' ', $segment)),
+            
         };
     }
 @endphp

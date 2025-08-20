@@ -46,13 +46,13 @@ class Rt_dashboardController extends Controller
 
     // Jumlah Warga dengan jenis 'penduduk' DI RT yang login
     // KOREKSI: Gunakan whereIn untuk membatasi scope hanya pada KK di RT yang login
-    $jumlah_warga_penduduk = Warga::where('jenis', 'penduduk')
+    $jumlah_warga_penduduk = Warga::where('status_warga', 'penduduk')
                                  ->whereIn('no_kk', $kk_nomor_list)
                                  ->count();
 
     // Jumlah Warga dengan jenis 'pendatang' DI RT yang login
     // KOREKSI: Gunakan whereIn untuk membatasi scope hanya pada KK di RT yang login
-    $jumlah_warga_pendatang = Warga::where('jenis', 'pendatang')
+    $jumlah_warga_pendatang = Warga::where('status_warga', 'pendatang')
                                   ->whereIn('no_kk', $kk_nomor_list)
                                   ->count();
 
