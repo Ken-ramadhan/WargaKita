@@ -12,13 +12,13 @@
     <title>{{ $title ?? 'WargaKita' }}</title>
 
     <!-- Custom fonts for this template-->
-    <link href="{{asset('vendor/fontawesome-free/css/all.min.css')}}" rel="stylesheet" type="text/css">
+    <link href="{{ asset('vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
     <link
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
 
     <!-- Custom styles for this template-->
-    <link href="{{ asset('css/sb-admin-2.min.css')}}" rel="stylesheet">
+    <link href="{{ asset('css/sb-admin-2.min.css') }}" rel="stylesheet">
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -57,20 +57,26 @@
             overflow-y: auto;
         }
 
-         /* --- CSS Untuk Modal Sidebar Mobile --- */
+        /* --- CSS Untuk Modal Sidebar Mobile --- */
 
         /* CSS dasar untuk modal slide dari kiri */
         .modal.fade .modal-dialog.modal-dialog-slideout-left {
-            transform: translateX(-100%); /* Awalnya di luar layar */
-            transition: transform .3s ease-out; /* Animasi geser */
+            transform: translateX(-100%);
+            /* Awalnya di luar layar */
+            transition: transform .3s ease-out;
+            /* Animasi geser */
             margin-left: 0;
-            margin-right: auto; /* Mendorong modal ke kiri */
-            pointer-events: none; /* Memastikan klik tidak melewati saat modal belum muncul sepenuhnya */
+            margin-right: auto;
+            /* Mendorong modal ke kiri */
+            pointer-events: none;
+            /* Memastikan klik tidak melewati saat modal belum muncul sepenuhnya */
         }
 
         .modal.show .modal-dialog.modal-dialog-slideout-left {
-            transform: translateX(0); /* Meluncur masuk ke layar */
-            pointer-events: auto; /* Aktifkan interaksi saat modal muncul */
+            transform: translateX(0);
+            /* Meluncur masuk ke layar */
+            pointer-events: auto;
+            /* Aktifkan interaksi saat modal muncul */
         }
 
         .modal-backdrop.fade {
@@ -79,62 +85,83 @@
         }
 
         .modal-backdrop.show {
-            opacity: .5; /* Sesuaikan opasitas backdrop jika perlu */
+            opacity: .5;
+            /* Sesuaikan opasitas backdrop jika perlu */
         }
 
         /* Penyesuaian untuk tampilan profesional di mobile (layar kecil) */
-        @media (max-width: 575.98px) { /* Ini menargetkan perangkat ekstra kecil (misalnya, ponsel) */
+        @media (max-width: 575.98px) {
+
+            /* Ini menargetkan perangkat ekstra kecil (misalnya, ponsel) */
             .modal-dialog.modal-dialog-slideout-left.modal-sm {
-                max-width: 35%; /* Batasi lebar modal, misalnya 65% dari lebar layar */
-                height: auto; /* Penting: Biarkan tinggi otomatis sesuai konten */
+                max-width: 35%;
+                /* Batasi lebar modal, misalnya 65% dari lebar layar */
+                height: auto;
+                /* Penting: Biarkan tinggi otomatis sesuai konten */
             }
 
             .modal-content {
-                border-radius: .3rem; /* Pertahankan sedikit border-radius agar tidak kaku */
-                height: auto; /* Tinggi konten yang menyesuaikan */
-                max-height: 100vh; /* Batasi tinggi maksimum modal: tinggi viewport dikurangi margin atas/bawah */
-                display: flex; /* Untuk flexbox layout */
-                flex-direction: column; /* Konten diatur secara kolom */
+                border-radius: .3rem;
+                /* Pertahankan sedikit border-radius agar tidak kaku */
+                height: auto;
+                /* Tinggi konten yang menyesuaikan */
+                max-height: 100vh;
+                /* Batasi tinggi maksimum modal: tinggi viewport dikurangi margin atas/bawah */
+                display: flex;
+                /* Untuk flexbox layout */
+                flex-direction: column;
+                /* Konten diatur secara kolom */
             }
 
             .modal-body {
-                overflow-y: auto; /* Aktifkan scroll vertikal jika konten melebihi max-height */
-                -webkit-overflow-scrolling: touch; /* Untuk scrolling yang lebih mulus di iOS */
-                flex-grow: 1; /* Biarkan body mengambil ruang yang tersedia */
+                overflow-y: auto;
+                /* Aktifkan scroll vertikal jika konten melebihi max-height */
+                -webkit-overflow-scrolling: touch;
+                /* Untuk scrolling yang lebih mulus di iOS */
+                flex-grow: 1;
+                /* Biarkan body mengambil ruang yang tersedia */
             }
 
             /* --- Perbaikan Tombol Close --- */
             .modal-header {
                 /* Mengatur perataan item di header ke atas */
                 align-items: flex-start;
-                padding-top: 1rem; /* Sesuaikan padding atas agar judul/logo tidak terlalu mepet */
-                padding-bottom: 0.5rem; /* Sesuaikan padding bawah */
-                flex-shrink: 0; /* Pastikan header tidak mengecil */
+                padding-top: 1rem;
+                /* Sesuaikan padding atas agar judul/logo tidak terlalu mepet */
+                padding-bottom: 0.5rem;
+                /* Sesuaikan padding bawah */
+                flex-shrink: 0;
+                /* Pastikan header tidak mengecil */
                 border-bottom: 2px solid #e3e6f0;
             }
 
             .modal-header .close {
                 /* Menyesuaikan margin negatif pada tombol close jika masih kurang pas */
-                margin-top: -1.5rem; /* Angka negatif akan menarik tombol ke atas */
+                margin-top: -1.5rem;
+                /* Angka negatif akan menarik tombol ke atas */
                 margin-bottom: 0;
-                padding: 0.5rem; /* Tambahkan padding di sekitar tombol agar lebih mudah di klik */
+                padding: 0.5rem;
+                /* Tambahkan padding di sekitar tombol agar lebih mudah di klik */
             }
 
             .modal-header .modal-title,
             .modal-header .sidebar-brand-icon-logo {
-                margin-top: 0; /* Pastikan tidak ada margin-top berlebihan */
+                margin-top: 0;
+                /* Pastikan tidak ada margin-top berlebihan */
                 margin-bottom: 0;
             }
 
             .sidebar-brand-icon-logo {
-                width: 35px; /* Sesuaikan ukuran logo di header modal */
+                width: 35px;
+                /* Sesuaikan ukuran logo di header modal */
                 height: 35px;
-                margin-left: 10px; /* Beri sedikit jarak antara logo dan judul */
+                margin-left: 10px;
+                /* Beri sedikit jarak antara logo dan judul */
             }
 
         }
-        /* --- Akhir CSS Untuk Modal Sidebar Mobile --- */
 
+        /* --- Akhir CSS Untuk Modal Sidebar Mobile --- */
     </style>
 
 
@@ -163,7 +190,7 @@
             <div class="modal-dialog modal-dialog-slideout-left modal-sm" role="document">
                 <div class="modal-content bg-primary text-white">
                     <div class="modal-header border-0">
-                        <img src="{{ asset('img/logo.png')}}" class="sidebar-brand-icon-logo" alt="Logo">
+                        <img src="{{ asset('img/logo.png') }}" class="sidebar-brand-icon-logo" alt="Logo">
                         <button type="button" class="close text-white" data-dismiss="modal" aria-label="Tutup">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -181,13 +208,6 @@
 
                             {{-- ... semua item lainnya tetap seperti sebelumnya ... --}}
 
-                            <li class="nav-item {{ Request::is('rw/warga*') ? 'active' : '' }}">
-                                <a class="nav-link" href="{{ route('warga.index') }}">
-                                    <i class="fas fa-users"></i>
-                                    <span>Manajemen Warga</span>
-                                </a>
-                            </li>
-
                             <li class="nav-item {{ Request::is('rw/rukun_tetangga*') ? 'active' : '' }}">
                                 <a class="nav-link" href="{{ route('rukun_tetangga.index') }}">
                                     <i class="fas fa-house-user"></i>
@@ -195,10 +215,31 @@
                                 </a>
                             </li>
 
-                            <li class="nav-item {{ Request::is('rw/pengumuman*') ? 'active' : '' }}">
+                            <li class="nav-item {{ Request::is('rw/warga*') ? 'active' : '' }}">
+                                <a class="nav-link" href="{{ route('warga.index') }}">
+                                    <i class="fas fa-users"></i>
+                                    <span>Manajemen Warga</span>
+                                </a>
+                            </li>
+
+                            <li class="nav-item {{ Request::is('rw/kartu_keluarga*') ? 'active' : '' }}">
+                                <a class="nav-link" href="{{ route('kartu_keluarga.index') }}">
+                                    <i class="fas fa-users "></i>
+                                    <span>Kartu Keluarga</span>
+                                </a>
+                            </li>
+                            <li
+                                class="nav-item {{ Request::is('rw/pengumuman') || (Request::is('rw/pengumuman/*') && !Request::is('rw/pengumuman-rt*')) ? 'active' : '' }}">
                                 <a class="nav-link" href="{{ route('pengumuman.index') }}">
                                     <i class="fas fa-bullhorn"></i>
-                                    <span>Pengumuman</span>
+                                    <span>Pengumuman RW</span>
+                                </a>
+                            </li>
+
+                            <li class="nav-item {{ Request::is('rw/pengumuman-rt*') ? 'active' : '' }}">
+                                <a class="nav-link" href="{{ route('pengumuman-rt.index') }}">
+                                    <i class="fas fa-bullhorn"></i>
+                                    <span>Pengumuman RT</span>
                                 </a>
                             </li>
 
@@ -227,8 +268,8 @@
             <!-- End of Main Content -->
 
 
-            
-            
+
+
             <!-- End of Content Wrapper -->
             {{-- footer --}}
             @include('rw.layouts.footer')
@@ -312,7 +353,7 @@
                     }, 3000); // Tutup setelah 3 detik
                 @endif
             }
-            
+
         });
     </script>
 

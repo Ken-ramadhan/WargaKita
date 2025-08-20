@@ -52,7 +52,7 @@
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Hubungan Dalam Keluarga</label>
                             <select name="status_hubungan_dalam_keluarga"
-                                class="form-select {{ $errorIfTambah('status_hubungan_dalam_keluarga') }}" required>
+                                class="form-select {{ $errorIfTambah('status_hubungan_dalam_keluarga') }}" id="status_hubungan_dalam_keluarga" required>
                                 <option value="">-- Pilih --</option>
                                 <option value="kepala keluarga" {{ $oldIfTambah('status_hubungan_dalam_keluarga') == 'kepala keluarga' ? 'selected' : '' }}>Kepala Keluarga</option>
                                 <option value="istri" {{ $oldIfTambah('status_hubungan_dalam_keluarga') == 'istri' ? 'selected' : '' }}>Istri</option>
@@ -65,7 +65,7 @@
 
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Nama Ayah</label>
-                            <input type="text" name="nama_ayah" class="form-control {{ $errorIfTambah('nama_ayah') }}"
+                            <input type="text" name="nama_ayah" id="nama_ayah" class="form-control {{ $errorIfTambah('nama_ayah') }}"
                                 value="{{ $oldIfTambah('nama_ayah') }}" required>
                             @error('nama_ayah')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -74,7 +74,7 @@
 
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Nama Ibu</label>
-                            <input type="text" name="nama_ibu" class="form-control {{ $errorIfTambah('nama_ibu') }}"
+                            <input type="text" name="nama_ibu" id="nama_ibu" class="form-control {{ $errorIfTambah('nama_ibu') }}"
                                 value="{{ $oldIfTambah('nama_ibu') }}" required>
                             @error('nama_ibu')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -228,3 +228,42 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const modalTambahWarga = document.getElementById('modalTambahWarga');
+        const statusHubunganSelect = modalTambahWarga.querySelector('#status_hubungan_dalam_keluarga');
+        const namaAyahInput = modalTambahWarga.querySelector('#nama_ayah');
+        const namaIbuInput = modalTambahWarga.querySelector('#nama_ibu');
+
+        modalTambahWarga.addEventListener('show.bs.modal', function (event) {
+            // Dapatkan data dari tombol yang memicu modal
+            const button = event.relatedTarget;
+            const namaAyahAuto = button.getAttribute('data-nama_ayah');
+            const namaIbuAuto = button.getAttribute('data-nama_ibu');
+
+            // Simpan nilai di bidang tersembunyi (atau langsung gunakan)
+            modalTambahWarga.querySelector('#kk_nama_ayah_auto').value = namaAyahAuto;
+            modalTambahWarga.querySelector('#kk_nama_ibu_auto').value = namaIbuAuto;
+
+            // Reset bidang saat modal dibuka untuk mencegah nilai lama tetap ada
+            statusHubunganSelect.value = '';
+            namaAyahInput.value = '';
+            namaIbuInput.value = '';
+        });
+
+        statusHubunganSelect.addEventListener('change', function() {
+            const selectedValue = this.value;
+            const namaAyahAuto = modalTambahWarga.querySelector('#kk_nama_ayah_auto').value;
+            const namaIbuAuto = modalTambahWarga.querySelector('#kk_nama_ibu_auto').value;
+
+            if (selectedValue === 'anak') {
+                namaAyahInput.value = namaAyahAuto;
+                namaIbuInput.value = namaIbuAuto;
+            } else {
+                namaAyahInput.value = '';
+                namaIbuInput.value = '';
+            }
+        });
+    });
+</script>

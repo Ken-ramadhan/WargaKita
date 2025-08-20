@@ -92,12 +92,6 @@
                                     <i class="fas fa-bullhorn me-2 text-primary"></i>
                                     <span class="fw-semibold text-dark">{{ $total_pengumuman ?? 0 }} Pengumuman</span>
                                 </div>
-
-                                {{-- Tombol tambah (kanan) --}}
-                                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                    data-bs-target="#modalTambahPengumuman">
-                                    <i class="fas fa-plus"></i> Tambah
-                                </button>
                             </div>
                             <div class="table-responsive table-container">
                                 <table class="table table-sm table-hover text-nowrap">

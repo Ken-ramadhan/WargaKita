@@ -60,7 +60,7 @@
                             @php
                                 $kepala = optional($kartuKeluarga->warga)->firstWhere(
                                     'status_hubungan_dalam_keluarga',
-                                    'Kepala Keluarga',
+                                    'kepala keluarga',
                                 );
                             @endphp
 
@@ -81,7 +81,7 @@
                                         {{ $kartuKeluarga->kabupaten ?? '-' }}</p>
                                     <p class="mb-1"><strong>Kode Pos</strong> : {{ $kartuKeluarga->kode_pos ?? '-' }}</p>
                                     <p class="mb-0"><strong>Provinsi</strong> : {{ $kartuKeluarga->provinsi ?? '-' }}</p>
-                                    <p class="mb-0"><strong>Kategori Iuran</strong> : {{ $kartuKeluarga->katgeori_iuran ?? '-' }}</p>
+                                    <p class="mb-0"><strong>Kategori Iuran</strong> : {{ $kartuKeluarga->kategori_iuran ?? '-' }}</p>
                                 </div>
                             </div>
 

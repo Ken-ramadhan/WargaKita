@@ -93,6 +93,13 @@
     </li>
 
     {{-- Item Navigasi Lainnya --}}
+    <li class="nav-item {{ Request::is('rw/rukun_tetangga*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('rukun_tetangga.index') }}">
+            <i class="fas fa-house-user"></i>
+            <span>Rukun Tetangga</span>
+        </a>
+    </li>
+
     <li class="nav-item {{ Request::is('rw/warga*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('warga.index') }}">
             <i class="fas fa-id-card"></i>
@@ -104,13 +111,6 @@
         <a class="nav-link" href="{{ route('kartu_keluarga.index') }}">
             <i class="fas fa-users "></i>
             <span>Kartu Keluarga</span>
-        </a>
-    </li>
-
-    <li class="nav-item {{ Request::is('rw/rukun_tetangga*') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('rukun_tetangga.index') }}">
-            <i class="fas fa-house-user"></i>
-            <span>Rukun Tetangga</span>
         </a>
     </li>
 
