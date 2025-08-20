@@ -1,17 +1,17 @@
-@extends('rt.layouts.app') {{-- Pastikan layout ini benar untuk RT --}}
+@extends('rt.layouts.app')
 
-@section('title', $title) {{-- Pastikan $title dikirim dari controller --}}
+@section('title', $title)
 
 @section('content')
 
     <div id="content">
 
         {{-- top bar --}}
-        @include('rt.layouts.topbar') {{-- Asumsi topbar ada di rt.layouts.topbar --}}
+        @include('rt.layouts.topbar')
 
         {{-- top bar end --}}
 
-        <div class="container-fluid ">
+        <div class="container-fluid">
             <div class="row">
 
                 {{-- Session messages --}}
@@ -29,28 +29,28 @@
                     </div>
                 @endif
 
-                {{-- FORM FILTER/SEARCH --}}
-                <form action="{{ route('rt_iuran.index') }}" method="GET" class="row g-2 align-items-center px-3 pb-2"> {{-- PERBAIKAN ROUTE --}}
+                <form action="{{ route('rt_iuran.index') }}" method="GET" class="row g-2 align-items-center px-3 pb-2">
                     <div class="col-md-5 col-sm-12">
                         <div class="input-group input-group-sm">
                             <input type="text" name="search" value="{{ request('search') }}" class="form-control"
-                                placeholder="Cari Data Iuran...">
+                                placeholder="Cari Data Iuran..."> {{-- Changed "Pengeluaran" to "Iuran" --}}
                             <button class="btn btn-primary" type="submit">
                                 <i class="fas fa-search"></i>
                             </button>
                         </div>
                     </div>
                     <div class="col-md-4 col-sm-6 d-flex gap-2">
-                        {{-- <select name="rt" class="form-select form-select-sm">
+                        <select name="rt" class="form-select form-select-sm">
                             <option value="">Semua RT</option>
                             @foreach ($rt as $item)
-                                <option value="{{ $item->nomor_rt }}" {{ request('rt') == $item->nomor_rt ? 'selected' : '' }}>
+                                <option value="{{ $item->nomor_rt }}"
+                                    {{ request('rt') == $item->nomor_rt ? 'selected' : '' }}>
                                     RT {{ $item->nomor_rt }}
                                 </option>
                             @endforeach
-                        </select> --}}
+                        </select>
                         <button type="submit" class="btn btn-sm btn-primary">Filter</button>
-                        <a href="{{ route('rt_iuran.index') }}" class="btn btn-secondary btn-sm">Reset</a> {{-- PERBAIKAN ROUTE --}}
+                        <a href="{{ route('rt_iuran.index') }}" class="btn btn-secondary btn-sm">Reset</a>
                     </div>
                 </form>
 
@@ -58,19 +58,12 @@
                 <div class="col-xl-12 col-lg-7">
                     <div class="card shadow mb-4">
                         <div class="card-header py-2 d-flex flex-row align-items-center justify-content-between">
-                            <h6 class="m-0 font-weight-bold text-primary">Tabel Daftar Iuran RT</h6>
+                            <h6 class="m-0 font-weight-bold text-primary">Tabel Daftar Iuran Manual</h6>
                             <div class="dropdown no-arrow">
                                 <!--tombol titik tiga di kanan-->
-                                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                    aria-labelledby="dropdownMenuLink">
-                                    <div class="dropdown-header">Data Iuran</div>
-                                    <a class="dropdown-item" href="#" data-bs-toggle="modal"
-                                        data-bs-target="#modalTambahIuran">Tambah</a>
-                                </div>
+                                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalTambahIuran">
+                            <i class="fas fa-plus"></i> tambah
+                        </button>
                             </div>
                         </div>
                         <div class="card-body">
@@ -88,7 +81,8 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @forelse ($iuran as $item)
+                                        @forelse ($iuran->where('jenis', 'manual') as $item)
+                                            {{-- Filter here for manual --}}
                                             <tr>
                                                 <th scope="row">{{ $loop->iteration }}</th>
                                                 <td>Rp{{ number_format($item->nominal, 0, ',', '.') }}</td>
@@ -98,23 +92,22 @@
                                                 <td>{{ \Carbon\Carbon::parse($item->tgl_tempo)->translatedFormat('d F Y') }}
                                                 </td>
                                                 <td><span
-                                                        class="badge bg-secondary">
-                                                        Manual
+                                                        class="badge bg-{{ $item->jenis == 'otomatis' ? 'primary' : 'secondary' }}">
+                                                        {{ ucfirst($item->jenis) }}
                                                     </span></td>
                                                 <td>
-                                                    {{-- FORM HAPUS --}}
-                                                    <form action="{{ route('rt_iuran.destroy', $item->id) }}" method="POST" {{-- PERBAIKAN ROUTE --}}
+                                                    <form action="{{ route('rt_iuran.destroy', $item->id) }}" method="POST"
                                                         class="d-inline"
                                                         onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                                        <button type="submit" class="btn btn-danger btn-sm"></button>
                                                     </form>
-                                                    {{-- TOMBOL EDIT --}}
-                                                    <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal"
+                                                    <button type="button" class="btn btn-warning btn-sm"
+                                                        data-bs-toggle="modal"
                                                         data-bs-target="#modalEditIuran{{ $item->id }}">
                                                         Edit
-                                                    </button>
+                                                </button>
                                                 </td>
                                             </tr>
                                         @empty
@@ -140,11 +133,17 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Tabel Iuran Otomatis -->
+            
             </div>
         </div>
     </div>
 
-    {{-- Modal Tambah Iuran --}}
+    {{-- Modals for Edit --}}
+   
+    
+
     <div class="modal fade" id="modalTambahIuran" tabindex="-1" aria-labelledby="modalTambahIuranLabel"
         aria-hidden="true">
         <div class="modal-dialog">
@@ -155,58 +154,61 @@
                         aria-label="Tutup"></button>
                 </div>
                 <div class="modal-body">
-                    {{-- Form Tambah Iuran --}}
-                    <form action="{{ route('rt_iuran.store') }}" method="POST" class="p-4"> {{-- PERBAIKAN ROUTE --}}
+                    <form action="{{ route('rt_iuran.store') }}" method="POST" class="p-3">
                         @csrf
 
                         <div class="mb-3">
                             <label for="nama" class="form-label">Nama Iuran</label>
-                            <input type="text" name="nama" placeholder="Nama Iuran"
-                                class="form-control @error('nama') is-invalid @enderror" value="{{ old('nama') }}" required>
-                            @error('nama')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            <input type="text" name="nama" class="form-control" value="{{ old('nama') }}"
+                                required>
                         </div>
 
                         <div class="mb-3">
                             <label for="tgl_tagih" class="form-label">Tanggal Tagih</label>
-                            <input type="date" name="tgl_tagih"
-                                class="form-control @error('tgl_tagih') is-invalid @enderror"
-                                value="{{ old('tgl_tagih') }}" required>
-                            @error('tgl_tagih')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            <input type="date" name="tgl_tagih" class="form-control" value="{{ old('tgl_tagih') }}"
+                                required>
                         </div>
 
                         <div class="mb-3">
                             <label for="tgl_tempo" class="form-label">Tanggal Tempo</label>
-                            <input type="date" name="tgl_tempo" id="tgl_tempo"
-                                class="form-control @error('tgl_tempo') is-invalid @enderror"
-                                value="{{ old('tgl_tempo') }}" required>
-                            @error('tgl_tempo')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            <input type="date" name="tgl_tempo" class="form-control" value="{{ old('tgl_tempo') }}"
+                                required>
                         </div>
 
                         <div class="mb-3">
                             <label for="jenis" class="form-label">Jenis Iuran</label>
-                            <input type="text" class="form-control" value="Manual" disabled>
-                            <input type="hidden" name="jenis" value="manual">
+                            <select name="jenis" id="jenis" class="form-control" required>
+                                <option value="manual">Manual</option>
+                                <option value="otomatis">Otomatis</option>
+                            </select>
                         </div>
 
-                        <div class="mb-3" id="manual-field">
-                            <label class="form-label">Nominal</label>
-                            <input type="number" name="nominal_manual" class="form-control"
-                                placeholder="Masukkan nominal manual" value="{{ old('nominal_manual') }}" required>
+                        {{-- Input untuk Manual --}}
+                        <div class="mb-3" id="manualFields">
+                            <label for="nominal_manual" class="form-label">Nominal Manual</label>
+                            <input type="number" name="nominal" class="form-control"
+                                placeholder="Masukkan nominal manual">
                         </div>
 
-                        <hr>
+                        {{-- Input untuk Otomatis --}}
+                        <div id="otomatisFields" style="display: none;">
+                            <label class="form-label">Nominal per Golongan</label>
+                            @foreach ($golongan_list as $golongan)
+                                <div class="mb-2">
+                                    <label for="nominal_{{ $golongan }}">Golongan {{ ucfirst($golongan) }}</label>
+                                    <input type="number" name="nominal_{{ $golongan }}" class="form-control"
+                                        placeholder="Masukkan nominal untuk golongan {{ $golongan }}">
+                                </div>
+                            @endforeach
+                        </div>
 
-                        <div class="d-grid">
+                        <div class="d-grid mt-4">
                             <button type="submit" class="btn btn-primary">Simpan Data</button>
                         </div>
                     </form>
-                    @if ($errors->any() && !request()->has('search') && !request()->has('rt'))
+
+                    {{-- Tampilkan error validasi --}}
+                    @if ($errors->any())
                         <div class="alert alert-danger mt-3">
                             <ul class="mb-0">
                                 @foreach ($errors->all() as $error)
@@ -220,140 +222,107 @@
         </div>
     </div>
 
-    {{-- Modals for Edit Iuran --}}
-    @foreach ($iuran as $item)
-        <div class="modal fade" id="modalEditIuran{{ $item->id }}" tabindex="-1"
-            aria-labelledby="modalEditIuranLabel{{ $item->id }}" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content shadow-lg">
-                    <div class="modal-header bg-warning text-white">
-                        <h5 class="modal-title" id="modalEditIuranLabel{{ $item->id }}">Edit Data Iuran</h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                            aria-label="Tutup"></button>
-                    </div>
-                    <div class="modal-body">
-                        {{-- Form Edit Iuran --}}
-                        <form action="{{ route('rt_iuran.update', $item->id) }}" method="POST" class="p-4"> {{-- PERBAIKAN ROUTE --}}
-                            @csrf
-                            @method('PUT')
+    </div>
 
-                            <div class="mb-3">
-                                <label for="nama" class="form-label">Nama Iuran</label>
-                                <input type="text" name="nama" class="form-control @error('nama') is-invalid @enderror"
-                                    value="{{ old('nama', $item->nama) }}" placeholder="Nama Iuran">
-                                @error('nama')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="tgl_tagih" class="form-label">Tanggal Tagih</label>
-                                <input type="date" name="tgl_tagih"
-                                    class="form-control @error('tgl_tagih') is-invalid @enderror"
-                                    value="{{ old('tgl_tagih', $item->tgl_tagih) }}">
-                                @error('tgl_tagih')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="tgl_tempo" class="form-label">Tanggal Tempo</label>
-                                <input type="date" name="tgl_tempo"
-                                    class="form-control @error('tgl_tempo') is-invalid @enderror"
-                                    value="{{ old('tgl_tempo', $item->tgl_tempo) }}">
-                                @error('tgl_tempo')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label">Jenis Iuran</label>
-                                <input type="text" class="form-control" value="Manual" disabled>
-                                <input type="hidden" name="jenis" value="manual">
-                            </div>
-
-                            <div id="manualFieldEdit{{ $item->id }}">
-                                <label class="form-label">Nominal</label>
-                                <input type="number" name="nominal_manual" class="form-control"
-                                    placeholder="Masukkan nominal manual"
-                                    value="{{ old('nominal_manual', $item->nominal) }}" required>
-                            </div>
-
-                            <hr>
-
-                            <div class="d-grid">
-                                <button type="submit" class="btn btn-warning">Update Data</button>
-                            </div>
-
-                            @if ($errors->any())
-                                <div class="alert alert-danger">
-                                    <ul class="mb-0">
-                                        @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                        @endforeach
-                                    </ul>
-                                </div>
-                            @endif
-
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    @endforeach
-   <!-- <style>
-        /* Pastikan html dan body bisa di-scroll */
-        html, body {
-            height: 100%; /* Memastikan tinggi minimal 100% dari viewport */
-            overflow-x: hidden; /* Mencegah horizontal scrollbar jika tidak diinginkan */
-            overflow-y: auto; /* Memungkinkan vertical scrollbar jika konten melebihi tinggi viewport */
-            scroll-behavior: smooth; /* Opsional: membuat scrolling lebih halus */
-        }
-
-        /* Jika ada elemen utama yang membungkus seluruh konten, pastikan juga bisa di-scroll */
-        /* Contoh: jika Anda punya div dengan id="wrapper" atau id="content-wrapper" */
-        #wrapper, #content-wrapper {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh; /* Memastikan wrapper minimal setinggi viewport */
-            overflow: hidden; /* Biasanya wrapper tidak perlu scroll, biarkan body yang handle */
-        }
-
-        /* Pastikan main content area bisa berkembang dan di-scroll */
-        #content {
-            flex-grow: 1; /* Memungkinkan konten untuk mengisi ruang yang tersedia */
-            overflow-y: auto; /* Jika konten di dalam #content melebihi tingginya */
-            -webkit-overflow-scrolling: touch; /* Untuk scrolling yang lebih baik di iOS */
-        }
-
-        /* Jika Anda menggunakan SB Admin 2, periksa juga CSS bawaannya */
-        /* Beberapa class SB Admin 2 mungkin mengatur overflow: hidden */
-        /* Anda mungkin perlu menimpanya jika itu yang menyebabkan masalah */
-        body.sidebar-toggled #content-wrapper {
-            overflow: auto; /* Pastikan konten bisa di-scroll saat sidebar ditoggle */
-        }
-
-        /* Tambahkan CSS yang sudah ada sebelumnya di sini */
-        @media (min-width: 768px) {
-            .sidebar {
-                transition: all 0.3s ease;
-            }
-            .sidebar.toggled {
-                width: 100px !important; /* ukuran kecil saat ditutup */
-            }
-            .sidebar .nav-item .nav-link span {
-                transition: opacity 0.3s ease;
-            }
-        }
-    </style>-->
 @endsection
-
-@push('scripts')
 <script>
-    // Tidak ada script JavaScript yang diperlukan untuk toggling field karena hanya ada jenis manual.
     document.addEventListener('DOMContentLoaded', function() {
-        // Jika ada logika lain yang perlu dijalankan saat DOM dimuat, tambahkan di sini.
-        // Misalnya, inisialisasi Bootstrap modals secara manual jika diperlukan.
+
+        // ======================
+        // === Tambah Iuran ====
+        // ======================
+        function toggleNominalFields() {
+            const jenisSelect = document.getElementById('jenis');
+            const otomatisFields = document.getElementById('otomatisFields');
+            const manualField = document.getElementById('manualFields');
+
+            if (!jenisSelect || !otomatisFields || !manualField) return;
+
+            const isOtomatis = jenisSelect.value === 'otomatis';
+
+            otomatisFields.style.display = isOtomatis ? 'block' : 'none';
+            manualField.style.display = isOtomatis ? 'none' : 'block';
+
+            // Handle field requirements
+            otomatisFields.querySelectorAll('input[type="number"]').forEach(input => {
+                input.required = isOtomatis;
+                if (!isOtomatis) input.value = '';
+            });
+
+            const manualInput = manualField.querySelector('input[type="number"]');
+            if (manualInput) {
+                manualInput.required = !isOtomatis;
+                if (isOtomatis) manualInput.value = '';
+            }
+        }
+
+        // ======================
+        // === Edit Iuran ======
+        // ======================
+        function toggleEditFields(itemId) {
+            const jenisSelect = document.getElementById('jenisEdit' + itemId);
+            const otomatisField = document.getElementById('otomatisFieldsEdit' + itemId);
+            const manualField = document.getElementById('manualFieldEdit' + itemId);
+
+            if (!jenisSelect || !otomatisField || !manualField) return;
+
+            const isOtomatis = jenisSelect.value === 'otomatis';
+
+            otomatisField.style.display = isOtomatis ? 'block' : 'none';
+            manualField.style.display = isOtomatis ? 'none' : 'block';
+
+            // Atur input otomatis
+            otomatisField.querySelectorAll('input[type="number"]').forEach(input => {
+                input.required = isOtomatis;
+                if (!isOtomatis) input.value = '';
+            });
+
+            // Atur input manual
+            const manualInput = manualField.querySelector('input[type="number"]');
+            if (manualInput) {
+                manualInput.required = !isOtomatis;
+                if (isOtomatis) manualInput.value = '';
+            }
+        }
+
+        // ======================
+        // === Inisialisasi ====
+        // ======================
+        const jenisAddSelect = document.getElementById('jenis');
+        if (jenisAddSelect) {
+            toggleNominalFields();
+            jenisAddSelect.addEventListener('change', toggleNominalFields);
+
+            const tambahIuranModal = document.getElementById('modalTambahIuran');
+            if (tambahIuranModal) {
+                tambahIuranModal.addEventListener('shown.bs.modal', toggleNominalFields);
+            }
+        }
+
+        // ================================
+        // === Inisialisasi Modal Edit ===
+        // ================================
+        @if ($iuran->isNotEmpty())
+            @foreach ($iuran as $item)
+                (function() {
+                    const itemId = '{{ $item->id }}';
+                    toggleEditFields(itemId);
+
+                    const jenisEditSelect = document.getElementById('jenisEdit' + itemId);
+                    if (jenisEditSelect) {
+                        jenisEditSelect.addEventListener('change', function() {
+                            toggleEditFields(itemId);
+                        });
+                    }
+
+                    const editModal = document.getElementById('modalEditIuran' + itemId);
+                    if (editModal) {
+                        editModal.addEventListener('shown.bs.modal', function() {
+                            toggleEditFields(itemId);
+                        });
+                    }
+                })();
+            @endforeach
+        @endif
     });
 </script>
-@endpush

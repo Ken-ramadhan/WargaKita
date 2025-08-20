@@ -56,7 +56,7 @@ class Kartu_keluargaController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-   public function store(Request $request)
+public function store(Request $request)
 {
     // Validasi input
     $request->validate([
@@ -70,19 +70,16 @@ class Kartu_keluargaController extends Controller
         'kode_pos'   => 'required|string|max:10',
         'tgl_terbit' => 'required|date',
         'golongan'   => 'required',
-    ], [
-        // Pesan error custom jika perlu
     ]);
 
-    // Ambil ID RW user yang login
     $id_rw = Auth::user()->id_rw;
 
-    // Simpan data ke database
-    Kartu_keluarga::create([
+    // Simpan KK baru
+    $kk = Kartu_keluarga::create([
         'no_kk'      => $request->no_kk,
         'alamat'     => $request->alamat,
         'id_rt'      => $request->id_rt,
-        'id_rw'      => $id_rw, // ← otomatis
+        'id_rw'      => $id_rw,
         'kelurahan'  => $request->kelurahan,
         'kecamatan'  => $request->kecamatan,
         'kabupaten'  => $request->kabupaten,
@@ -92,9 +89,37 @@ class Kartu_keluargaController extends Controller
         'golongan'   => $request->golongan,
     ]);
 
+    // ====== Tambahkan ini: Generate tagihan otomatis untuk KK baru ======
+    $iurans = \App\Models\Iuran::where('jenis', 'otomatis')->get();
+
+    foreach ($iurans as $iuran) {
+        $kategori = \App\Models\Kategori_golongan::where('jenis', $kk->golongan)->first();
+
+        if (!$kategori) continue;
+
+        $nominal = \App\Models\IuranGolongan::where('id_iuran', $iuran->id)
+            ->where('id_golongan', $kategori->id)
+            ->value('nominal');
+
+        if ($nominal && $nominal > 0) {
+            \App\Models\Tagihan::create([
+                'nama' => $iuran->nama,
+                'tgl_tagih' => $iuran->tgl_tagih,
+                'tgl_tempo' => $iuran->tgl_tempo,
+                'jenis' => 'otomatis',
+                'nominal' => $nominal,
+                'no_kk' => $kk->no_kk,
+                'status_bayar' => 'belum_bayar',
+                'id_iuran' => $iuran->id,
+            ]);
+        }
+    }
+    // =====================================================================
+
     return redirect()->route('kartu_keluarga.index')
         ->with('success', 'Data kartu keluarga berhasil ditambahkan.');
 }
+ 
 
 
 

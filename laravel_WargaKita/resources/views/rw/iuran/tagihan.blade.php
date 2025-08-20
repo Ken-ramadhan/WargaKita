@@ -30,7 +30,7 @@
                 @endif
 
                 {{-- Form Filter dan Pencarian --}}
-                <form action="{{ route('iuran.index') }}" method="GET" class="row g-2 align-items-center px-3 pb-2">
+                <form action="{{ route('tagihan.index') }}" method="GET" class="row g-2 align-items-center px-3 pb-2">
                     <div class="col-md-5 col-sm-12">
                         <div class="input-group input-group-sm">
                             <input type="text" name="search" value="{{ request('search') }}" class="form-control"
@@ -116,7 +116,7 @@
                                                     <button type="button" class="btn btn-success btn-sm"
                                                         data-bs-toggle="modal"
                                                         data-bs-target="#modalDetailkk{{ $item->kartuKeluarga->no_kk }}">
-                                                        <i class="fas fa-eye"></i>
+                                                        <i class="fas fa-info"></i>
 
                                                     </button>
                                                     {{-- Tombol Edit --}}

@@ -2,24 +2,19 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+// use Illuminate\Contracts\Auth\MustVerifyEmail; // Dihapus karena tidak digunakan
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsTo; // Pastikan ini ada jika menggunakan type-hinting BelongsTo
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasApiTokens,HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
-  protected $table = 'users';
+    protected $table = 'users';
+
     protected $fillable = [
         'nik',
         'password',
@@ -27,41 +22,30 @@ class User extends Authenticatable
         'nomor_rw',
         'id_rw',
         'role',
-        'id_rt',
+        'id_rt', // Ini adalah ID dari tabel rukun_tetangga
     ];
 
-// Di User.php
-public function warga()
-{
-    return $this->belongsTo(Warga::class, 'nik', 'nik');
-}
+    public function warga(): BelongsTo
+    {
+        return $this->belongsTo(Warga::class, 'nik', 'nik');
+    }
 
+    public function rukunTetangga(): BelongsTo
+    {
+        // Relasi ini sudah benar, id_rt di users merujuk ke id di rukun_tetangga
+        return $this->belongsTo(Rukun_tetangga::class, 'id_rt', 'id');
+    }
 
- public function rukunTetangga()
-{
-    return $this->belongsTo(Rukun_tetangga::class,'id_rt','id');
-}
+    public function rw(): BelongsTo
+    {
+        return $this->belongsTo(Rw::class, 'id_rw', 'id');
+    }
 
-public function rw()
-{
-    return $this->belongsTo(Rw::class,'id_rw','id');
-}
-
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -69,5 +53,4 @@ public function rw()
             'password' => 'hashed',
         ];
     }
-
 }

@@ -31,9 +31,6 @@
         .card-body .text-xs {
             font-size: 0.58rem !important; /* Slightly smaller title text size for better fit */
             margin-bottom: 0.1rem !important; /* More compact bottom margin for title text */
-
-            /* REMOVED: white-space: nowrap; overflow: hidden; text-overflow: ellipsis; */
-            /* Teks akan membungkus baris jika terlalu panjang */
         }
         .card-body .bi, /* Target Bootstrap SVG Icons */
         .card-body .fa-3x { /* Target Font Awesome icons */
@@ -103,6 +100,7 @@
 
 <div class="row">
 
+    <!-- Card Jumlah Warga -->
     <div class="col-6 col-md-4 col-xl-3 mb-4">
         <div class="card border-left-primary shadow h-100 py-2 card-clickable">
             <a href="{{ route('warga.index') }}" class="text-decoration-none">
@@ -110,8 +108,7 @@
                     <div class="row align-items-center">
                         <div class="col">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Jumlah Warga
-                            </div>
+                                Jumlah Warga</div>
                             <div class="h4 mb-0 font-weight-bolder text-gray-800">{{ $jumlah_warga }}</div>
                         </div>
                         <div class="col-auto">
@@ -127,26 +124,7 @@
         </div>
     </div>
 
-    <div class="col-6 col-md-4 col-xl-3 mb-4">
-        <div class="card border-left-success shadow h-100 py-2 card-clickable">
-            <a href="/iuran" class="text-decoration-none">
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                Total Iuran Masuk Bulan Ini
-                            </div>
-                            <div class="h4 mb-0 font-weight-bolder text-gray-800">$215,000</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-dollar-sign fa-3x text-gray-400"></i>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-    </div>
-
+    <!-- Card Jumlah KK -->
     <div class="col-6 col-md-4 col-xl-3 mb-4">
         <div class="card border-left-info shadow h-100 py-2 card-clickable">
             <a href="{{ route('kartu_keluarga.index') }}" class="text-decoration-none">
@@ -160,13 +138,14 @@
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-clipboard-list fa-3x text-gray-400"></i>
-                        </div>
+                        </div>  
                     </div>
                 </div>
             </a>
         </div>
     </div>
 
+    <!-- Card Jumlah RT -->
     <div class="col-6 col-md-4 col-xl-3 mb-4">
         <div class="card border-left-info shadow h-100 py-2 card-clickable">
             <a href="{{ route('rukun_tetangga.index') }}" class="text-decoration-none">
@@ -187,6 +166,7 @@
         </div>
     </div>
 
+    <!-- Card Jumlah Warga Sebagai Penduduk -->
     <div class="col-6 col-md-4 col-xl-3 mb-4">
         <div class="card border-left-primary shadow h-100 py-2 card-clickable">
             <a href="{{ route('warga.index') }}" class="text-decoration-none">
@@ -207,6 +187,7 @@
         </div>
     </div>
 
+    <!-- Card Jumlah Warga Sebagai Pendatang -->
     <div class="col-6 col-md-4 col-xl-3 mb-4">
         <div class="card border-left-primary shadow h-100 py-2 card-clickable">
             <a href="{{ route('warga.index') }}" class="text-decoration-none">
@@ -227,7 +208,7 @@
         </div>
     </div>
 
-    
+    <!-- Card Jumlah Pengumuman -->
     <div class="col-6 col-md-4 col-xl-3 mb-4">
         <div class="card border-left-warning shadow h-100 py-2 card-clickable">
             <a href="{{ route('pengumuman.index') }}" class="text-decoration-none">
@@ -247,4 +228,77 @@
             </a>
         </div>
     </div>
+
+    <!-- Card Total Pemasukan -->
+    <div class="col-6 col-md-4 col-xl-3 mb-4">
+        <div class="card border-left-success shadow h-100 py-2 card-clickable">
+            <a href="{{ route('transaksi.index') }}" class="text-decoration-none">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Total Pemasukan
+                            </div>
+                            <div class="h4 mb-0 font-weight-bolder text-gray-800">
+                                Rp{{ number_format($total_pemasukan, 0, ',', '.') }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-3x text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Card Total Pengeluaran -->
+    <div class="col-6 col-md-4 col-xl-3 mb-4">
+        <div class="card border-left-danger shadow h-100 py-2 card-clickable">
+            <a href="{{ route('transaksi.index') }}" class="text-decoration-none">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                Total Pengeluaran
+                            </div>
+                            <div class="h4 mb-0 font-weight-bolder text-gray-800">
+                                Rp{{ number_format($total_pengeluaran, 0, ',', '.') }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-money-bill-wave fa-3x text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    {{-- ==================================================================== --}}
+    {{-- CARD BARU: Saldo Akhir --}}
+    {{-- ==================================================================== --}}
+    <div class="col-6 col-md-4 col-xl-3 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2 card-clickable"> {{-- Anda bisa pilih warna border lain, misal border-left-info --}}
+            <a href="{{ route('transaksi.index') }}" class="text-decoration-none"> {{-- Link ke halaman transaksi --}}
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Saldo Akhir
+                            </div>
+                            <div class="h4 mb-0 font-weight-bolder text-gray-800">
+                                Rp{{ number_format($total_saldo_akhir, 0, ',', '.') }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-wallet fa-3x text-gray-400"></i> {{-- Icon dompet atau sejenisnya --}}
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    {{-- ==================================================================== --}}
+
 </div>
+

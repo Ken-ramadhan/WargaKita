@@ -111,20 +111,25 @@
             <span>Pengumuman</span>
         </a>
     </li>
-
+    <li class="nav-item {{ Request::is('rw/iuran*') ? 'active' : '' }}">
+    <a class="nav-link" href="{{ route('iuran.index') }}">
+        <i class="fas fa-file-invoice-dollar"></i>
+        <span>Iuran</span>
+    </a>
+    </li>
     <li class="nav-item {{ Request::is('rw/tagihan*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('tagihan.index') }}">
-            <i class="fas fa-file-invoice-dollar"></i>
-            <span>Manajemen Keuangan</span>
+            <i class="fas fa-dollar-sign"></i>
+            <span>Tagihan</span>
         </a>
     </li>
-    <li class="nav-item {{ Request::is('rw/iuran*') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('iuran.index') }}">
-            <i class="fas fa-file-invoice-dollar"></i>
-            <span>Iuran</span>
+    <li class="nav-item {{ Request::is('rw/transaksi*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('transaksi.index') }}">
+            <i class="fas fa-money-bill-wave"></i>
+            <span>Pengeluaran</span>
         </a>
     </li>
-    <hr class="sidebar-divider d-none d-md-block">
+        <hr class="sidebar-divider d-none d-md-block">
 
     <div class="text-center">
         <button class="rounded-circle border-0" id="sidebarToggle"></button>

@@ -188,6 +188,12 @@
                                     <span>Lihat KK</span>
                                 </a>
                             </li>
+                            <li class="nav-item {{ Request::is('warga/tagihan*') ? 'active' : '' }}">
+                                <a class="nav-link" href="{{ route('tagihan') }}">
+                                    <i class="fas fa-id-card"></i>
+                                    <span>Lihat Tagihan</span>
+                                </a>
+                            </li>
 
                             <hr class="sidebar-divider d-none d-md-block">
 

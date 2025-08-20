@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Rt;
 use App\Http\Controllers\Controller;
 use App\Models\Kartu_keluarga;
 use App\Models\Pengumuman;
+use App\Models\Tagihan;
+use App\Models\Transaksi;
 use App\Models\Warga;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -54,6 +56,9 @@ class Rt_dashboardController extends Controller
                                   ->whereIn('no_kk', $kk_nomor_list)
                                   ->count();
 
+    $total_pemasukan = Tagihan::where('status_bayar', 'sudah_bayar')->sum('nominal');
+        $total_pengeluaran= Transaksi::sum('pengeluaran');
+        $total_saldo_akhir = $total_pemasukan - $total_pengeluaran;                              
     // --- Mengirim Data ke View ---
     return view('rt.dashboard.dashboard', compact(
         'title',
@@ -61,7 +66,10 @@ class Rt_dashboardController extends Controller
         'jumlah_kk',
         'jumlah_pengumuman',
         'jumlah_warga_penduduk',
-        'jumlah_warga_pendatang'
+        'jumlah_warga_pendatang',
+        'total_pemasukan',
+        'total_pengeluaran',
+        'total_saldo_akhir'
     ));
 }
 }

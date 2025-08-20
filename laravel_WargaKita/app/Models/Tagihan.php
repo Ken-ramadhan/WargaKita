@@ -22,8 +22,14 @@ class Tagihan extends Model
         'status_bayar',
         'tgl_bayar',
         'id_iuran',
-        'kategori_pembayaran', // Ditambahkan ke $fillable
-        'bukti_transfer',      // Ditambahkan ke $fillable
+        'kategori_pembayaran',
+        'bukti_transfer',
+        'tercatat_transaksi', // <<< Tambahkan ini
+    ];
+
+    // Jika Anda ingin Laravel secara otomatis mengkonversi nilai boolean
+    protected $casts = [
+        'tercatat_transaksi' => 'boolean',
     ];
 
     /**
@@ -39,6 +45,6 @@ class Tagihan extends Model
      */
     public function iuran()
     {
-        return $this->belongsTo(Iuran::class, 'id_iuran'); // Asumsi primary key model Iuran adalah 'id'
+        return $this->belongsTo(Iuran::class, 'id_iuran');
     }
 }

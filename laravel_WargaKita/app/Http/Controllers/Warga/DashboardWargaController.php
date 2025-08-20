@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Warga;
 
 use App\Http\Controllers\Controller;
 use App\Models\Pengumuman;
+use App\Models\Tagihan;
+use App\Models\Transaksi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -53,7 +55,10 @@ class DashboardWargaController extends Controller
         // Menghitung total pengumuman berdasarkan baseQuery
         $jumlah_pengumuman = (clone $baseQuery)->count();
 
+        $total_pemasukan = Tagihan::where('status_bayar', 'sudah_bayar')->sum('nominal');
+        $total_pengeluaran = Transaksi::sum('pengeluaran');
+        $total_saldo_akhir = $total_pemasukan - $total_pengeluaran;
 
-    return view('warga.dashboard.dashboard', compact('title', 'jumlah_pengumuman'));
+    return view('warga.dashboard.dashboard', compact('title', 'jumlah_pengumuman','total_pemasukan', 'total_pengeluaran', 'total_saldo_akhir'));
 }
 }

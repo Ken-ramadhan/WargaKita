@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Rw;
 
+use App\Http\Controllers\Controller;
 use App\Models\Pengeluaran; // Import model Pengeluaran
 use Illuminate\Http\Request;
 use Carbon\Carbon; // Digunakan untuk manipulasi tanggal

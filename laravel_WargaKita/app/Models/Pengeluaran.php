@@ -2,22 +2,31 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Pengeluaran extends Model
 {
-    //
+    use HasFactory;
+
+    // Menentukan nama tabel yang terkait dengan model ini
     protected $table = 'pengeluaran';
+
+    // Mendefinisikan kolom-kolom yang bisa diisi secara massal (mass assignable)
     protected $fillable = [
-        'id_rt',
-        'nama_pengeluaran',
-        'jumlah',
+        'rt',
         'tanggal',
+        'pemasukan', // Sekarang ini adalah kolom string
+        'pengeluaran', // Sekarang ini adalah kolom string
+        'nama_transaksi',
+        'jumlah',
         'keterangan',
     ];
 
-    public function rukunTetangga()
-    {
-        return $this->belongsTo(Rukun_tetangga::class, 'id_rt');
-    }
+    // Opsional: Casting atribut ke tipe data tertentu
+    protected $casts = [
+        'tanggal' => 'date',     // Mengubah 'tanggal' menjadi objek Carbon
+        'jumlah' => 'decimal:2', // Mengubah 'jumlah' menjadi tipe desimal dengan 2 angka di belakang koma
+        // Tidak meng-cast 'pemasukan' dan 'pengeluaran' karena mereka string di migrasi
+    ];
 }

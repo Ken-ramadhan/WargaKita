@@ -11,15 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pengeluaran', function (Blueprint $table) {
+        Schema::create('transaksi', function (Blueprint $table) {
             $table->id();
-            // Kolom ini akan membedakan antara pemasukan dan pengeluaran
             $table->string('rt');
             $table->date('tanggal');
-            $table->string('pemasukan');
-            $table->string('pengeluaran');
-            $table->string('nama_transaksi'); // Nama atau deskripsi transaksi
-            $table->decimal('jumlah', 15, 2); // Menggunakan decimal untuk uang
+            $table->string('pemasukan')->nullable();   // nullable supaya bisa kosong
+            $table->string('pengeluaran')->nullable(); // nullable supaya bisa kosong
+            $table->string('nama_transaksi'); 
+            $table->decimal('jumlah', 15, 2);
             $table->text('keterangan')->nullable();
             $table->timestamps();
         });
@@ -30,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pengeluaran'); // Ini akan menghapus tabel 'pengeluaran'
+        Schema::dropIfExists('transaksi');
     }
 };
